@@ -68,7 +68,6 @@ public struct Csv2Img: ParsableCommand {
 
     public func run() throws {
         let imageMaker = ImageMaker(
-            padding: 8,
             fontSize: 12
         )
         let csv: Csv

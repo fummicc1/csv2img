@@ -7,26 +7,17 @@ import CoreText
 import AppKit
 
 public protocol ImageMakerType {
-    var padding: CGFloat { get }
     func make(csv: Csv) -> Data?
-    func setPadding(_ padding: CGFloat)
 }
 
 public class ImageMaker: ImageMakerType {
     public init(
-        padding: CGFloat,
         fontSize: CGFloat
     ) {
-        self.padding = padding
         self.fontSize = fontSize
     }
 
-    public var padding: CGFloat
     public var fontSize: CGFloat
-
-    public func setPadding(_ padding: CGFloat) {
-        self.padding = padding
-    }
 
     public func setFontSize(_ size: CGFloat) {
         self.fontSize = size
@@ -49,11 +40,11 @@ public class ImageMaker: ImageMakerType {
 
         let longestHeight = textSizeList.map({ $0.height }).sorted().reversed()[0]
         let longestWidth = textSizeList.map({ $0.width }).sorted().reversed()[0]
-        let _width = (Int(longestWidth) + horizontalSpace) * csv.columnNames.count
-        let _height = (csv.rows.count + 1) * (Int(longestHeight) + verticalSpace)
+        let width = (Int(longestWidth) + horizontalSpace) * csv.columnNames.count
+        let height = (csv.rows.count + 1) * (Int(longestHeight) + verticalSpace)
 
         let canvas = NSImage(
-            size: NSSize(width: _width, height: _height)
+            size: NSSize(width: width, height: height)
         )
 
         canvas.lockFocus()
@@ -67,10 +58,7 @@ public class ImageMaker: ImageMakerType {
             blue: 250/255,
             alpha: 1)
         )
-        context.fill(CGRect(origin: .zero, size: CGSize(width: _width, height: _height)))
-
-        let width = _width - Int(padding/2)
-        let height = _height - Int(padding/2)
+        context.fill(CGRect(origin: .zero, size: CGSize(width: width, height: height)))
 
         context.setLineWidth(1)
         context.setStrokeColor(NSColor.separatorColor.cgColor)

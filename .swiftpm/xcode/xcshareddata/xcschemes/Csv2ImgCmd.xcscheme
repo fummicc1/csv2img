@@ -80,7 +80,7 @@
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "https://raw.githubusercontent.com/thephpleague/csv/master/test_files/foo.csv"
+            argument = "https://raw.githubusercontent.com/fummicc1/csv2img/main/Sources/Csv2ImgCmd/Resources/yolov5x6.csv?token=GHSAT0AAAAAABMYJL6PAWA72PX4JI2AWA5EYU2FBFA"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
