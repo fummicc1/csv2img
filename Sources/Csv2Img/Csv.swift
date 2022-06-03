@@ -48,7 +48,8 @@ extension Csv {
             columnNames: [],
             rows: []
         )
-        let lines = str.split(separator: "\n")
+        var lines = str.components(separatedBy: CharacterSet(charactersIn: "\r\n"))
+        lines = lines.filter({ !$0.isEmpty })
         var ignoredIndexes: [Int] = []
         for (i, line) in lines.enumerated() {
             var items = line
