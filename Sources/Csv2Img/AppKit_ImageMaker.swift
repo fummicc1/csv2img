@@ -6,10 +6,13 @@ import CoreGraphics
 import CoreText
 import AppKit
 
+
+/// No overview available
 public protocol ImageMakerType {
     func make(csv: Csv) -> Data?
 }
 
+/// `ImageMarker` generate png-image from ``Csv``.
 public class ImageMaker: ImageMakerType {
     public init(
         fontSize: CGFloat
@@ -23,6 +26,7 @@ public class ImageMaker: ImageMakerType {
         self.fontSize = size
     }
 
+    /// generate png-image data from ``Csv``.
     public func make(
         csv: Csv
     ) -> Data? {
