@@ -4,7 +4,6 @@ Convert Csv into png image.
 
 - [documentation](https://fummicc1.github.io/csv2img/Csv2Img/index.html)
 
----
 
 # Csv2ImgCmd
 
