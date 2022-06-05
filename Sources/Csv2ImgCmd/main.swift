@@ -1,10 +1,3 @@
-//
-//  File.swift
-//  
-//
-//  Created by Fumiya Tanaka on 2022/06/03.
-//
-
 import Foundation
 import ArgumentParser
 import Csv2Img
@@ -46,6 +39,7 @@ public enum InputType: EnumerableFlag {
 ///
 ///
 /// If you have a csv file on your computer, you cloud use this flag with `--local`, `-l`.
+///
 /// ```shell
 /// ./Csv2ImgCmd --local ~/Downloads/sample.csv ./output.csv
 /// ```

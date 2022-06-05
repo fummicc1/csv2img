@@ -1,6 +1,22 @@
 # Csv2Img
 
-## Example
+Convert Csv into png image.
+
+## Overview
+
+Csv2Image is static library to convert csv data into table with png-format.
+
+---
+
+# Csv2ImgCmd
+
+A command line tool which generates png-image from csv. (Using `Csv2Img` library)
+
+## Overview
+
+`Csv2ImgCmd` is CLI tool to generate image from csv. 
+
+## Usage
 
 1. Build CLI
 

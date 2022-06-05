@@ -1,26 +1,28 @@
 import Foundation
 
-/// Csv data structure
-///
-/// `Csv` is a struct to store information to parse csv into table.
-/// `Csv` automatically recognize first row as column and others as rows.
-///
-/// ```swift
-/// let rawCsv = """
-/// a,b,c
-/// 1,2,3
-/// 4,5,6
-/// 7,8,9
-/// 10,11,12
-/// """
-/// let csv = Csv.fromString(rawCsv)
-/// Output:
-/// | a  | b  | c  |
-/// | 1  | 2  | 3  |
-/// | 4  | 5  | 6  |
-/// | 7  | 8  | 9  |
-/// | 10 | 11 | 12 |
-/// ```
+/** Csv data structure
+
+ ``Csv`` is a struct to store information to parse csv into table.
+
+ ``Csv`` automatically recognize first row as column and others as rows.
+
+ ```swift
+ let rawCsv = """
+ a,b,c
+ 1,2,3
+ 4,5,6
+ 7,8,9
+ 10,11,12
+ """
+ let csv = Csv.fromString(rawCsv)
+ Output:
+ | a  | b  | c  |
+ | 1  | 2  | 3  |
+ | 4  | 5  | 6  |
+ | 7  | 8  | 9  |
+ | 10 | 11 | 12 |
+ ```
+*/
 public struct Csv {
     /// initialization
     ///
@@ -45,10 +47,15 @@ extension Csv {
     /// Row (a line)
     ///
     /// Row is hrizontally separated group except first line.
+    ///
     /// First line is treated as ``ColumnName``.
+    ///
     /// eg.
+    ///
     /// 1 2 3 4
+    ///
     /// 5 6 7 8
+    ///
     /// →Row is [5, 6, 7, 8].
     ///
     ///
@@ -69,9 +76,13 @@ extension Csv {
     /// ColumnName (a head line)
     ///
     /// Column is at the first group of hrizontally separated groups.
+    ///
     /// following lines are treated as ``Row``.
+    ///
     /// eg.
+    ///
     /// 1 2 3 4
+    ///
     /// 5 6 7 8
     /// →ColumnName is [1, 2, 3, 4] and Row is [5, 6, 7, 8].
     ///
@@ -100,6 +111,7 @@ extension Csv {
     /// Generate `Csv` from `String` data.
     ///
     /// You cloud call `Csv.fromString` if you can own raw-CSV data.
+    ///
     /// ```swift
     /// let rawCsv = """
     /// a,b,c
@@ -136,6 +148,7 @@ extension Csv {
     /// ```
     ///
     /// If certain row-item is very long, you could trim it with `maxLength`-th length.
+    ///
     ///```swift
     /// let longCsv = """
     /// a.b.c

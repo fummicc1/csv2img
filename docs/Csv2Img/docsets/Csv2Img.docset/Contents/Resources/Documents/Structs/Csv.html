@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Csv Structure Reference</title>
+    <link rel="stylesheet" type="text/css" href="../css/jazzy.css" />
+    <link rel="stylesheet" type="text/css" href="../css/highlight.css" />
+    <meta charset='utf-8'>
+    <script src="../js/jquery.min.js" defer></script>
+    <script src="../js/jazzy.js" defer></script>
+    
+    <script src="../js/lunr.min.js" defer></script>
+    <script src="../js/typeahead.jquery.js" defer></script>
+    <script src="../js/jazzy.search.js" defer></script>
+  </head>
+  <body>
+    <a name="//apple_ref/swift/Struct/Csv" class="dashAnchor"></a>
+    <a title="Csv Structure Reference"></a>
+    <header>
+      <div class="content-wrapper">
+        <p><a href="../index.html">Csv2Img Docs</a> (64% documented)</p>
+        <div class="header-right">
+          <form role="search" action="../search.json">
+            <input type="text" placeholder="Search documentation" data-typeahead>
+          </form>
+        </div>
+      </div>
+    </header>
+    <div class="content-wrapper">
+      <p id="breadcrumbs">
+        <a href="../index.html">Csv2Img Reference</a>
+        <img id="carat" src="../img/carat.png" alt=""/>
+        Csv Structure Reference
+      </p>
+    </div>
+    <div class="content-wrapper">
+      <nav class="sidebar">
+        <ul class="nav-groups">
+          <li class="nav-group-name">
+            <a href="../Classes.html">Classes</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Classes/ImageMaker.html">ImageMaker</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Extensions.html">Extensions</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Extensions/CGImage.html">CGImage</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/CGImage.html">CGImage</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Protocols.html">Protocols</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Protocols/ImageMakerType.html">ImageMakerType</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Structs.html">Structures</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Structs/Csv.html">Csv</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/Csv/Row.html">– Row</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/Csv/ColumnName.html">– ColumnName</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/Csv/Error.html">– Error</a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </nav>
+      <article class="main-content">
+        <section>
+          <section class="section">
+            <h1>Csv</h1>
+              <div class="declaration">
+                <div class="language">
+                  
+                  <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">struct</span> <span class="kt">Csv</span></code></pre>
+
+                </div>
+              </div>
+            <p>Csv data structure</p>
+
+<p><code>Csv</code> is a struct to store information to parse csv into table.</p>
+
+<p><code>Csv</code> automatically recognize first row as column and others as rows.</p>
+<pre class="highlight swift"><code> <span class="k">let</span> <span class="nv">rawCsv</span> <span class="o">=</span> <span class="s">"""
+ a,b,c
+ 1,2,3
+ 4,5,6
+ 7,8,9
+ 10,11,12
+ """</span>
+ <span class="k">let</span> <span class="nv">csv</span> <span class="o">=</span> <span class="kt">Csv</span><span class="o">.</span><span class="nf">fromString</span><span class="p">(</span><span class="n">rawCsv</span><span class="p">)</span>
+ <span class="kt">Output</span><span class="p">:</span>
+ <span class="o">|</span> <span class="n">a</span>  <span class="o">|</span> <span class="n">b</span>  <span class="o">|</span> <span class="n">c</span>  <span class="o">|</span>
+ <span class="o">|</span> <span class="mi">1</span>  <span class="o">|</span> <span class="mi">2</span>  <span class="o">|</span> <span class="mi">3</span>  <span class="o">|</span>
+ <span class="o">|</span> <span class="mi">4</span>  <span class="o">|</span> <span class="mi">5</span>  <span class="o">|</span> <span class="mi">6</span>  <span class="o">|</span>
+ <span class="o">|</span> <span class="mi">7</span>  <span class="o">|</span> <span class="mi">8</span>  <span class="o">|</span> <span class="mi">9</span>  <span class="o">|</span>
+ <span class="o">|</span> <span class="mi">10</span> <span class="o">|</span> <span class="mi">11</span> <span class="o">|</span> <span class="mi">12</span> <span class="o">|</span>
+</code></pre>
+
+          </section>
+          <section class="section task-group-section">
+            <div class="task-group">
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:7Csv2Img3CsvV9separator11columnNames4rowsACSS_SayAC10ColumnNameVGSayAC3RowVGtcfc"></a>
+                    <a name="//apple_ref/swift/Method/init(separator:columnNames:rows:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:7Csv2Img3CsvV9separator11columnNames4rowsACSS_SayAC10ColumnNameVGSayAC3RowVGtcfc">init(separator:<wbr>columnNames:<wbr>rows:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>initialization</p>
+
+<p><code><a href="../Structs/Csv.html#/s:7Csv2Img3CsvV9separatorSSvp">separator</a></code> is applied to each row and generate items per row.
+<code><a href="../Structs/Csv.html#/s:7Csv2Img3CsvV11columnNamesSayAC10ColumnNameVGvp">columnNames</a></code> is array of column whose type is <code>String</code>.
+<code><a href="../Structs/Csv/Row.html">Row</a></code> is array of row whose type is <code><a href="../Structs/Csv/Row.html">Row</a></code></p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="nf">init</span><span class="p">(</span><span class="nv">separator</span><span class="p">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="s">","</span><span class="p">,</span> <span class="nv">columnNames</span><span class="p">:</span> <span class="p">[</span><span class="kt">Csv</span><span class="o">.</span><span class="kt"><a href="../Structs/Csv/ColumnName.html">ColumnName</a></span><span class="p">],</span> <span class="nv">rows</span><span class="p">:</span> <span class="p">[</span><span class="kt">Csv</span><span class="o">.</span><span class="kt"><a href="../Structs/Csv/Row.html">Row</a></span><span class="p">])</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:7Csv2Img3CsvV9separatorSSvp"></a>
+                    <a name="//apple_ref/swift/Property/separator" class="dashAnchor"></a>
+                    <a class="token" href="#/s:7Csv2Img3CsvV9separatorSSvp">separator</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>an separator applied to each row and column.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">separator</span><span class="p">:</span> <span class="kt">String</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:7Csv2Img3CsvV11columnNamesSayAC10ColumnNameVGvp"></a>
+                    <a name="//apple_ref/swift/Property/columnNames" class="dashAnchor"></a>
+                    <a class="token" href="#/s:7Csv2Img3CsvV11columnNamesSayAC10ColumnNameVGvp">columnNames</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>an array of column name with type <code><a href="../Structs/Csv/ColumnName.html">ColumnName</a></code>.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">columnNames</span><span class="p">:</span> <span class="p">[</span><span class="kt"><a href="../Structs/Csv/ColumnName.html">ColumnName</a></span><span class="p">]</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:7Csv2Img3CsvV4rowsSayAC3RowVGvp"></a>
+                    <a name="//apple_ref/swift/Property/rows" class="dashAnchor"></a>
+                    <a class="token" href="#/s:7Csv2Img3CsvV4rowsSayAC3RowVGvp">rows</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>an array of row whose type is `<code><a href="../Structs/Csv/Row.html">Row</a></code>.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">rows</span><span class="p">:</span> <span class="p">[</span><span class="kt"><a href="../Structs/Csv/Row.html">Row</a></span><span class="p">]</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:7Csv2Img3CsvV3RowV"></a>
+                    <a name="//apple_ref/swift/Struct/Row" class="dashAnchor"></a>
+                    <a class="token" href="#/s:7Csv2Img3CsvV3RowV">Row</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Row (a line)</p>
+
+<p>Row is hrizontally separated group except first line.</p>
+
+<p>First line is treated as <code><a href="../Structs/Csv/ColumnName.html">ColumnName</a></code>.</p>
+
+<p>eg.</p>
+
+<p>1 2 3 4</p>
+
+<p>5 6 7 8</p>
+
+<p>→Row is [5, 6, 7, 8].</p>
+
+<p>Because this class is usually initialized via <code><a href="../Structs/Csv.html">Csv</a></code>, you do not have to take care about <code>Row</code> in detail.</p>
+
+                        <a href="../Structs/Csv/Row.html" class="slightly-smaller">See more</a>
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">struct</span> <span class="kt">Row</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:7Csv2Img3CsvV10ColumnNameV"></a>
+                    <a name="//apple_ref/swift/Struct/ColumnName" class="dashAnchor"></a>
+                    <a class="token" href="#/s:7Csv2Img3CsvV10ColumnNameV">ColumnName</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>ColumnName (a head line)</p>
+
+<p>Column is at the first group of hrizontally separated groups.</p>
+
+<p>following lines are treated as <code><a href="../Structs/Csv/Row.html">Row</a></code>.</p>
+
+<p>eg.</p>
+
+<p>1 2 3 4</p>
+
+<p>5 6 7 8
+→ColumnName is [1, 2, 3, 4] and Row is [5, 6, 7, 8].</p>
+
+<p>Because this class is usually initialized via <code><a href="../Structs/Csv.html">Csv</a></code>, you do not have to take care about <code>ColumnName</code> in detail.</p>
+
+                        <a href="../Structs/Csv/ColumnName.html" class="slightly-smaller">See more</a>
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">struct</span> <span class="kt">ColumnName</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:7Csv2Img3CsvV5ErrorO"></a>
+                    <a name="//apple_ref/swift/Enum/Error" class="dashAnchor"></a>
+                    <a class="token" href="#/s:7Csv2Img3CsvV5ErrorO">Error</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p><code>Error</code> related with Csv implmentation.</p>
+
+                        <a href="../Structs/Csv/Error.html" class="slightly-smaller">See more</a>
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">enum</span> <span class="kt">Error</span> <span class="p">:</span> <span class="kt">Swift</span><span class="o">.</span><span class="kt">Error</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:7Csv2Img3CsvV10fromString_9separator9maxLengthACSS_SSSiSgtFZ"></a>
+                    <a name="//apple_ref/swift/Method/fromString(_:separator:maxLength:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:7Csv2Img3CsvV10fromString_9separator9maxLengthACSS_SSSiSgtFZ">fromString(_:<wbr>separator:<wbr>maxLength:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Generate <code>Csv</code> from <code>String</code> data.</p>
+
+<p>You cloud call <code>Csv.fromString</code> if you can own raw-CSV data.</p>
+<pre class="highlight swift"><code> <span class="k">let</span> <span class="nv">rawCsv</span> <span class="o">=</span> <span class="s">"""
+ a,b,c
+ 1,2,3
+ 4,5,6
+ 7,8,9
+ 10,11,12
+ """</span>
+ <span class="k">let</span> <span class="nv">csv</span> <span class="o">=</span> <span class="kt">Csv</span><span class="o">.</span><span class="nf">fromString</span><span class="p">(</span><span class="n">rawCsv</span><span class="p">)</span>
+ <span class="kt">Output</span><span class="p">:</span>
+ <span class="o">|</span> <span class="n">a</span>  <span class="o">|</span> <span class="n">b</span>  <span class="o">|</span> <span class="n">c</span>  <span class="o">|</span>
+ <span class="o">|</span> <span class="mi">1</span>  <span class="o">|</span> <span class="mi">2</span>  <span class="o">|</span> <span class="mi">3</span>  <span class="o">|</span>
+ <span class="o">|</span> <span class="mi">4</span>  <span class="o">|</span> <span class="mi">5</span>  <span class="o">|</span> <span class="mi">6</span>  <span class="o">|</span>
+ <span class="o">|</span> <span class="mi">7</span>  <span class="o">|</span> <span class="mi">8</span>  <span class="o">|</span> <span class="mi">9</span>  <span class="o">|</span>
+ <span class="o">|</span> <span class="mi">10</span> <span class="o">|</span> <span class="mi">11</span> <span class="o">|</span> <span class="mi">12</span> <span class="o">|</span>
+</code></pre>
+
+<p>You cloud change separator by giving value to <code><a href="../Structs/Csv.html#/s:7Csv2Img3CsvV9separatorSSvp">separator</a></code> parameter.</p>
+<pre class="highlight swift"><code> <span class="k">let</span> <span class="nv">dotSeparated</span> <span class="o">=</span> <span class="s">"""
+ a.b.c
+ 1.2.3
+ 4.5.6
+ 7.8.9
+ """</span>
+ <span class="k">let</span> <span class="nv">csv</span> <span class="o">=</span> <span class="kt">Csv</span><span class="o">.</span><span class="nf">fromString</span><span class="p">(</span><span class="n">dotSeparated</span><span class="p">,</span> <span class="nv">separator</span><span class="p">:</span> <span class="s">"."</span><span class="p">)</span>
+ <span class="kt">Output</span><span class="p">:</span>
+ <span class="o">|</span> <span class="n">a</span>  <span class="o">|</span> <span class="n">b</span>  <span class="o">|</span> <span class="n">c</span>  <span class="o">|</span>
+ <span class="o">|</span> <span class="mi">1</span>  <span class="o">|</span> <span class="mi">2</span>  <span class="o">|</span> <span class="mi">3</span>  <span class="o">|</span>
+ <span class="o">|</span> <span class="mi">4</span>  <span class="o">|</span> <span class="mi">5</span>  <span class="o">|</span> <span class="mi">6</span>  <span class="o">|</span>
+ <span class="o">|</span> <span class="mi">7</span>  <span class="o">|</span> <span class="mi">8</span>  <span class="o">|</span> <span class="mi">9</span>  <span class="o">|</span>
+ <span class="o">|</span> <span class="mi">10</span> <span class="o">|</span> <span class="mi">11</span> <span class="o">|</span> <span class="mi">12</span> <span class="o">|</span>
+</code></pre>
+
+<p>If certain row-item is very long, you could trim it with <code>maxLength</code>-th length.</p>
+<pre class="highlight swift"><code> <span class="k">let</span> <span class="nv">longCsv</span> <span class="o">=</span> <span class="s">"""
+ a.b.c
+ 1.2.33333333333333333333333333333333333333333
+ 4.5.6
+ 7.8.9
+ """</span>
+ <span class="k">let</span> <span class="nv">csv</span> <span class="o">=</span> <span class="kt">Csv</span><span class="o">.</span><span class="nf">fromString</span><span class="p">(</span><span class="n">dotSeparated</span><span class="p">,</span> <span class="nv">separator</span><span class="p">:</span> <span class="s">"."</span><span class="p">,</span> <span class="nv">maxLength</span><span class="p">:</span> <span class="mi">7</span><span class="p">)</span>
+ <span class="kt">Output</span><span class="p">:</span>
+ <span class="o">|</span> <span class="n">a</span>  <span class="o">|</span> <span class="n">b</span>  <span class="o">|</span> <span class="n">c</span>        <span class="o">|</span>
+ <span class="o">|</span> <span class="mi">1</span>  <span class="o">|</span> <span class="mi">2</span>  <span class="o">|</span> <span class="mi">3333333</span>  <span class="o">|</span>
+ <span class="o">|</span> <span class="mi">4</span>  <span class="o">|</span> <span class="mi">5</span>  <span class="o">|</span> <span class="mi">6</span>        <span class="o">|</span>
+ <span class="o">|</span> <span class="mi">7</span>  <span class="o">|</span> <span class="mi">8</span>  <span class="o">|</span> <span class="mi">9</span>        <span class="o">|</span>
+ <span class="o">|</span> <span class="mi">10</span> <span class="o">|</span> <span class="mi">11</span> <span class="o">|</span> <span class="mi">12</span>       <span class="o">|</span>
+</code></pre>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">static</span> <span class="kd">func</span> <span class="nf">fromString</span><span class="p">(</span><span class="n">_</span> <span class="nv">str</span><span class="p">:</span> <span class="kt">String</span><span class="p">,</span> <span class="nv">separator</span><span class="p">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="s">","</span><span class="p">,</span> <span class="nv">maxLength</span><span class="p">:</span> <span class="kt">Int</span><span class="p">?</span> <span class="o">=</span> <span class="kc">nil</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Csv</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>str</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>Row String</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>separator</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>Default separator in a row is <code>&quot;,&quot;</code>. You cloud change it by giving separator to <code><a href="../Structs/Csv.html#/s:7Csv2Img3CsvV9separatorSSvp">separator</a></code> parameter.</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>maxLength</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>Default value is nil. if <code>maxLength</code> is not nil, every row-item length is limited by <code>maxLength</code>.</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:7Csv2Img3CsvV7fromURL_9separatorAC10Foundation0E0V_SStKFZ"></a>
+                    <a name="//apple_ref/swift/Method/fromURL(_:separator:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:7Csv2Img3CsvV7fromURL_9separatorAC10Foundation0E0V_SStKFZ">fromURL(_:<wbr>separator:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Generate <code>Csv</code> from network url (like <code>HTTPS</code>).</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">static</span> <span class="kd">func</span> <span class="nf">fromURL</span><span class="p">(</span><span class="n">_</span> <span class="nv">url</span><span class="p">:</span> <span class="kt">URL</span><span class="p">,</span> <span class="nv">separator</span><span class="p">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="s">","</span><span class="p">)</span> <span class="k">throws</span> <span class="o">-&gt;</span> <span class="kt">Csv</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>url</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>network url, commonly <code>HTTPS</code> schema.</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>separator</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>Default separator in a row is <code>&quot;,&quot;</code>. You cloud change it by giving separator to <code><a href="../Structs/Csv.html#/s:7Csv2Img3CsvV9separatorSSvp">separator</a></code> parameter.</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:7Csv2Img3CsvV8fromFile_9separatorAC10Foundation3URLV_SStKFZ"></a>
+                    <a name="//apple_ref/swift/Method/fromFile(_:separator:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:7Csv2Img3CsvV8fromFile_9separatorAC10Foundation3URLV_SStKFZ">fromFile(_:<wbr>separator:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Generate <code>Csv</code> from local url (like <code>file://Users/...</code>).</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">static</span> <span class="kd">func</span> <span class="nf">fromFile</span><span class="p">(</span><span class="n">_</span> <span class="nv">file</span><span class="p">:</span> <span class="kt">URL</span><span class="p">,</span> <span class="nv">separator</span><span class="p">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="s">","</span><span class="p">)</span> <span class="k">throws</span> <span class="o">-&gt;</span> <span class="kt">Csv</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>url</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>local url, commonly <code>file://</code> schema. Relative-path is not enable, please specify by absolute-path rule.</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>separator</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>Default separator in a row is <code>&quot;,&quot;</code>. You cloud change it by giving separator to <code><a href="../Structs/Csv.html#/s:7Csv2Img3CsvV9separatorSSvp">separator</a></code> parameter.</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </section>
+        </section>
+        <section id="footer">
+          <p>&copy; 2022 <a class="link" href="https://fummicc1.dev" target="_blank" rel="external noopener">fummicc1</a>. All rights reserved. (Last updated: 2022-06-05)</p>
+          <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external noopener">jazzy ♪♫ v0.14.2</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external noopener">Realm</a> project.</p>
+        </section>
+      </article>
+    </div>
+  </body>
+</html>

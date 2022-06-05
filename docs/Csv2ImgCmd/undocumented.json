@@ -1,0 +1,26 @@
+{
+  "warnings": [
+    {
+      "file": "/Users/fumiyatanaka/Work/iOSDev/Csv2Img/Sources/Csv2ImgCmd/main.swift",
+      "line": 66,
+      "symbol": "Csv2Img.inputType",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/fumiyatanaka/Work/iOSDev/Csv2Img/Sources/Csv2ImgCmd/main.swift",
+      "line": 69,
+      "symbol": "Csv2Img.data",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/fumiyatanaka/Work/iOSDev/Csv2Img/Sources/Csv2ImgCmd/main.swift",
+      "line": 72,
+      "symbol": "Csv2Img.output",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    }
+  ],
+  "source_directory": "/Users/fumiyatanaka/Work/iOSDev/Csv2Img"
+}
