@@ -6,7 +6,7 @@ A command line tool which generates png-image from csv.
 
 `Csv2ImgCmd` is CLI tool to generate image from csv. 
 
-## Example
+## Usage
 
 - csv
 
