@@ -10,16 +10,37 @@ import Csv2Img
 
 struct ContentView: View {
 
-    private let marker: ImageMakerType = ImageMaker(fontSize: 12)
-
     @State private var error: Error?
     @State private var showFileImporter: Bool = false
     @State private var csv: Csv?
 
     var body: some View {
-        VStack {
-            if let csv = csv, let data = marker.make(csv: csv) {
-                
+        GeometryReader { proxy in
+            VStack {
+                if let csv = csv, let img = csv.cgImage(fontSize: 12) {
+                    Image(img, scale: 1, orientation: .up, label: Text("Output Image"))
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                }
+                HStack {
+                    Button {
+                        showFileImporter = true
+                    } label: {
+                        Text("Choose Csv File.")
+                            .font(.title3)
+                            .bold()
+                    }
+                    .padding()
+                    Spacer()
+                    Button {
+                        showFileImporter = true
+                    } label: {
+                        Text("Choose Csv File.")
+                            .font(.title3)
+                            .bold()
+                    }
+                    .padding()
+                }
             }
         }.fileImporter(
             isPresented: $showFileImporter,
@@ -47,7 +68,7 @@ struct ContentView: View {
             Button {
                 error = nil
             } label: {
-                Text(error!.localizedDescription)
+                Text(error?.localizedDescription ?? "")
             }
 
         }

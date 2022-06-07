@@ -49,6 +49,9 @@ public struct Csv {
     public var rows: [Row]
     /// ``ImageMarker`` has responsibility to generate png-image from csv.
     private let imageMarker: ImageMakerType
+
+    /// `data` has result of converstion from csv to png-image.
+    private var data: Data?
 }
 
 extension Csv {
@@ -238,7 +241,7 @@ extension Csv {
     /// Generate `Csv` from local url (like `file://Users/...`).
     ///
     /// - Parameters:
-    ///     - url: local url, commonly `file://` schema. Relative-path is not enable, please specify by absolute-path rule.
+    ///     - file: local url, commonly `file://` schema. Relative-path is not enable, please specify by absolute-path rule.
     ///     - separator: Default separator in a row is `","`. You cloud change it by giving separator to `separator` parameter.
     public static func fromFile(_ file: URL, separator: String = ",") throws -> Csv {
         let data = try Data(contentsOf: file)
@@ -256,8 +259,10 @@ extension Csv {
      `fontSize` determines the size of output image and it can be as large as you want. Please consider the case that output image is too large to open image. Although output image becomes large, it is recommended to set fontSize amply enough (maybe larger than `12pt`) to see image clearly.
      - Returns: CGImage
      */
-    public func cgImage(fontSize: CGFloat) -> CGImage {
-        imageMarker.setFontSize(fontSize)
+    public func cgImage(fontSize: CGFloat? = nil) -> CGImage {
+        if let fontSize = fontSize {
+            imageMarker.setFontSize(fontSize)
+        }
         return imageMarker.make(csv: self)
     }
 
@@ -269,8 +274,37 @@ extension Csv {
      `fontSize` determines the size of output image and it can be as large as you want. Please consider the case that output image is too large to open image. Although output image becomes large, it is recommended to set fontSize amply enough (maybe larger than `12pt`) to see image clearly.
      - Returns: `Optional<Data>`
      */
-    public func pngData(fontSize: CGFloat) -> Data? {
+    public func pngData(fontSize: CGFloat? = nil) -> Data? {
         let image = cgImage(fontSize: fontSize)
         return image.convertToData()
+    }
+
+    /**
+     - parameters:
+        - to url: local file path where png-image will be saved.
+     - Returns: If saving csv image to file, returns `true`. Otherwise, return `False`.
+     */
+    public func write(to url: URL, regenerate: Bool = false) -> Bool {
+        if !regenerate && data == nil {
+            assertionFailure("data == nil ADN regenerate is false.")
+            return false
+        }
+        let data: Data?
+        if regenerate {
+            data = pngData()
+        } else {
+            data = self.data
+        }
+        guard let data = data else {
+            return false
+        }
+
+        do {
+            try data.write(to: url)
+            return true
+        } catch {
+            print(error)
+            return false
+        }
     }
 }
