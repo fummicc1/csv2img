@@ -61,10 +61,6 @@ struct ContentView: View {
                     .padding()
 
                     Button {
-                        let url = URL(fileURLWithPath: "/Users/fumiyatanaka/Downloads/sample.csv")
-                         "".data(using: .utf8)?.write(to: url)
-                        let csv = Csv.fromFile(url)
-                        csv.pngData(fontSize: 12)
                         showNetworkFileImporter = true
                     } label: {
                         Text("Choose Csv File from Network.")
