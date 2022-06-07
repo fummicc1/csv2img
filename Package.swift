@@ -7,12 +7,6 @@ let package = Package(
     name: "Csv2Img",
     platforms: [.macOS(.v10_14)],
     products: [
-        .library(
-            name: "Csv2Img_Csv2ImgCmd",
-            targets: [
-                "Csv2Img", "Csv2ImgCmd"
-            ]
-        ),
         // Products define the executables and libraries a package produces, and make them visible to other packages.
         .library(
             name: "Csv2Img",

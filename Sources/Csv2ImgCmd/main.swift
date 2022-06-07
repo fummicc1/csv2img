@@ -74,9 +74,6 @@ public struct Csv2Img: ParsableCommand {
     public init() { }
 
     public func run() throws {
-        let imageMaker = ImageMaker(
-            fontSize: 12
-        )
         let csv: Csv
         switch inputType {
         case .local:
@@ -88,12 +85,12 @@ public struct Csv2Img: ParsableCommand {
             }
             csv = try Csv.fromURL(url)
         }
-        let data = imageMaker.make(csv: csv)
+        let data = csv.pngData(fontSize: 12)!
         let outputURL = URL(fileURLWithPath: output)
         if !FileManager.default.fileExists(atPath: output) {
             FileManager.default.createFile(atPath: output, contents: data)
         } else {
-            try data!.write(to: outputURL)
+            try data.write(to: outputURL)
         }
         print("Succeed generating image from csv!")
         print("Output path: ", outputURL.absoluteString)

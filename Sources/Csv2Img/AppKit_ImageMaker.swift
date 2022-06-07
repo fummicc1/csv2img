@@ -8,12 +8,13 @@ import AppKit
 
 
 /// No overview available
-public protocol ImageMakerType {
-    func make(csv: Csv) -> Data?
+protocol ImageMakerType {
+    func make(csv: Csv) -> CGImage
+    func setFontSize(_ size: CGFloat)
 }
 
 /// `ImageMarker` generate png-image from ``Csv``.
-public class ImageMaker: ImageMakerType {
+class ImageMaker: ImageMakerType {
     public init(
         fontSize: CGFloat
     ) {
@@ -29,7 +30,7 @@ public class ImageMaker: ImageMakerType {
     /// generate png-image data from ``Csv``.
     public func make(
         csv: Csv
-    ) -> Data? {
+    ) -> CGImage {
 
         let horizontalSpace = 8
         let verticalSpace = 12
@@ -156,7 +157,7 @@ public class ImageMaker: ImageMakerType {
         }
         canvas.unlockFocus()
 
-        return image.convertToData()
+        return image
     }
 }
 

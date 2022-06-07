@@ -24,12 +24,18 @@ import Foundation
  ```
 */
 public struct Csv {
+
     /// initialization
     ///
     /// `separator` is applied to each row and generate items per row.
     /// `columnNames` is array of column whose type is `String`.
     /// `Row` is array of row whose type is ``Row``
-    public init(separator: String=",", columnNames: [Csv.ColumnName], rows: [Csv.Row]) {
+    public init(
+        separator: String=",",
+        columnNames: [Csv.ColumnName],
+        rows: [Csv.Row]
+    ) {
+        self.imageMarker = ImageMaker(fontSize: 12)
         self.separator = separator
         self.columnNames = columnNames
         self.rows = rows
@@ -41,6 +47,8 @@ public struct Csv {
     public var columnNames: [ColumnName]
     /// an array of row whose type is ``Row`.
     public var rows: [Row]
+    /// ``ImageMarker`` has responsibility to generate png-image from csv.
+    private let imageMarker: ImageMakerType
 }
 
 extension Csv {
@@ -238,5 +246,31 @@ extension Csv {
             throw Error.invalidLocalResource(url: file.absoluteString, data: data)
         }
         return .fromString(str)
+    }
+
+    /**
+     Generate CGImage
+     - Parameters:
+        - fontSize: Determine the fontsize of characters in output-table image.
+     - Note:
+     `fontSize` determines the size of output image and it can be as large as you want. Please consider the case that output image is too large to open image. Although output image becomes large, it is recommended to set fontSize amply enough (maybe larger than `12pt`) to see image clearly.
+     - Returns: CGImage
+     */
+    public func cgImage(fontSize: CGFloat) -> CGImage {
+        imageMarker.setFontSize(fontSize)
+        return imageMarker.make(csv: self)
+    }
+
+    /**
+     Generate Data
+     - Parameters:
+        - fontSize: Determine the fontsize of characters in output-table image.
+     - Note:
+     `fontSize` determines the size of output image and it can be as large as you want. Please consider the case that output image is too large to open image. Although output image becomes large, it is recommended to set fontSize amply enough (maybe larger than `12pt`) to see image clearly.
+     - Returns: `Optional<Data>`
+     */
+    public func pngData(fontSize: CGFloat) -> Data? {
+        let image = cgImage(fontSize: fontSize)
+        return image.convertToData()
     }
 }
