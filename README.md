@@ -1,11 +1,24 @@
-# Csv2Img
+# Csv2ImageApp (MacOS App)
+
+Convert Csv into png image.
+
+## Demo
+
+- Import Csv file from local computer.
+
+![Import Csv file from local computer.](./Gifs/01.gif)
+
+- Import Csv file from network resource.
+
+![Import Csv file from network resource.](./Gifs/02.gif)
+
+# Csv2Img (Library)
 
 Convert Csv into png image.
 
 - [documentation](https://fummicc1.github.io/csv2img/Csv2Img/index.html)
 
-
-# Csv2ImgCmd
+# Csv2ImgCmd (CLI)
 
 A command line tool which generates png-image from csv. (Using `Csv2Img` library)
 
