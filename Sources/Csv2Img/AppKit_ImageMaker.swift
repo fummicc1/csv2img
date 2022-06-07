@@ -15,20 +15,20 @@ protocol ImageMakerType {
 
 /// `ImageMarker` generate png-image from ``Csv``.
 class ImageMaker: ImageMakerType {
-    public init(
+    init(
         fontSize: CGFloat
     ) {
         self.fontSize = fontSize
     }
 
-    public var fontSize: CGFloat
+    var fontSize: CGFloat
 
-    public func setFontSize(_ size: CGFloat) {
+    func setFontSize(_ size: CGFloat) {
         self.fontSize = size
     }
 
     /// generate png-image data from ``Csv``.
-    public func make(
+    func make(
         csv: Csv
     ) -> CGImage {
 
