@@ -56,6 +56,7 @@ struct ContentView: View {
                         Text("Choose Csv File from Local Computer.")
                             .font(.title3)
                             .bold()
+                            .padding()
                     }
                     .padding()
 
@@ -65,11 +66,13 @@ struct ContentView: View {
                         Text("Choose Csv File from Network.")
                             .font(.title3)
                             .bold()
+                            .padding()
                     }
                     .padding()
                     Spacer()
                     Button {
                         let panel = NSSavePanel()
+                        panel.allowedContentTypes = [.png]
                         panel.begin { response in
                             switch response {
                             case .OK:
@@ -84,7 +87,9 @@ struct ContentView: View {
                         Text("Save Output Image.")
                             .font(.title3)
                             .bold()
+                            .padding()
                     }
+                    .disabled(csv == nil)
                     .padding()
                 }
             }
