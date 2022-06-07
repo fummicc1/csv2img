@@ -1,0 +1,23 @@
+{
+  "pins" : [
+    {
+      "identity" : "csv2img",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/fummicc1/csv2img",
+      "state" : {
+        "branch" : "main",
+        "revision" : "3f4968a867a45a903f0df255a14ee273f34fd2df"
+      }
+    },
+    {
+      "identity" : "swift-argument-parser",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/apple/swift-argument-parser",
+      "state" : {
+        "revision" : "f3c9084a71ef4376f2fabbdf1d3d90a49f1fabdb",
+        "version" : "1.1.2"
+      }
+    }
+  ],
+  "version" : 2
+}

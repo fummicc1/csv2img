@@ -8,16 +8,43 @@
 import SwiftUI
 import Csv2Img
 
+enum CsvImageAppError: Swift.Error {
+    case invalidNetworkURL(url: String)
+}
+
 struct ContentView: View {
 
     @State private var error: Error?
+    @State private var networkURL: String = ""
+    @State private var showNetworkFileImporter: Bool = false
     @State private var showFileImporter: Bool = false
     @State private var csv: Csv?
 
     var body: some View {
         GeometryReader { proxy in
             VStack {
+                if showNetworkFileImporter {
+                    HStack {
+                        TextField("Input URL", text: $networkURL)
+                        Button("OK") {
+                            if let url = URL(string: networkURL) {
+                                do {
+                                    csv = try Csv.fromURL(url)
+                                    showNetworkFileImporter = false
+                                } catch {
+                                    self.error = error
+                                }
+                            } else {
+                                self.error = CsvImageAppError.invalidNetworkURL(url: networkURL)
+                            }
+                        }
+                    }
+                    .padding()
+                }
                 if let csv = csv, let img = csv.cgImage(fontSize: 12) {
+                    Text("Output Image")
+                        .font(.title)
+                        .bold()
                     Image(img, scale: 1, orientation: .up, label: Text("Output Image"))
                         .resizable()
                         .aspectRatio(contentMode: .fit)
@@ -26,16 +53,35 @@ struct ContentView: View {
                     Button {
                         showFileImporter = true
                     } label: {
-                        Text("Choose Csv File.")
+                        Text("Choose Csv File from Local Computer.")
+                            .font(.title3)
+                            .bold()
+                    }
+                    .padding()
+
+                    Button {
+                        showNetworkFileImporter = true
+                    } label: {
+                        Text("Choose Csv File from Network.")
                             .font(.title3)
                             .bold()
                     }
                     .padding()
                     Spacer()
                     Button {
-                        showFileImporter = true
+                        let panel = NSSavePanel()
+                        panel.begin { response in
+                            switch response {
+                            case .OK:
+                                if let url = panel.url {
+                                    csv?.write(to: url)
+                                }
+                            default:
+                                break
+                            }
+                        }
                     } label: {
-                        Text("Choose Csv File.")
+                        Text("Save Output Image.")
                             .font(.title3)
                             .bold()
                     }
@@ -57,7 +103,7 @@ struct ContentView: View {
                 self.error = error
             }
         }
-        .alert("エラー",
+        .alert("Error Occurred.",
                isPresented: Binding(
                 get: {
                     error != nil
@@ -68,9 +114,8 @@ struct ContentView: View {
             Button {
                 error = nil
             } label: {
-                Text(error?.localizedDescription ?? "")
+                Text(String(describing: error))
             }
-
         }
     }
 }

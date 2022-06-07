@@ -284,21 +284,11 @@ extension Csv {
         - to url: local file path where png-image will be saved.
      - Returns: If saving csv image to file, returns `true`. Otherwise, return `False`.
      */
-    public func write(to url: URL, regenerate: Bool = false) -> Bool {
-        if !regenerate && data == nil {
-            assertionFailure("data == nil ADN regenerate is false.")
-            return false
-        }
-        let data: Data?
-        if regenerate {
-            data = pngData()
-        } else {
-            data = self.data
-        }
+    public func write(to url: URL) -> Bool {
+        let data: Data? = pngData()
         guard let data = data else {
             return false
         }
-
         do {
             try data.write(to: url)
             return true
