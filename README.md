@@ -4,6 +4,8 @@
 
 Convert Csv into png image.
 
+- App is distributed on App Store, [let's visit !](https://apps.apple.com/jp/app/csv2imageapp/id1628273936?l=en&mt=12)
+
 ## Demo
 
 - Import Csv file from local computer.
