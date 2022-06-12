@@ -1,10 +1,18 @@
-#if canImport(AppKit)
-
+#if os(macOS)
+import AppKit
+typealias Image = NSImage
+typealias Color = NSColor
+typealias Rect = NSRect
+#elseif os(iOS)
+import UIKit
+typealias Image = UIImage
+typealias Color = UIColor
+typealias Rect = CGRect
+#endif
 
 import Foundation
 import CoreGraphics
 import CoreText
-import AppKit
 
 
 /// No overview available
@@ -48,14 +56,19 @@ class ImageMaker: ImageMakerType {
         let width = (Int(longestWidth) + horizontalSpace) * csv.columnNames.count
         let height = (csv.rows.count + 1) * (Int(longestHeight) + verticalSpace)
 
+        #if os(macOS)
         let canvas = NSImage(
             size: NSSize(width: width, height: height)
         )
-
         canvas.lockFocus()
         guard let context = NSGraphicsContext.current?.cgContext else {
             fatalError()
         }
+        #elseif os(iOS)
+        guard let context = UIGraphicsGetCurrentContext() else {
+            fatalError()
+        }
+        #endif
 
         context.setFillColor(CGColor(
             red: 250/255,
@@ -66,7 +79,11 @@ class ImageMaker: ImageMakerType {
         context.fill(CGRect(origin: .zero, size: CGSize(width: width, height: height)))
 
         context.setLineWidth(1)
-        context.setStrokeColor(NSColor.separatorColor.cgColor)
+        #if os(macOS)
+        context.setStrokeColor(Color.separatorColor.cgColor)
+        #elseif os(iOS)
+        context.setStrokeColor(Color.separator.cgColor)
+        #endif
         context.setFillColor(CGColor(
             red: 22/255,
             green: 22/255,
@@ -113,15 +130,15 @@ class ImageMaker: ImageMakerType {
             let str = NSAttributedString(
                 string: column.value,
                 attributes: [
-                    .font: NSFont.systemFont(ofSize: fontSize, weight: .bold)
+                    .font: Font.systemFont(ofSize: fontSize, weight: .bold)
                 ]
             )
             let size = str.string.getSize(fontSize: fontSize)
             let originX = i * columnWidth + columnWidth / 2 - Int(size.width) / 2
             let originY = height - Int(size.height) / 2 - rowHeight / 2
             context.saveGState()
-            str.draw(
-                with: NSRect(
+            str._draw(
+                at: Rect(
                     origin: CGPoint(x: originX, y: originY),
                     size: CGSize(width: columnWidth, height: rowHeight)
                 )
@@ -135,15 +152,15 @@ class ImageMaker: ImageMakerType {
                 let str = NSAttributedString(
                     string: item,
                     attributes: [
-                        .font: NSFont.systemFont(ofSize: fontSize)
+                        .font: Font.systemFont(ofSize: fontSize)
                     ]
                 )
                 let size = str.string.getSize(fontSize: fontSize)
                 let originX = j * columnWidth + columnWidth / 2 - Int(size.width) / 2
                 let originY = height - (i+1) * rowHeight + Int(size.height) / 2
                 context.saveGState()
-                str.draw(
-                    with: NSRect(
+                str._draw(
+                    at: Rect(
                         origin: CGPoint(x: originX, y: originY),
                         size: size
                     )
@@ -155,10 +172,11 @@ class ImageMaker: ImageMakerType {
         guard let image = context.makeImage() else {
             fatalError()
         }
+        #if os(macOS)
         canvas.unlockFocus()
+        #endif
 
         return image
     }
 }
 
-#endif
