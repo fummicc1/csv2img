@@ -7,6 +7,12 @@
 
 import SwiftUI
 
+#if os(macOS)
+typealias Application = NSApplication
+#elseif os(iOS)
+typealias Application = UIApplication
+#endif
+
 @main
 struct Csv2ImageAppApp: App {
     var body: some Scene {

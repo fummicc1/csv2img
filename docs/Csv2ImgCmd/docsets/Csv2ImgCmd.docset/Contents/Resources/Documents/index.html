@@ -56,25 +56,147 @@
         <section>
           <section class="section">
             
-            <h1 id='csv2img' class='heading'>Csv2Img</h1>
+            <p><img src="https://user-images.githubusercontent.com/44002126/172318021-2f2c6b7c-25f0-4d06-95b6-aef02d2e06d2.png" alt="アートボード 1 のコピー"></p>
+<h1 id='csv2imageapp' class='heading'>Csv2ImageApp</h1>
+
+<p>Convert Csv into png image.</p>
+
+<ul>
+<li>App is distributed on App Store, <a href="https://apps.apple.com/jp/app/csv2imageapp/id1628273936?l=en&mt=12">let&rsquo;s visit !</a></li>
+</ul>
+<h2 id='macos-app' class='heading'>MacOS App</h2>
+<h3 id='demo' class='heading'>Demo</h3>
+
+<ul>
+<li>Import Csv file from local computer.</li>
+</ul>
+
+<p><img src="./Gifs/v1.0.0/01.gif" alt="Import Csv file from local computer."></p>
+
+<ul>
+<li>Import Csv file from network resource.</li>
+</ul>
+
+<p><img src="./Gifs/v1.0.0/02.gif" alt="Import Csv file from network resource."></p>
+<h3 id='ios-app' class='heading'>iOS App</h3>
+
+<ul>
+<li>export output image by sharing (like <code>Airdrop</code>, saving to <code>File</code> and so on).</li>
+</ul>
+
+<p><img src="./Gifs/v1.1.0/01.gif" alt=""></p>
+<h1 id='csv2img-library' class='heading'>Csv2Img (Library)</h1>
 
 <p>Convert Csv into png image.</p>
 
 <ul>
 <li><a href="https://fummicc1.github.io/csv2img/Csv2Img/index.html">documentation</a></li>
 </ul>
-<h1 id='csv2imgcmd' class='heading'>Csv2ImgCmd</h1>
+<h2 id='usage' class='heading'>Usage</h2>
+
+<p>You cloud convert csv into image in 3 ways.</p>
+
+<ol>
+<li>Via raw <code>String</code>.</li>
+</ol>
+<pre class="highlight swift"><code> <span class="k">let</span> <span class="nv">rawCsv</span> <span class="o">=</span> <span class="s">"""
+ a,b,c
+ 1,2,3
+ 4,5,6
+ 7,8,9
+ 10,11,12
+ """</span>
+<span class="k">let</span> <span class="nv">csv</span> <span class="o">=</span> <span class="kt">Csv</span><span class="o">.</span><span class="nf">fromString</span><span class="p">(</span><span class="n">rawCsv</span><span class="p">)</span>
+<span class="k">let</span> <span class="nv">image</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="nf">cgImage</span><span class="p">(</span><span class="nv">fontSize</span><span class="p">:</span> <span class="mi">12</span><span class="p">)</span>
+<span class="c1">// or directly get data.</span>
+<span class="k">let</span> <span class="nv">data</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="nf">pngData</span><span class="p">(</span><span class="nv">fontSize</span><span class="p">:</span> <span class="mi">12</span><span class="p">)</span>
+ <span class="kt">Output</span><span class="p">:</span>
+ <span class="o">|</span> <span class="n">a</span>  <span class="o">|</span> <span class="n">b</span>  <span class="o">|</span> <span class="n">c</span>  <span class="o">|</span>
+ <span class="o">|</span> <span class="mi">1</span>  <span class="o">|</span> <span class="mi">2</span>  <span class="o">|</span> <span class="mi">3</span>  <span class="o">|</span>
+ <span class="o">|</span> <span class="mi">4</span>  <span class="o">|</span> <span class="mi">5</span>  <span class="o">|</span> <span class="mi">6</span>  <span class="o">|</span>
+ <span class="o">|</span> <span class="mi">7</span>  <span class="o">|</span> <span class="mi">8</span>  <span class="o">|</span> <span class="mi">9</span>  <span class="o">|</span>
+ <span class="o">|</span> <span class="mi">10</span> <span class="o">|</span> <span class="mi">11</span> <span class="o">|</span> <span class="mi">12</span> <span class="o">|</span>
+</code></pre>
+
+<ol>
+<li>Via Local file.</li>
+</ol>
+<pre class="highlight swift"><code> <span class="k">let</span> <span class="nv">rawCsv</span> <span class="o">=</span> <span class="s">"""
+ a,b,c
+ 1,2,3
+ 4,5,6
+ 7,8,9
+ 10,11,12
+ """</span>
+<span class="k">let</span> <span class="nv">url</span> <span class="o">=</span> <span class="kt">URL</span><span class="p">(</span>
+    <span class="nv">fileURLWithPath</span><span class="p">:</span> <span class="s">"/Users/fumiyatanaka/Downloads/sample.csv"</span>
+<span class="p">)</span>
+<span class="n">rawCsv</span><span class="o">.</span><span class="nf">data</span><span class="p">(</span><span class="nv">using</span><span class="p">:</span> <span class="o">.</span><span class="n">utf8</span><span class="p">)?</span><span class="o">.</span><span class="nf">write</span><span class="p">(</span><span class="nv">to</span><span class="p">:</span> <span class="n">url</span><span class="p">)</span>
+<span class="c1">// ----- ↑Just prepared for explanation. -----</span>
+<span class="k">let</span> <span class="nv">csv</span> <span class="o">=</span> <span class="kt">Csv</span><span class="o">.</span><span class="nf">fromFile</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+<span class="k">let</span> <span class="nv">data</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="nf">pngData</span><span class="p">(</span><span class="nv">fontSize</span><span class="p">:</span> <span class="mi">12</span><span class="p">)</span>
+ <span class="kt">Output</span><span class="p">:</span>
+ <span class="o">|</span> <span class="n">a</span>  <span class="o">|</span> <span class="n">b</span>  <span class="o">|</span> <span class="n">c</span>  <span class="o">|</span>
+ <span class="o">|</span> <span class="mi">1</span>  <span class="o">|</span> <span class="mi">2</span>  <span class="o">|</span> <span class="mi">3</span>  <span class="o">|</span>
+ <span class="o">|</span> <span class="mi">4</span>  <span class="o">|</span> <span class="mi">5</span>  <span class="o">|</span> <span class="mi">6</span>  <span class="o">|</span>
+ <span class="o">|</span> <span class="mi">7</span>  <span class="o">|</span> <span class="mi">8</span>  <span class="o">|</span> <span class="mi">9</span>  <span class="o">|</span>
+ <span class="o">|</span> <span class="mi">10</span> <span class="o">|</span> <span class="mi">11</span> <span class="o">|</span> <span class="mi">12</span> <span class="o">|</span>
+</code></pre>
+
+<ol>
+<li>Via network resource</li>
+</ol>
+<pre class="highlight swift"><code><span class="k">let</span> <span class="nv">rawCsv</span> <span class="o">=</span> <span class="s">"""
+ a,b,c
+ 1,2,3
+ 4,5,6
+ 7,8,9
+ 10,11,12
+ """</span>
+<span class="k">let</span> <span class="nv">url</span> <span class="o">=</span> <span class="kt">URL</span><span class="p">(</span>
+    <span class="nv">string</span><span class="p">:</span> <span class="s">"https://raw.githubusercontent.com/fummicc1/csv2img/main/Fixtures/sample_1.csv"</span>
+<span class="p">)</span>
+<span class="c1">// ----- ↑Just prepared for explanation. -----</span>
+<span class="k">let</span> <span class="nv">csv</span> <span class="o">=</span> <span class="kt">Csv</span><span class="o">.</span><span class="nf">fromURL</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+<span class="k">let</span> <span class="nv">data</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="nf">pngData</span><span class="p">(</span><span class="nv">fontSize</span><span class="p">:</span> <span class="mi">12</span><span class="p">)</span>
+ <span class="kt">Output</span><span class="p">:</span>
+ <span class="o">|</span> <span class="n">a</span>  <span class="o">|</span> <span class="n">b</span>  <span class="o">|</span> <span class="n">c</span>  <span class="o">|</span>
+ <span class="o">|</span> <span class="mi">1</span>  <span class="o">|</span> <span class="mi">2</span>  <span class="o">|</span> <span class="mi">3</span>  <span class="o">|</span>
+ <span class="o">|</span> <span class="mi">4</span>  <span class="o">|</span> <span class="mi">5</span>  <span class="o">|</span> <span class="mi">6</span>  <span class="o">|</span>
+ <span class="o">|</span> <span class="mi">7</span>  <span class="o">|</span> <span class="mi">8</span>  <span class="o">|</span> <span class="mi">9</span>  <span class="o">|</span>
+ <span class="o">|</span> <span class="mi">10</span> <span class="o">|</span> <span class="mi">11</span> <span class="o">|</span> <span class="mi">12</span> <span class="o">|</span>
+</code></pre>
+<h1 id='csv2imgcmd-cli' class='heading'>Csv2ImgCmd (CLI)</h1>
 
 <p>A command line tool which generates png-image from csv. (Using <code><a href="Structs/Csv2Img.html">Csv2Img</a></code> library)</p>
 
 <ul>
 <li><a href="https://fummicc1.github.io/csv2img/Csv2ImgCmd/index.html">documentation</a></li>
 </ul>
+<h2 id='usage' class='heading'>Usage</h2>
+
+<p>Coomand line interface using <code><a href="Structs/Csv2Img.html">Csv2Img</a></code> library.</p>
+
+<p>If you have a csv file on your computer, you cloud use this flag with <code>--local</code>, <code>-l</code>.</p>
+<pre class="highlight shell"><code>./Csv2ImgCmd <span class="nt">--local</span> ~/Downloads/sample.csv ./output.csv
+</code></pre>
+
+<p>If you would like to convert csv file on the internet, you cloud use this flag with <code>--network</code>, <code>-n</code>.</p>
+<pre class="highlight shell"><code>./Csv2ImgCmd <span class="nt">--network</span> <span class="se">\</span>
+https://raw.githubusercontent.com/fummicc1/csv2img/main/Sources/Csv2ImgCmd/Resources/sample_1.csv <span class="se">\</span>
+output.png
+</code></pre>
+<h1 id='contributing' class='heading'>Contributing</h1>
+
+<p>Pull requests, bug reports and feature requests are welcome 🚀</p>
+<h1 id='license' class='heading'>License</h1>
+
+<p><a href="https://github.com/fummicc1/csv2img/blob/main/LICENSE">MIT LICENSE</a></p>
 
           </section>
         </section>
         <section id="footer">
-          <p>&copy; 2022 <a class="link" href="https://fummicc1.dev" target="_blank" rel="external noopener">fummicc1</a>. All rights reserved. (Last updated: 2022-06-07)</p>
+          <p>&copy; 2022 <a class="link" href="https://fummicc1.dev" target="_blank" rel="external noopener">fummicc1</a>. All rights reserved. (Last updated: 2022-06-12)</p>
           <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external noopener">jazzy ♪♫ v0.14.2</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external noopener">Realm</a> project.</p>
         </section>
       </article>

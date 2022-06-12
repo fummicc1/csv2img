@@ -1,4 +1,5 @@
 import Foundation
+import CoreGraphics
 
 /** Csv data structure
 
@@ -117,6 +118,8 @@ extension Csv {
         case invalidDownloadResource(url: String, data: Data)
         /// Specified local url is invalid (file may not exist).
         case invalidLocalResource(url: String, data: Data)
+        /// If file is not accessible due to security issue.
+        case cannotAccessFile(url: String)
     }
 
     /// Generate `Csv` from `String` data.
@@ -244,11 +247,16 @@ extension Csv {
     ///     - file: local url, commonly `file://` schema. Relative-path is not enable, please specify by absolute-path rule.
     ///     - separator: Default separator in a row is `","`. You cloud change it by giving separator to `separator` parameter.
     public static func fromFile(_ file: URL, separator: String = ",") throws -> Csv {
-        let data = try Data(contentsOf: file)
-        guard let str = String(data: data, encoding: .utf8) else {
-            throw Error.invalidLocalResource(url: file.absoluteString, data: data)
+        // https://www.hackingwithswift.com/forums/swift/accessing-files-from-the-files-app/8203
+        if file.startAccessingSecurityScopedResource() {
+            let data = try Data(contentsOf: file)
+            guard let str = String(data: data, encoding: .utf8) else {
+                throw Error.invalidLocalResource(url: file.absoluteString, data: data)
+            }
+            return .fromString(str)
+        } else {
+            throw Error.cannotAccessFile(url: file.absoluteString)
         }
-        return .fromString(str)
     }
 
     /**
@@ -290,7 +298,11 @@ extension Csv {
             return false
         }
         do {
-            try data.write(to: url)
+            if !FileManager.default.fileExists(atPath: url.absoluteString) {
+                FileManager.default.createFile(atPath: url.absoluteString, contents: data)
+            } else {
+                try data.write(to: url)
+            }
             return true
         } catch {
             print(error)
