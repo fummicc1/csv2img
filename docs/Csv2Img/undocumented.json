@@ -2,35 +2,35 @@
   "warnings": [
     {
       "file": "/Users/fumiyatanaka/Work/iOSDev/Csv2Img/Sources/Csv2Img/Csv.swift",
-      "line": 77,
+      "line": 78,
       "symbol": "Csv.Row.init(index:values:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/fumiyatanaka/Work/iOSDev/Csv2Img/Sources/Csv2Img/Csv.swift",
-      "line": 82,
+      "line": 83,
       "symbol": "Csv.Row.index",
       "symbol_kind": "source.lang.swift.decl.var.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/fumiyatanaka/Work/iOSDev/Csv2Img/Sources/Csv2Img/Csv.swift",
-      "line": 83,
+      "line": 84,
       "symbol": "Csv.Row.values",
       "symbol_kind": "source.lang.swift.decl.var.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/fumiyatanaka/Work/iOSDev/Csv2Img/Sources/Csv2Img/Csv.swift",
-      "line": 104,
+      "line": 105,
       "symbol": "Csv.ColumnName.init(value:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/fumiyatanaka/Work/iOSDev/Csv2Img/Sources/Csv2Img/Csv.swift",
-      "line": 108,
+      "line": 109,
       "symbol": "Csv.ColumnName.value",
       "symbol_kind": "source.lang.swift.decl.var.instance",
       "warning": "undocumented"
