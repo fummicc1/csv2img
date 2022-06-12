@@ -105,10 +105,10 @@
 		D3A4EB16284F11A3002E3499 /* Csv2ImageApp */ = {
 			isa = PBXGroup;
 			children = (
-				D3A4EB17284F11A3002E3499 /* Csv2ImageAppApp.swift */,
-				D3A4EB19284F11A3002E3499 /* ContentView.swift */,
-				D3A4EB1B284F11A4002E3499 /* Assets.xcassets */,
 				D3A4EB20284F11A4002E3499 /* Csv2ImageApp.entitlements */,
+				D3A4EB19284F11A3002E3499 /* ContentView.swift */,
+				D3A4EB17284F11A3002E3499 /* Csv2ImageAppApp.swift */,
+				D3A4EB1B284F11A4002E3499 /* Assets.xcassets */,
 				D3A4EB1D284F11A4002E3499 /* Preview Content */,
 			);
 			path = Csv2ImageApp;
@@ -445,6 +445,7 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Csv2ImageApp/Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -488,6 +489,7 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Csv2ImageApp/Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;

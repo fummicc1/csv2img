@@ -36,56 +36,52 @@ struct ContentView: View {
     @State private var completeSavingFile: Bool = false
     @State private var savedOutputFileURL: URL?
 
-#if os(iOS)
-    @State private var outputFileName: String = ""
-#endif
 
     var body: some View {
         GeometryReader { proxy in
-            VStack {
-#if os(iOS)
-                TextField("Please Decide Output FileName", text: $outputFileName)
-                    .font(.body)
-                    .padding()
-#endif
-                if showNetworkFileImporter {
-                    HStack {
-                        TextField("Input URL", text: $networkURL)
-                        Button("OK") {
-                            if let url = URL(string: networkURL) {
-                                do {
-                                    csv = try Csv.fromURL(url)
-                                    showNetworkFileImporter = false
-                                } catch {
-                                    self.error = .underlying(error)
+            HStack {
+                Spacer()
+                VStack {
+                    if showNetworkFileImporter {
+                        HStack {
+                            TextField("Input URL", text: $networkURL)
+                            Button("OK") {
+                                if let url = URL(string: networkURL) {
+                                    do {
+                                        csv = try Csv.fromURL(url)
+                                        showNetworkFileImporter = false
+                                    } catch {
+                                        self.error = .underlying(error)
+                                    }
+                                } else {
+                                    self.error = CsvImageAppError.invalidNetworkURL(url: networkURL)
                                 }
-                            } else {
-                                self.error = CsvImageAppError.invalidNetworkURL(url: networkURL)
                             }
                         }
+                        .padding()
                     }
-                    .padding()
-                }
-                if let csv = csv, let img = csv.cgImage(fontSize: 12) {
-                    Text("Output Image")
-                        .font(.title3)
-                        .bold()
-                    ScrollView {
-                        Image(img, scale: 1, orientation: .up, label: Text("Output Image"))
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                            .frame(maxWidth: proxy.size.width * 0.8)
+                    if let csv = csv, let img = csv.cgImage(fontSize: 12) {
+                        Text("Output Image")
+                            .font(.title3)
+                            .bold()
+                        ScrollView {
+                            Image(img, scale: 1, orientation: .up, label: Text("Output Image"))
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .frame(maxWidth: proxy.size.width * 0.8)
+                        }
                     }
+    #if os(macOS)
+                    HStack {
+                        actions()
+                    }
+    #elseif os(iOS)
+                    VStack(spacing: 0) {
+                        actions()
+                    }
+    #endif
                 }
-#if os(macOS)
-                HStack {
-                    actions()
-                }
-#elseif os(iOS)
-                VStack(spacing: 0) {
-                    actions()
-                }
-#endif
+                Spacer()
             }
         }.fileImporter(
             isPresented: $showFileImporter,
@@ -101,24 +97,6 @@ struct ContentView: View {
                 }
             case .failure(let error):
                 self.error = .underlying(error)
-            }
-        }
-        .alert("Complete Saving file!", isPresented: $completeSavingFile) {
-            Button {
-                completeSavingFile = false
-            } label: {
-                Text("Close")
-            }
-            Button {
-                completeSavingFile = false
-                if let url = savedOutputFileURL {
-                    if url.startAccessingSecurityScopedResource(), Application.shared.canOpenURL(url) {
-                        Application.shared.open(url, options: [:])
-                    }
-                    url.stopAccessingSecurityScopedResource()
-                }
-            } label: {
-                Text("Open File")
             }
         }
         .alert(error?.message ?? "",
@@ -175,20 +153,23 @@ struct ContentView: View {
                 }
             }
 #elseif os(iOS)
-            if outputFileName.isEmpty {
-                error = CsvImageAppError.outputFileNameIsEmpty
+            guard let data = csv?.pngData() else {
                 return
-            }            
-            let document = URL(fileURLWithPath: NSHomeDirectory() + "/Library/OutputCsvImage")
-            let url = document.appendingPathComponent(
-                outputFileName,
-                conformingTo: .png
-            )            
-            let ok = csv?.write(to: url)
-            completeSavingFile = ok ?? false
-            if completeSavingFile {
-                savedOutputFileURL = url
             }
+            let activityVC = UIActivityViewController(
+                activityItems: [UIImage(data: data)!],
+                applicationActivities: nil
+            )
+            UIApplication.shared.connectedScenes
+                .filter({ $0.activationState == .foregroundActive })
+                .compactMap({ $0 as? UIWindowScene })
+                .compactMap({ $0.windows.first })
+                .first?.rootViewController?
+                .present(
+                    activityVC,
+                    animated: true,
+                    completion: nil
+                )
 #endif
         } label: {
             Text("Save Output Image.")
