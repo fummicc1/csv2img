@@ -1,18 +1,28 @@
 ![アートボード 1 のコピー](https://user-images.githubusercontent.com/44002126/172318021-2f2c6b7c-25f0-4d06-95b6-aef02d2e06d2.png)
 
-# Csv2ImageApp (MacOS App)
+# Csv2ImageApp
 
 Convert Csv into png image.
 
-## Demo
+- App is distributed on App Store, [let's visit !](https://apps.apple.com/jp/app/csv2imageapp/id1628273936?l=en&mt=12)
+
+## MacOS App
+
+### Demo
 
 - Import Csv file from local computer.
 
-![Import Csv file from local computer.](https://raw.githubusercontent.com/fummicc1/csv2img/1.0.1/Gifs/v1.0.0/01.gif)
+![Import Csv file from local computer.](../Gifs/v1.0.0/01.gif)
 
 - Import Csv file from network resource.
 
-![Import Csv file from network resource.](https://raw.githubusercontent.com/fummicc1/csv2img/1.0.1/Gifs/v1.0.0/02.gif)
+![Import Csv file from network resource.](../Gifs/v1.0.0/02.gif)
+
+### iOS App
+
+- export output image by sharing (like `Airdrop`, saving to `File` and so on).
+
+![](../Gifs/v1.1.0/01.gif)
 
 # Csv2Img (Library)
 

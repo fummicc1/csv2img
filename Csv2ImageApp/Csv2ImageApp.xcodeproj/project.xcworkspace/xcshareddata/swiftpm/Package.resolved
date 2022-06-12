@@ -5,8 +5,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/fummicc1/csv2img",
       "state" : {
-        "branch" : "support_ios",
-        "revision" : "efc6dab75384d99646e6fd3191a7a29a30e8dbeb"
+        "branch" : "main",
+        "revision" : "bfb6bbbf283ec045563e9dcaf6fa65c913145031"
       }
     },
     {
