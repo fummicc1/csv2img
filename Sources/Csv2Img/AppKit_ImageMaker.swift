@@ -136,7 +136,11 @@ class ImageMaker: ImageMakerType {
             )
             let size = str.string.getSize(fontSize: fontSize)
             let originX = i * columnWidth + columnWidth / 2 - Int(size.width) / 2
+            #if os(macOS)
             let originY = height - Int(size.height) / 2 - rowHeight / 2
+            #elseif os(iOS)
+            let originY = Int(size.height) / 2 + rowHeight / 2
+            #endif
             context.saveGState()
             str._draw(
                 at: Rect(
@@ -158,7 +162,11 @@ class ImageMaker: ImageMakerType {
                 )
                 let size = str.string.getSize(fontSize: fontSize)
                 let originX = j * columnWidth + columnWidth / 2 - Int(size.width) / 2
+#if os(macOS)
                 let originY = height - (i+1) * rowHeight + Int(size.height) / 2
+#elseif os(iOS)
+                let originY = (i+1) * rowHeight - Int(size.height) / 2
+#endif
                 context.saveGState()
                 str._draw(
                     at: Rect(
