@@ -65,6 +65,7 @@ class ImageMaker: ImageMakerType {
             fatalError()
         }
         #elseif os(iOS)
+        UIGraphicsBeginImageContext(CGSize(width: width, height: height))
         guard let context = UIGraphicsGetCurrentContext() else {
             fatalError()
         }
@@ -174,6 +175,8 @@ class ImageMaker: ImageMakerType {
         }
         #if os(macOS)
         canvas.unlockFocus()
+        #elseif os(iOS)
+        UIGraphicsEndImageContext()
         #endif
 
         return image
