@@ -20,9 +20,18 @@ struct ContentView: View {
     @State private var showFileImporter: Bool = false
     @State private var csv: Csv?
 
+    #if os(iOS)
+    @State private var outputFileName: String = ""
+    #endif
+
     var body: some View {
         GeometryReader { proxy in
             VStack {
+                #if os(iOS)
+                TextField("Please Decide Output FileName", text: $outputFileName)
+                    .font(.title3)
+                    .padding()
+                #endif
                 if showNetworkFileImporter {
                     HStack {
                         TextField("Input URL", text: $networkURL)
@@ -45,9 +54,12 @@ struct ContentView: View {
                     Text("Output Image")
                         .font(.title)
                         .bold()
-                    Image(img, scale: 1, orientation: .up, label: Text("Output Image"))
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
+                    ScrollView {
+                        Image(img, scale: 1, orientation: .up, label: Text("Output Image"))
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(maxWidth: proxy.size.width * 0.6)
+                    }
                 }
                 HStack {
                     Button {
@@ -71,6 +83,7 @@ struct ContentView: View {
                     .padding()
                     Spacer()
                     Button {
+                        #if os(macOS)
                         let panel = NSSavePanel()
                         panel.allowedContentTypes = [.png]
                         panel.begin { response in
@@ -83,6 +96,19 @@ struct ContentView: View {
                                 break
                             }
                         }
+                        #elseif os(iOS)
+                        guard let document = FileManager.default.urls(
+                            for: .documentDirectory,
+                            in: .userDomainMask
+                        ).first else {
+                            fatalError()
+                        }
+                        let url = document.appendingPathComponent(
+                            outputFileName,
+                            conformingTo: .png
+                        )
+                        let _ = csv?.write(to: url)
+                        #endif
                     } label: {
                         Text("Save Output Image.")
                             .font(.title3)
@@ -102,6 +128,7 @@ struct ContentView: View {
                 do {
                     self.csv = try Csv.fromFile(url)
                 } catch {
+                    print(error.localizedDescription)
                     self.error = error
                 }
             case .failure(let error):

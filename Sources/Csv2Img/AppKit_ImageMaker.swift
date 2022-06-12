@@ -139,7 +139,7 @@ class ImageMaker: ImageMakerType {
             #if os(macOS)
             let originY = height - Int(size.height) / 2 - rowHeight / 2
             #elseif os(iOS)
-            let originY = Int(size.height) / 2 + rowHeight / 2
+            let originY = Int(size.height) / 2
             #endif
             context.saveGState()
             str._draw(
@@ -165,7 +165,7 @@ class ImageMaker: ImageMakerType {
 #if os(macOS)
                 let originY = height - (i+1) * rowHeight + Int(size.height) / 2
 #elseif os(iOS)
-                let originY = (i+1) * rowHeight - Int(size.height) / 2
+                let originY = i * rowHeight - Int(size.height) / 2
 #endif
                 context.saveGState()
                 str._draw(
