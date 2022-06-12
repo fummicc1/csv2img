@@ -179,11 +179,11 @@ struct ContentView: View {
                 error = CsvImageAppError.outputFileNameIsEmpty
                 return
             }            
-            let document = URL(fileURLWithPath: NSHomeDirectory())
+            let document = URL(fileURLWithPath: NSHomeDirectory() + "/Library/OutputCsvImage")
             let url = document.appendingPathComponent(
                 outputFileName,
                 conformingTo: .png
-            )
+            )            
             let ok = csv?.write(to: url)
             completeSavingFile = ok ?? false
             if completeSavingFile {

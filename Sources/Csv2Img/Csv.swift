@@ -298,7 +298,11 @@ extension Csv {
             return false
         }
         do {
-            try data.write(to: url)
+            if !FileManager.default.fileExists(atPath: url.absoluteString) {
+                FileManager.default.createFile(atPath: url.absoluteString, contents: data)
+            } else {
+                try data.write(to: url)
+            }
             return true
         } catch {
             print(error)
