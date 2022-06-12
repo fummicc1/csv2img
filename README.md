@@ -12,17 +12,17 @@ Convert Csv into png image.
 
 - Import Csv file from local computer.
 
-![Import Csv file from local computer.](./Gifs/v1.0.0/01.gif)
+![Import Csv file from local computer.](https://raw.githubusercontent.com/fummicc1/csv2img/main/Gifs/v1.0.0/01.gif)
 
 - Import Csv file from network resource.
 
-![Import Csv file from network resource.](./Gifs/v1.0.0/02.gif)
+![Import Csv file from network resource.](https://raw.githubusercontent.com/fummicc1/csv2img/main/Gifs/v1.0.0/02.gif)
 
 ### iOS App
 
 - export output image by sharing (like `Airdrop`, saving to `File` and so on).
 
-![](./Gifs/v1.1.0/01.gif)
+<img src="https://raw.githubusercontent.com/fummicc1/csv2img/main/Gifs/v1.1.0/01.gif" width=320px>
 
 # Csv2Img (Library)
 
