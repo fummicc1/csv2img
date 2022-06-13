@@ -22,7 +22,7 @@ Convert Csv into png image.
 
 - export output image by sharing (like `Airdrop`, saving to `File` and so on).
 
-<img src="https://raw.githubusercontent.com/fummicc1/csv2img/main/Gifs/v1.1.0/01.gif" width=60%>
+<img src="https://raw.githubusercontent.com/fummicc1/csv2img/main/Gifs/v1.1.0/01.gif" width=40%>
 
 # Csv2Img (Library)
 
