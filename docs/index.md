@@ -1,4 +1,4 @@
-![アートボード 1 のコピー](https://user-images.githubusercontent.com/44002126/172318021-2f2c6b7c-25f0-4d06-95b6-aef02d2e06d2.png)
+![Csv2mg_bg](https://user-images.githubusercontent.com/44002126/173288309-81e336d2-5239-441a-bc6e-2b58bb9da349.png)
 
 # Csv2ImageApp
 
