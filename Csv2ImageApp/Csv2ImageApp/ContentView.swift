@@ -87,6 +87,7 @@ struct ContentView: View {
             isPresented: $showFileImporter,
             allowedContentTypes: [.commaSeparatedText]
         ) { result in
+            showFileImporter = false
             switch result {
             case .success(let url):
                 do {
