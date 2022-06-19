@@ -33,11 +33,13 @@ public struct Csv {
     /// `Row` is array of row whose type is ``Row``
     public init(
         separator: String=",",
+        rawString: String,
         columnNames: [Csv.ColumnName],
         rows: [Csv.Row]
     ) {
         self.imageMarker = ImageMaker(fontSize: 12)
         self.separator = separator
+        self.rawString = rawString
         self.columnNames = columnNames
         self.rows = rows
     }
@@ -53,6 +55,9 @@ public struct Csv {
 
     /// `data` has result of converstion from csv to png-image.
     private var data: Data?
+
+    /// `rawString` is original String read from Resource (either Local or Network).
+    public var rawString: String
 }
 
 extension Csv {
@@ -186,6 +191,7 @@ extension Csv {
     public static func fromString(_ str: String, separator: String = ",", maxLength: Int? = nil) -> Csv {
         var csv = Csv(
             separator: separator,
+            rawString: str,
             columnNames: [],
             rows: []
         )
