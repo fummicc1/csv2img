@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import CoreData
 
 #if os(macOS)
 typealias Application = NSApplication
@@ -15,9 +16,31 @@ typealias Application = UIApplication
 
 @main
 struct Csv2ImageAppApp: App {
+
+    let container: NSPersistentContainer
+
+    init() {
+        container = NSPersistentContainer(name: "Csv2Img")
+        let description = NSPersistentStoreDescription()
+        description.shouldMigrateStoreAutomatically = true
+        container.persistentStoreDescriptions = [description]
+        container.loadPersistentStores { _, error in
+            if let error = error {
+                print(error)
+                assertionFailure(error.localizedDescription)
+            }
+        }
+    }
+
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .environment(
+                    \.managedObjectContext, container.viewContext
+                )
+        }
+        .commands {
+            SidebarCommands()
         }
     }
 }

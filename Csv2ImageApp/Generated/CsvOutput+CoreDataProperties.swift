@@ -16,8 +16,9 @@ extension CsvOutput {
         return NSFetchRequest<CsvOutput>(entityName: "CsvOutput")
     }
 
-    @NSManaged public var raw: String?
+    @NSManaged public var generatedAt: Date
     @NSManaged public var png: Data?
+    @NSManaged public var raw: String?
     @NSManaged public var config: CsvConfig?
 
 }
