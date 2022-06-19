@@ -241,10 +241,13 @@ extension Csv {
     ///     - separator: Default separator in a row is `","`. You cloud change it by giving separator to `separator` parameter.
     public static func fromURL(_ url: URL, separator: String = ",") throws -> Csv {
         let data = try Data(contentsOf: url)
-        guard let str = String(data: data, encoding: .utf8) else {
-            throw Error.invalidDownloadResource(url: url.absoluteString, data: data)
+        if let str = String(data: data, encoding: .utf8) {
+            return .fromString(str)
         }
-        return .fromString(str)
+        if let str = String(data: data, encoding: .ascii) {
+            return .fromString(str)
+        }
+        throw Error.invalidDownloadResource(url: url.absoluteString, data: data)
     }
 
     /// Generate `Csv` from local url (like `file://Users/...`).
@@ -256,10 +259,13 @@ extension Csv {
         // https://www.hackingwithswift.com/forums/swift/accessing-files-from-the-files-app/8203
         if file.startAccessingSecurityScopedResource() {
             let data = try Data(contentsOf: file)
-            guard let str = String(data: data, encoding: .utf8) else {
-                throw Error.invalidLocalResource(url: file.absoluteString, data: data)
+            if let str = String(data: data, encoding: .utf8) {
+                return .fromString(str)
             }
-            return .fromString(str)
+            if let str = String(data: data, encoding: .ascii) {
+                return .fromString(str)
+            }
+            throw Error.invalidLocalResource(url: file.absoluteString, data: data)
         } else {
             throw Error.cannotAccessFile(url: file.absoluteString)
         }
