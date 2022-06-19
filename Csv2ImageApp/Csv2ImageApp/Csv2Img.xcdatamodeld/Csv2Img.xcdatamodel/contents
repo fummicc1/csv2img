@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="20086" systemVersion="22A5266r" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+    <entity name="CsvConfig" representedClassName="CsvConfig" syncable="YES" codeGenerationType="class">
+        <attribute name="fontSize" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="separator" optional="YES" attributeType="String"/>
+    </entity>
+    <entity name="CsvOutput" representedClassName="CsvOutput" syncable="YES" codeGenerationType="class">
+        <attribute name="png" optional="YES" attributeType="Binary"/>
+        <attribute name="raw" optional="YES" attributeType="String"/>
+        <relationship name="config" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CsvConfig"/>
+    </entity>
+    <elements>
+        <element name="CsvConfig" positionX="-63" positionY="-18" width="128" height="59"/>
+        <element name="CsvOutput" positionX="-54" positionY="0" width="128" height="74"/>
+    </elements>
+</model>

@@ -7,19 +7,20 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		D30B17E6285F865700EA92B5 /* Csv2Img.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = D30B17E4285F865700EA92B5 /* Csv2Img.xcdatamodeld */; };
+		D30B17E7285F865700EA92B5 /* Csv2Img.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = D30B17E4285F865700EA92B5 /* Csv2Img.xcdatamodeld */; };
+		D30B1811285F8A3400EA92B5 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3A4EB19284F11A3002E3499 /* ContentView.swift */; };
+		D30B181A285F8A5300EA92B5 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3A4EB19284F11A3002E3499 /* ContentView.swift */; };
+		D30B181B285F8A6100EA92B5 /* Csv2ImageAppApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3A4EB17284F11A3002E3499 /* Csv2ImageAppApp.swift */; };
+		D30B181D285F902800EA92B5 /* Csv2Img in Frameworks */ = {isa = PBXBuildFile; productRef = D30B181C285F902800EA92B5 /* Csv2Img */; };
 		D34680E02856C9F500FDC132 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D34680DF2856C9F500FDC132 /* Preview Assets.xcassets */; };
-		D34680E42856CA0600FDC132 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3A4EB19284F11A3002E3499 /* ContentView.swift */; };
-		D34680E52856CA0F00FDC132 /* Csv2ImageAppApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3A4EB17284F11A3002E3499 /* Csv2ImageAppApp.swift */; };
 		D34680E72856CA2300FDC132 /* Csv2Img in Frameworks */ = {isa = PBXBuildFile; productRef = D34680E62856CA2300FDC132 /* Csv2Img */; };
 		D3A4EB18284F11A3002E3499 /* Csv2ImageAppApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3A4EB17284F11A3002E3499 /* Csv2ImageAppApp.swift */; };
-		D3A4EB1A284F11A3002E3499 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3A4EB19284F11A3002E3499 /* ContentView.swift */; };
 		D3A4EB1C284F11A4002E3499 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D3A4EB1B284F11A4002E3499 /* Assets.xcassets */; };
 		D3A4EB1F284F11A4002E3499 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D3A4EB1E284F11A4002E3499 /* Preview Assets.xcassets */; };
 		D3A4EB2A284F11A4002E3499 /* Csv2ImageAppTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3A4EB29284F11A4002E3499 /* Csv2ImageAppTests.swift */; };
 		D3A4EB34284F11A4002E3499 /* Csv2ImageAppUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3A4EB33284F11A4002E3499 /* Csv2ImageAppUITests.swift */; };
 		D3A4EB36284F11A4002E3499 /* Csv2ImageAppUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3A4EB35284F11A4002E3499 /* Csv2ImageAppUITestsLaunchTests.swift */; };
-		D3BD21FC2855D2F6004B53FE /* Csv2Img in Frameworks */ = {isa = PBXBuildFile; productRef = D3BD21FB2855D2F6004B53FE /* Csv2Img */; };
-		D3DCD2F52856CA9B0097CFB2 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D3A4EB1B284F11A4002E3499 /* Assets.xcassets */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -40,6 +41,11 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		D30B17E5285F865700EA92B5 /* Csv2Img.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Csv2Img.xcdatamodel; sourceTree = "<group>"; };
+		D30B1805285F886900EA92B5 /* CsvOutput+CoreDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "CsvOutput+CoreDataClass.swift"; sourceTree = "<group>"; };
+		D30B1806285F886900EA92B5 /* CsvConfig+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "CsvConfig+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		D30B1807285F886900EA92B5 /* CsvOutput+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "CsvOutput+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		D30B1808285F886900EA92B5 /* CsvConfig+CoreDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "CsvConfig+CoreDataClass.swift"; sourceTree = "<group>"; };
 		D34680D62856C9F400FDC132 /* Csv2ImageiOSApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Csv2ImageiOSApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D34680DF2856C9F500FDC132 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		D3A4EB14284F11A3002E3499 /* Csv2ImageApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Csv2ImageApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -68,7 +74,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D3BD21FC2855D2F6004B53FE /* Csv2Img in Frameworks */,
+				D30B181D285F902800EA92B5 /* Csv2Img in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -89,6 +95,17 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		D30B17F4285F874000EA92B5 /* Generated */ = {
+			isa = PBXGroup;
+			children = (
+				D30B1808285F886900EA92B5 /* CsvConfig+CoreDataClass.swift */,
+				D30B1806285F886900EA92B5 /* CsvConfig+CoreDataProperties.swift */,
+				D30B1805285F886900EA92B5 /* CsvOutput+CoreDataClass.swift */,
+				D30B1807285F886900EA92B5 /* CsvOutput+CoreDataProperties.swift */,
+			);
+			path = Generated;
+			sourceTree = SOURCE_ROOT;
+		};
 		D34306A62855CA170035C6F0 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -138,11 +155,13 @@
 		D3A4EB16284F11A3002E3499 /* Csv2ImageApp */ = {
 			isa = PBXGroup;
 			children = (
+				D30B17F4285F874000EA92B5 /* Generated */,
 				D3A4EB20284F11A4002E3499 /* Csv2ImageApp.entitlements */,
 				D3A4EB19284F11A3002E3499 /* ContentView.swift */,
 				D3A4EB17284F11A3002E3499 /* Csv2ImageAppApp.swift */,
 				D3A4EB1B284F11A4002E3499 /* Assets.xcassets */,
 				D3A4EB1D284F11A4002E3499 /* Preview Content */,
+				D30B17E4285F865700EA92B5 /* Csv2Img.xcdatamodeld */,
 			);
 			path = Csv2ImageApp;
 			sourceTree = "<group>";
@@ -209,7 +228,7 @@
 			);
 			name = Csv2ImageApp;
 			packageProductDependencies = (
-				D3BD21FB2855D2F6004B53FE /* Csv2Img */,
+				D30B181C285F902800EA92B5 /* Csv2Img */,
 			);
 			productName = Csv2ImageApp;
 			productReference = D3A4EB14284F11A3002E3499 /* Csv2ImageApp.app */;
@@ -306,7 +325,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D3DCD2F52856CA9B0097CFB2 /* Assets.xcassets in Resources */,
 				D34680E02856C9F500FDC132 /* Preview Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -341,8 +359,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D34680E42856CA0600FDC132 /* ContentView.swift in Sources */,
-				D34680E52856CA0F00FDC132 /* Csv2ImageAppApp.swift in Sources */,
+				D30B181B285F8A6100EA92B5 /* Csv2ImageAppApp.swift in Sources */,
+				D30B1811285F8A3400EA92B5 /* ContentView.swift in Sources */,
+				D30B17E7285F865700EA92B5 /* Csv2Img.xcdatamodeld in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -350,8 +369,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D3A4EB1A284F11A3002E3499 /* ContentView.swift in Sources */,
+				D30B181A285F8A5300EA92B5 /* ContentView.swift in Sources */,
 				D3A4EB18284F11A3002E3499 /* Csv2ImageAppApp.swift in Sources */,
+				D30B17E6285F865700EA92B5 /* Csv2Img.xcdatamodeld in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -790,17 +810,30 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		D30B181C285F902800EA92B5 /* Csv2Img */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D3BD21FA2855D2F6004B53FE /* XCRemoteSwiftPackageReference "csv2img" */;
+			productName = Csv2Img;
+		};
 		D34680E62856CA2300FDC132 /* Csv2Img */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = D3BD21FA2855D2F6004B53FE /* XCRemoteSwiftPackageReference "csv2img" */;
 			productName = Csv2Img;
 		};
-		D3BD21FB2855D2F6004B53FE /* Csv2Img */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = D3BD21FA2855D2F6004B53FE /* XCRemoteSwiftPackageReference "csv2img" */;
-			productName = Csv2Img;
-		};
 /* End XCSwiftPackageProductDependency section */
+
+/* Begin XCVersionGroup section */
+		D30B17E4285F865700EA92B5 /* Csv2Img.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				D30B17E5285F865700EA92B5 /* Csv2Img.xcdatamodel */,
+			);
+			currentVersion = D30B17E5285F865700EA92B5 /* Csv2Img.xcdatamodel */;
+			path = Csv2Img.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
 	};
 	rootObject = D3A4EB0C284F11A3002E3499 /* Project object */;
 }
