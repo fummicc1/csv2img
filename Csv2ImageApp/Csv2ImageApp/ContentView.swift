@@ -42,12 +42,7 @@ struct ContentView: View {
     @State private var completeSavingFile: Bool = false
     @State private var savedOutputFileURL: URL?
     @State private var contentMode: ContentMode = .create
-    @FetchRequest(
-        sortDescriptors: [NSSortDescriptor(
-            key: "generatedAt",
-            ascending: false
-        )]
-    ) var histories: FetchedResults<CsvOutput>
+    @StateObject var historyModel: HistoryModel
     @Environment(\.managedObjectContext) var context: NSManagedObjectContext
 
     var body: some View {

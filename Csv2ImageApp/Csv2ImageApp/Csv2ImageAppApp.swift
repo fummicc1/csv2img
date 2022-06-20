@@ -10,18 +10,34 @@ import CoreData
 
 #if os(macOS)
 typealias Application = NSApplication
+typealias ApplicationDelegate = NSApplicationDelegate
+typealias ApplicationDelegateAdaptor = NSApplicationDelegateAdaptor
+typealias Responder = NSResponder
 #elseif os(iOS)
 typealias Application = UIApplication
+typealias ApplicationDelegate = UIApplicationDelegate
+typealias ApplicationDelegateAdaptor = UIApplicationDelegateAdaptor
+typealias Responder = UIResponder
 #endif
 
 @main
 struct Csv2ImageAppApp: App {
 
-    let container: NSPersistentContainer
+    @ApplicationDelegateAdaptor var appDelegate: AppDelegate
+
+    var persistentController: NSPersistentContainer
 
     init() {
-        container = NSPersistentContainer(name: "Csv2Img")
+        let container = NSPersistentContainer(name: "Csv2Img")
         let description = NSPersistentStoreDescription()
+        description.setOption(
+            true as NSNumber,
+            forKey: NSPersistentHistoryTrackingKey
+        )
+        description.setOption(
+            true as NSNumber,
+            forKey: "NSPersistentStoreRemoteChangeNotificationOptionKey"
+        )
         description.shouldMigrateStoreAutomatically = true
         container.persistentStoreDescriptions = [description]
         container.loadPersistentStores { _, error in
@@ -30,17 +46,22 @@ struct Csv2ImageAppApp: App {
                 assertionFailure(error.localizedDescription)
             }
         }
+        container.viewContext.automaticallyMergesChangesFromParent = true
+        self.persistentController = container
     }
 
     var body: some Scene {
         WindowGroup {
             ContentView()
                 .environment(
-                    \.managedObjectContext, container.viewContext
+                    \.managedObjectContext, persistentController.viewContext
                 )
         }
         .commands {
             SidebarCommands()
         }
     }
+}
+
+class AppDelegate: Responder, ApplicationDelegate {
 }

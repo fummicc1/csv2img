@@ -17,6 +17,7 @@
 		D34680E02856C9F500FDC132 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D34680DF2856C9F500FDC132 /* Preview Assets.xcassets */; };
 		D34680E72856CA2300FDC132 /* Csv2Img in Frameworks */ = {isa = PBXBuildFile; productRef = D34680E62856CA2300FDC132 /* Csv2Img */; };
 		D35DB0D4285FA754009C252D /* CsvViewer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D35DB0D3285FA754009C252D /* CsvViewer.swift */; };
+		D35DB0D6285FADA5009C252D /* HistoryModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D35DB0D5285FADA5009C252D /* HistoryModel.swift */; };
 		D3A4EB18284F11A3002E3499 /* Csv2ImageAppApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3A4EB17284F11A3002E3499 /* Csv2ImageAppApp.swift */; };
 		D3A4EB1C284F11A4002E3499 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D3A4EB1B284F11A4002E3499 /* Assets.xcassets */; };
 		D3A4EB1F284F11A4002E3499 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D3A4EB1E284F11A4002E3499 /* Preview Assets.xcassets */; };
@@ -52,6 +53,7 @@
 		D34680DF2856C9F500FDC132 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		D35DB0CE285FA334009C252D /* Csv2Img 2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "Csv2Img 2.xcdatamodel"; sourceTree = "<group>"; };
 		D35DB0D3285FA754009C252D /* CsvViewer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CsvViewer.swift; sourceTree = "<group>"; };
+		D35DB0D5285FADA5009C252D /* HistoryModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryModel.swift; sourceTree = "<group>"; };
 		D3A4EB14284F11A3002E3499 /* Csv2ImageApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Csv2ImageApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D3A4EB17284F11A3002E3499 /* Csv2ImageAppApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Csv2ImageAppApp.swift; sourceTree = "<group>"; };
 		D3A4EB19284F11A3002E3499 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -167,6 +169,7 @@
 				D3A4EB1D284F11A4002E3499 /* Preview Content */,
 				D30B17E4285F865700EA92B5 /* Csv2Img.xcdatamodeld */,
 				D35DB0D3285FA754009C252D /* CsvViewer.swift */,
+				D35DB0D5285FADA5009C252D /* HistoryModel.swift */,
 			);
 			path = Csv2ImageApp;
 			sourceTree = "<group>";
@@ -376,6 +379,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				D35DB0D4285FA754009C252D /* CsvViewer.swift in Sources */,
+				D35DB0D6285FADA5009C252D /* HistoryModel.swift in Sources */,
 				D30B181A285F8A5300EA92B5 /* ContentView.swift in Sources */,
 				D3A4EB18284F11A3002E3499 /* Csv2ImageAppApp.swift in Sources */,
 				D30B17E6285F865700EA92B5 /* Csv2Img.xcdatamodeld in Sources */,
