@@ -55,7 +55,7 @@ struct ContentView: View {
                     Label("Create", systemImage: "plus")
                 }
 
-                ForEach(histories) { (history: CsvOutput) in
+                ForEach(historyModel.histories) { (history: CsvOutput) in
                     if let generatedAt = history.generatedAt {
                         Button {
                             contentMode = .history(history)
@@ -238,6 +238,6 @@ struct ContentView: View {
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        ContentView()
+        fatalError()
     }
 }

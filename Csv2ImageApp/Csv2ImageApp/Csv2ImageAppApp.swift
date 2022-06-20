@@ -52,7 +52,9 @@ struct Csv2ImageAppApp: App {
 
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            ContentView(
+                historyModel: HistoryModel(context: persistentController.viewContext)
+            )
                 .environment(
                     \.managedObjectContext, persistentController.viewContext
                 )

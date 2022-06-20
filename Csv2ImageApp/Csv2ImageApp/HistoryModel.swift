@@ -39,13 +39,18 @@ class HistoryModel: ObservableObject {
                     Task {
                         if let i = await self.histories.firstIndex(where: { $0.objectID == updatedElement.objectID }) {
                             await MainActor.run(body: {
-                                self.histories[i] = updatedElement
+                                self.update(index: i, value: updatedElement)
                             })
                         }
                     }
                 }
             }
         }
+    }
+
+    @MainActor
+    private func update(index: Int, value: CsvOutput) {
+        self.histories[index] = value
     }
 
     func save() throws {
