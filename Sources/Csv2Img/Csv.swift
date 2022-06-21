@@ -74,7 +74,7 @@ extension Csv {
     /**
     `ExportType` is a enum that expresses
      */
-    public enum ExportType {
+    public enum ExportType: CaseIterable {
         /// `png` output
         case png
         /// `pdf` output
