@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>Structures  Reference</title>
+    <title>Enumerations  Reference</title>
     <link rel="stylesheet" type="text/css" href="css/jazzy.css" />
     <link rel="stylesheet" type="text/css" href="css/highlight.css" />
     <meta charset='utf-8'>
@@ -13,8 +13,8 @@
     <script src="js/jazzy.search.js" defer></script>
   </head>
   <body>
-    <a name="//apple_ref/swift/Section/Structures" class="dashAnchor"></a>
-    <a title="Structures  Reference"></a>
+    <a name="//apple_ref/swift/Section/Enumerations" class="dashAnchor"></a>
+    <a title="Enumerations  Reference"></a>
     <header>
       <div class="content-wrapper">
         <p><a href="index.html">Csv2Img Docs</a> (59% documented)</p>
@@ -29,7 +29,7 @@
       <p id="breadcrumbs">
         <a href="index.html">Csv2Img Reference</a>
         <img id="carat" src="img/carat.png" alt=""/>
-        Structures  Reference
+        Enumerations  Reference
       </p>
     </div>
     <div class="content-wrapper">
@@ -107,8 +107,8 @@
       <article class="main-content">
         <section>
           <section class="section">
-            <h1>Structures</h1>
-            <p>The following structures are available globally.</p>
+            <h1>Enumerations</h1>
+            <p>The following enumerations are available globally.</p>
 
           </section>
           <section class="section task-group-section">
@@ -117,9 +117,9 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:7Csv2Img3CsvV"></a>
-                    <a name="//apple_ref/swift/Struct/Csv" class="dashAnchor"></a>
-                    <a class="token" href="#/s:7Csv2Img3CsvV">Csv</a>
+                    <a name="/s:7Csv2Img16ImageMakingErrorO"></a>
+                    <a name="//apple_ref/swift/Enum/ImageMakingError" class="dashAnchor"></a>
+                    <a class="token" href="#/s:7Csv2Img16ImageMakingErrorO">ImageMakingError</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -127,34 +127,43 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Csv data structure</p>
+                        <p>Undocumented</p>
 
-<p><code>Csv</code> is a struct to store information to parse csv into table.</p>
-
-<p><code>Csv</code> automatically recognize first row as column and others as rows.</p>
-<pre class="highlight swift"><code> <span class="k">let</span> <span class="nv">rawCsv</span> <span class="o">=</span> <span class="s">"""
- a,b,c
- 1,2,3
- 4,5,6
- 7,8,9
- 10,11,12
- """</span>
- <span class="k">let</span> <span class="nv">csv</span> <span class="o">=</span> <span class="kt">Csv</span><span class="o">.</span><span class="nf">fromString</span><span class="p">(</span><span class="n">rawCsv</span><span class="p">)</span>
- <span class="kt">Output</span><span class="p">:</span>
- <span class="o">|</span> <span class="n">a</span>  <span class="o">|</span> <span class="n">b</span>  <span class="o">|</span> <span class="n">c</span>  <span class="o">|</span>
- <span class="o">|</span> <span class="mi">1</span>  <span class="o">|</span> <span class="mi">2</span>  <span class="o">|</span> <span class="mi">3</span>  <span class="o">|</span>
- <span class="o">|</span> <span class="mi">4</span>  <span class="o">|</span> <span class="mi">5</span>  <span class="o">|</span> <span class="mi">6</span>  <span class="o">|</span>
- <span class="o">|</span> <span class="mi">7</span>  <span class="o">|</span> <span class="mi">8</span>  <span class="o">|</span> <span class="mi">9</span>  <span class="o">|</span>
- <span class="o">|</span> <span class="mi">10</span> <span class="o">|</span> <span class="mi">11</span> <span class="o">|</span> <span class="mi">12</span> <span class="o">|</span>
-</code></pre>
-
-                        <a href="Structs/Csv.html" class="slightly-smaller">See more</a>
+                        <a href="Enums/ImageMakingError.html" class="slightly-smaller">See more</a>
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">struct</span> <span class="kt">Csv</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">enum</span> <span class="kt">ImageMakingError</span> <span class="p">:</span> <span class="kt">Error</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:7Csv2Img14PdfMakingErrorO"></a>
+                    <a name="//apple_ref/swift/Enum/PdfMakingError" class="dashAnchor"></a>
+                    <a class="token" href="#/s:7Csv2Img14PdfMakingErrorO">PdfMakingError</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                        <a href="Enums/PdfMakingError.html" class="slightly-smaller">See more</a>
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">enum</span> <span class="kt">PdfMakingError</span> <span class="p">:</span> <span class="kt">Error</span></code></pre>
 
                         </div>
                       </div>

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>ColumnName Structure Reference</title>
+    <title>ExportType Enumeration Reference</title>
     <link rel="stylesheet" type="text/css" href="../../css/jazzy.css" />
     <link rel="stylesheet" type="text/css" href="../../css/highlight.css" />
     <meta charset='utf-8'>
@@ -13,8 +13,8 @@
     <script src="../../js/jazzy.search.js" defer></script>
   </head>
   <body>
-    <a name="//apple_ref/swift/Struct/ColumnName" class="dashAnchor"></a>
-    <a title="ColumnName Structure Reference"></a>
+    <a name="//apple_ref/swift/Enum/ExportType" class="dashAnchor"></a>
+    <a title="ExportType Enumeration Reference"></a>
     <header>
       <div class="content-wrapper">
         <p><a href="../../index.html">Csv2Img Docs</a> (59% documented)</p>
@@ -29,7 +29,7 @@
       <p id="breadcrumbs">
         <a href="../../index.html">Csv2Img Reference</a>
         <img id="carat" src="../../img/carat.png" alt=""/>
-        ColumnName Structure Reference
+        ExportType Enumeration Reference
       </p>
     </div>
     <div class="content-wrapper">
@@ -107,28 +107,15 @@
       <article class="main-content">
         <section>
           <section class="section">
-            <h1>ColumnName</h1>
+            <h1>ExportType</h1>
               <div class="declaration">
                 <div class="language">
                   
-                  <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">struct</span> <span class="kt">ColumnName</span></code></pre>
+                  <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">enum</span> <span class="kt">ExportType</span></code></pre>
 
                 </div>
               </div>
-            <p>ColumnName (a head line)</p>
-
-<p>Column is at the first group of hrizontally separated groups.</p>
-
-<p>following lines are treated as <code><a href="../../Structs/Csv/Row.html">Row</a></code>.</p>
-
-<p>eg.</p>
-
-<p>1 2 3 4</p>
-
-<p>5 6 7 8
-→ColumnName is [1, 2, 3, 4] and Row is [5, 6, 7, 8].</p>
-
-<p>Because this class is usually initialized via <code><a href="../../Structs/Csv.html">Csv</a></code>, you do not have to take care about <code>ColumnName</code> in detail.</p>
+            <p><code>ExportType</code> is a enum that expresses</p>
 
           </section>
           <section class="section task-group-section">
@@ -137,9 +124,9 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:7Csv2Img3CsvV10ColumnNameV5valueAESS_tcfc"></a>
-                    <a name="//apple_ref/swift/Method/init(value:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:7Csv2Img3CsvV10ColumnNameV5valueAESS_tcfc">init(value:<wbr>)</a>
+                    <a name="/s:7Csv2Img3CsvV10ExportTypeO3pngyA2EmF"></a>
+                    <a name="//apple_ref/swift/Element/png" class="dashAnchor"></a>
+                    <a class="token" href="#/s:7Csv2Img3CsvV10ExportTypeO3pngyA2EmF">png</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -147,41 +134,14 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Undocumented</p>
+                        <p><code>png</code> output</p>
 
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="nf">init</span><span class="p">(</span><span class="nv">value</span><span class="p">:</span> <span class="kt">String</span><span class="p">)</span></code></pre>
-
-                        </div>
-                      </div>
-                    </section>
-                  </div>
-                </li>
-                <li class="item">
-                  <div>
-                    <code>
-                    <a name="/s:7Csv2Img3CsvV10ColumnNameV5valueSSvp"></a>
-                    <a name="//apple_ref/swift/Property/value" class="dashAnchor"></a>
-                    <a class="token" href="#/s:7Csv2Img3CsvV10ColumnNameV5valueSSvp">value</a>
-                    </code>
-                  </div>
-                  <div class="height-container">
-                    <div class="pointer-container"></div>
-                    <section class="section">
-                      <div class="pointer"></div>
-                      <div class="abstract">
-                        <p>Undocumented</p>
-
-                      </div>
-                      <div class="declaration">
-                        <h4>Declaration</h4>
-                        <div class="language">
-                          <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">value</span><span class="p">:</span> <span class="kt">String</span></code></pre>
+                          <pre class="highlight swift"><code><span class="k">case</span> <span class="n">png</span></code></pre>
 
                         </div>
                       </div>
