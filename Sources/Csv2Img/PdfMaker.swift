@@ -14,7 +14,8 @@ protocol PdfMakerType: Maker {
     func setFontSize(_ size: CGFloat)
 }
 
-/// ``PdfMaker`` generate pdf from ``Csv``.
+/// ``PdfMaker`` generate pdf from ``Csv`` (Work In Progress).
+@available(*, unavailable)
 class PdfMaker: PdfMakerType {
 
     typealias Exportable = PDFDocument
@@ -35,7 +36,7 @@ class PdfMaker: PdfMakerType {
     func make(
         csv: Csv
     ) throws -> PDFDocument {
-
+        var pages: [PDFPage] = []
         let horizontalSpace = 8
         let verticalSpace = 12
         let textSizeList =
@@ -60,7 +61,10 @@ class PdfMaker: PdfMakerType {
         guard let context = NSGraphicsContext.current?.cgContext else {
             throw PdfMakingError.failedToGeneratePdf
         }
+
+        context.beginPDFPage([:] as CFDictionary)
         #elseif os(iOS)
+        UIGraphicsBeginPDFPage()
         UIGraphicsBeginImageContext(CGSize(width: width, height: height))
         guard let context = UIGraphicsGetCurrentContext() else {
             throw PdfMakingError.failedToGeneratePdf
@@ -176,8 +180,9 @@ class PdfMaker: PdfMakerType {
         context.drawPath(using: .stroke)
         #if os(macOS)
         canvas.unlockFocus()
+        context.endPDFPage()
         #elseif os(iOS)
-        UIGraphicsEndImageContext()
+        UIGraphicsEndPDFContext()
         #endif
 
         guard let data = context.makeImage()?.convertToData(),

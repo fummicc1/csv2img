@@ -76,11 +76,17 @@ struct ContentView: View {
                 if let raw = history.raw,
                     let csv = Csv.fromString(raw),
                     let config = history.config {
-                    let out = csv.generate(
-                        fontSize: config.fontSize,
+                    if let out = try? csv.generate(
+                        fontSize: CGFloat(config.fontSize),
                         exportType: self.exportType
                     ) {
-                        
+                        if exportType == .png {
+                            let img = out.base as! CGImage
+                            CsvViewer(img: img)
+                        } else if exportType == .pdf {
+                            let pdf = out.base as! PDFDocument
+                            PdfDocumentView(document: pdf)
+                        }
                     }
                 }
             } else {
@@ -104,16 +110,18 @@ struct ContentView: View {
                             }
                             .padding()
                         }
-                        if let csv = csv, let output = csv.generate(fontSize: 12) {
+                        if let csv = csv, let out = try? csv.generate(fontSize: 12, exportType: exportType) {
                             HStack {
                                 Spacer()
                                 VStack {
                                     Text("Output Image")
                                         .font(.title3)
                                         .bold()
-                                    if let img = output as? CGImage {
+                                    if exportType == .png {
+                                        let img = out.base as! CGImage
                                         CsvViewer(img: img)
-                                    } else if let pdf = output as? PDFDocument {
+                                    } else if exportType == .pdf {
+                                        let pdf = out.base as! PDFDocument
                                         PdfDocumentView(document: pdf)
                                     }
                                 }
@@ -127,18 +135,42 @@ struct ContentView: View {
 #endif
         }
         .toolbar {
+            ToolbarItemGroup(placement: ToolbarItemPlacement.navigation) {
+                HStack {
+                    if exportType == .png {
+                        Text("PNG Mode")
+                    } else {
+                        Text("Not PNG Mode (Export as PDF)")
+                    }
+                    Toggle("", isOn: Binding<Bool>(
+                        get: {
+                            if exportType == .png {
+                                return true
+                            } else if exportType == .pdf {
+                                return false
+                            }
+                            return false
+                        }, set: { newValue in
+                            if newValue {
+                                exportType = .png
+                            } else {
+                                exportType = .pdf
+                            }
+                        }
+                    )).toggleStyle(SwitchToggleStyle())
+                    Button {
+                        showFileImporter = true
+                    } label: {
+                        Text("from Device.")
+                    }
+                    Button {
+                        showNetworkFileImporter = true
+                    } label: {
+                        Text("from Network.")
+                    }
+                }
+            }
             ToolbarItemGroup(placement: getToolBarItemPlacement()) {
-                Button {
-                    showFileImporter = true
-                } label: {
-                    Text("from Device.")
-                }
-                Button {
-                    showNetworkFileImporter = true
-                } label: {
-                    Text("from Network.")
-                }
-
                 Button {
                     let config = CsvConfig(context: context)
                     // TODO: Customizable config
@@ -236,7 +268,7 @@ struct ContentView: View {
 
 
     private func getToolBarItemPlacement() -> ToolbarItemPlacement {
-        var placement: ToolbarItemPlacement = .primaryAction
+        var placement: ToolbarItemPlacement = .principal
 #if os(iOS)
         placement = .bottomBar
 #endif

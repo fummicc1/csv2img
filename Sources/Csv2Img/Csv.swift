@@ -40,7 +40,7 @@ public struct Csv {
         exportType: ExportType = .png
     ) {
         self.imageMarker = ImageMaker(fontSize: 12)
-        self.pdfMarker = PdfMaker(fontSize: 12)
+//        self.pdfMarker = PdfMaker(fontSize: 12)
         self.separator = separator
         self.rawString = rawString
         self.columnNames = columnNames
@@ -58,7 +58,7 @@ public struct Csv {
     private let imageMarker: ImageMaker
 
     /// ``PdfMaker`` has responsibility to generate pdf-image from csv.
-    private let pdfMarker: PdfMaker
+//    private let pdfMarker: PdfMaker
 
     /// `data` has result of converstion from csv to png-image.
     private var data: Data?
@@ -74,10 +74,11 @@ extension Csv {
     /**
     `ExportType` is a enum that expresses
      */
-    public enum ExportType: CaseIterable {
+    public enum ExportType {
         /// `png` output
         case png
-        /// `pdf` output
+        /// `pdf` output (Work In Progress)
+        @available(*, unavailable)
         case pdf
 
         var outputType: CsvExportable.Type {
@@ -85,7 +86,7 @@ extension Csv {
             case .png:
                 return CGImage.self
             case .pdf:
-                return PDFDocument.self
+                return CGImage.self
             }
         }
     }
@@ -321,7 +322,8 @@ extension Csv {
         case .png:
             maker = self.imageMarker
         case .pdf:
-            maker = self.pdfMarker
+            maker = self.imageMarker
+            break
         }
         if let fontSize = fontSize {
             maker.setFontSize(fontSize)
