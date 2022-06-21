@@ -48,7 +48,6 @@ class ImageMaker: ImageMakerType {
     func make(
         csv: Csv
     ) throws -> CGImage {
-
         let horizontalSpace = 8
         let verticalSpace = 12
         let textSizeList =

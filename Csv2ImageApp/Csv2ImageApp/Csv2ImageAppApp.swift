@@ -8,17 +8,6 @@
 import SwiftUI
 import CoreData
 
-#if os(macOS)
-typealias Application = NSApplication
-typealias ApplicationDelegate = NSApplicationDelegate
-typealias ApplicationDelegateAdaptor = NSApplicationDelegateAdaptor
-typealias Responder = NSResponder
-#elseif os(iOS)
-typealias Application = UIApplication
-typealias ApplicationDelegate = UIApplicationDelegate
-typealias ApplicationDelegateAdaptor = UIApplicationDelegateAdaptor
-typealias Responder = UIResponder
-#endif
 
 @main
 struct Csv2ImageAppApp: App {

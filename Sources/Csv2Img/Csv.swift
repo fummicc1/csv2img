@@ -315,7 +315,7 @@ extension Csv {
     public func generate(
         fontSize: CGFloat? = nil,
         exportType: ExportType = .png
-    ) throws -> CsvExportable {
+    ) throws -> AnyCsvExportable {
         let maker: any Maker
         switch exportType {
         case .png:
@@ -326,7 +326,12 @@ extension Csv {
         if let fontSize = fontSize {
             maker.setFontSize(fontSize)
         }
-        return try maker.make(csv: self)
+        if exportType.outputType == CGImage.self {
+            return AnyCsvExportable(try maker.make(csv: self) as! CGImage)
+        } else if exportType.outputType == PDFDocument.self {
+            return AnyCsvExportable(try maker.make(csv: self) as! PDFDocument)
+        }
+        fatalError()
     }
 
     /**

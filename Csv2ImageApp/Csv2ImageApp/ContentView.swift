@@ -8,7 +8,7 @@
 import SwiftUI
 import Csv2Img
 import CoreData
-
+import PDFKit
 
 enum CsvImageAppError: Swift.Error {
     case invalidNetworkURL(url: String)
@@ -42,6 +42,7 @@ struct ContentView: View {
     @State private var completeSavingFile: Bool = false
     @State private var savedOutputFileURL: URL?
     @State private var contentMode: ContentMode = .create
+    @State private var exportType: Csv.ExportType = .png
     @StateObject var historyModel: HistoryModel
     @Environment(\.managedObjectContext) var context: NSManagedObjectContext
 
@@ -72,12 +73,15 @@ struct ContentView: View {
 #if os(iOS)
 #elseif os(macOS)
             if case ContentMode.history(let history) = contentMode {
-                if
-                    let raw = history.raw,
+                if let raw = history.raw,
                     let csv = Csv.fromString(raw),
-                    let config = history.config,
-                    let img = csv.cgImage(fontSize: CGFloat(config.fontSize)) {
-                    CsvViewer(img: img)
+                    let config = history.config {
+                    let out = csv.generate(
+                        fontSize: config.fontSize,
+                        exportType: self.exportType
+                    ) {
+                        
+                    }
                 }
             } else {
                 GeometryReader { proxy in
@@ -100,14 +104,18 @@ struct ContentView: View {
                             }
                             .padding()
                         }
-                        if let csv = csv, let img = csv.cgImage(fontSize: 12) {
+                        if let csv = csv, let output = csv.generate(fontSize: 12) {
                             HStack {
                                 Spacer()
                                 VStack {
                                     Text("Output Image")
                                         .font(.title3)
                                         .bold()
-                                    CsvViewer(img: img)
+                                    if let img = output as? CGImage {
+                                        CsvViewer(img: img)
+                                    } else if let pdf = output as? PDFDocument {
+                                        PdfDocumentView(document: pdf)
+                                    }
                                 }
                                 .padding()
                                 Spacer()
