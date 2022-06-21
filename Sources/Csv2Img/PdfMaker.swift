@@ -1,28 +1,24 @@
-#if os(macOS)
-import AppKit
-typealias Image = NSImage
-typealias Color = NSColor
-typealias Rect = NSRect
-#elseif os(iOS)
-import UIKit
-typealias Image = UIImage
-typealias Color = UIColor
-typealias Rect = CGRect
-#endif
-
 import Foundation
 import CoreGraphics
-import CoreText
+import PDFKit
 
+public enum PdfMakingError: Error {
+    /// Failed to get current `CGContext`.
+    case noContextAvailabe
+    case failedToGeneratePdf
+}
 
 /// No overview available
-protocol ImageMakerType {
-    func make(csv: Csv) -> CGImage
+protocol PdfMakerType: Maker {
+    func make(csv: Csv) throws -> PDFDocument
     func setFontSize(_ size: CGFloat)
 }
 
-/// `ImageMarker` generate png-image from ``Csv``.
-class ImageMaker: ImageMakerType {
+/// ``PdfMaker`` generate pdf from ``Csv``.
+class PdfMaker: PdfMakerType {
+
+    typealias Exportable = PDFDocument
+
     init(
         fontSize: CGFloat
     ) {
@@ -38,7 +34,7 @@ class ImageMaker: ImageMakerType {
     /// generate png-image data from ``Csv``.
     func make(
         csv: Csv
-    ) -> CGImage {
+    ) throws -> PDFDocument {
 
         let horizontalSpace = 8
         let verticalSpace = 12
@@ -62,12 +58,12 @@ class ImageMaker: ImageMakerType {
         )
         canvas.lockFocus()
         guard let context = NSGraphicsContext.current?.cgContext else {
-            fatalError()
+            throw PdfMakingError.failedToGeneratePdf
         }
         #elseif os(iOS)
         UIGraphicsBeginImageContext(CGSize(width: width, height: height))
         guard let context = UIGraphicsGetCurrentContext() else {
-            fatalError()
+            throw PdfMakingError.failedToGeneratePdf
         }
         #endif
 
@@ -178,16 +174,18 @@ class ImageMaker: ImageMakerType {
             }
         }
         context.drawPath(using: .stroke)
-        guard let image = context.makeImage() else {
-            fatalError()
-        }
         #if os(macOS)
         canvas.unlockFocus()
         #elseif os(iOS)
         UIGraphicsEndImageContext()
         #endif
 
-        return image
+        guard let data = context.makeImage()?.convertToData(),
+            let document = PDFDocument(data: data) else {
+            throw PdfMakingError.failedToGeneratePdf
+        }
+
+        return document
     }
 }
 

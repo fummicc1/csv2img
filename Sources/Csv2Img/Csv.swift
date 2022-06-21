@@ -1,5 +1,6 @@
 import Foundation
 import CoreGraphics
+import PDFKit
 
 /** Csv data structure
 
@@ -35,13 +36,16 @@ public struct Csv {
         separator: String=",",
         rawString: String,
         columnNames: [Csv.ColumnName],
-        rows: [Csv.Row]
+        rows: [Csv.Row],
+        exportType: ExportType = .png
     ) {
         self.imageMarker = ImageMaker(fontSize: 12)
+        self.pdfMarker = PdfMaker(fontSize: 12)
         self.separator = separator
         self.rawString = rawString
         self.columnNames = columnNames
         self.rows = rows
+        self.exportType = exportType
     }
 
     /// an separator applied to each row and column.
@@ -51,13 +55,40 @@ public struct Csv {
     /// an array of row whose type is ``Row`.
     public var rows: [Row]
     /// ``ImageMarker`` has responsibility to generate png-image from csv.
-    private let imageMarker: ImageMakerType
+    private let imageMarker: ImageMaker
+
+    /// ``PdfMaker`` has responsibility to generate pdf-image from csv.
+    private let pdfMarker: PdfMaker
 
     /// `data` has result of converstion from csv to png-image.
     private var data: Data?
 
     /// `rawString` is original String read from Resource (either Local or Network).
     public var rawString: String
+
+    /// `exportType` determines export type. Please choose ``ExportType.png`` or ``ExportType.pdf``.
+    public var exportType: ExportType
+}
+
+extension Csv {
+    /**
+    `ExportType` is a enum that expresses
+     */
+    public enum ExportType {
+        /// `png` output
+        case png
+        /// `pdf` output
+        case pdf
+
+        var outputType: CsvExportable.Type {
+            switch self {
+            case .png:
+                return CGImage.self
+            case .pdf:
+                return PDFDocument.self
+            }
+        }
+    }
 }
 
 extension Csv {
@@ -272,18 +303,30 @@ extension Csv {
     }
 
     /**
-     Generate CGImage
+     Generate Output (file-type is determined by `exportType` parameter)
      - Parameters:
         - fontSize: Determine the fontsize of characters in output-table image.
+        - exportType:Determine file-extension. Type is ``ExportType`` and default value is ``ExportType.png``.
      - Note:
      `fontSize` determines the size of output image and it can be as large as you want. Please consider the case that output image is too large to open image. Although output image becomes large, it is recommended to set fontSize amply enough (maybe larger than `12pt`) to see image clearly.
-     - Returns: CGImage
+     - Returns: ``CsvExportable``. (either ``CGImage`` or  ``PdfDocument``).
+     - Throws: Throws ``ImageMakingError``.
      */
-    public func cgImage(fontSize: CGFloat? = nil) -> CGImage {
-        if let fontSize = fontSize {
-            imageMarker.setFontSize(fontSize)
+    public func generate(
+        fontSize: CGFloat? = nil,
+        exportType: ExportType = .png
+    ) throws -> CsvExportable {
+        let maker: any Maker
+        switch exportType {
+        case .png:
+            maker = self.imageMarker
+        case .pdf:
+            maker = self.pdfMarker
         }
-        return imageMarker.make(csv: self)
+        if let fontSize = fontSize {
+            maker.setFontSize(fontSize)
+        }
+        return try maker.make(csv: self)
     }
 
     /**
@@ -295,8 +338,11 @@ extension Csv {
      - Returns: `Optional<Data>`
      */
     public func pngData(fontSize: CGFloat? = nil) -> Data? {
-        let image = cgImage(fontSize: fontSize)
-        return image.convertToData()
+        if let fontSize = fontSize {
+            imageMarker.setFontSize(fontSize)
+        }
+        let image = try? imageMarker.make(csv: self)
+        return image?.convertToData()
     }
 
     /**
