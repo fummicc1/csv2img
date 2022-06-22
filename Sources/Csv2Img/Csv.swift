@@ -78,7 +78,6 @@ extension Csv {
         /// `png` output
         case png
         /// `pdf` output (Work In Progress)
-        @available(*, unavailable)
         case pdf
 
         var outputType: CsvExportable.Type {

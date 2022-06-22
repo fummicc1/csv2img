@@ -11,26 +11,30 @@ public enum PdfMakingError: Error {
 /// No overview available
 protocol PdfMakerType: Maker {
     func make(csv: Csv) throws -> PDFDocument
+    func setMetadata(_ metadata: PDFMetadata)
     func setFontSize(_ size: CGFloat)
 }
 
 /// ``PdfMaker`` generate pdf from ``Csv`` (Work In Progress).
-@available(*, unavailable)
 class PdfMaker: PdfMakerType {
 
     typealias Exportable = PDFDocument
 
     init(
-        fontSize: CGFloat
+        fontSize: CGFloat,
+        metadata: PDFMetadata
     ) {
         self.fontSize = fontSize
+        self.metadata = metadata
     }
 
     var fontSize: CGFloat
+    var metadata: PDFMetadata
 
     func setFontSize(_ size: CGFloat) {
         self.fontSize = size
     }
+
 
     /// generate png-image data from ``Csv``.
     func make(
@@ -53,23 +57,30 @@ class PdfMaker: PdfMakerType {
         let width = (Int(longestWidth) + horizontalSpace) * csv.columnNames.count
         let height = (csv.rows.count + 1) * (Int(longestHeight) + verticalSpace)
 
+        let pageHeight = min(480, height)
+
+
+
         #if os(macOS)
-        let canvas = NSImage(
-            size: NSSize(width: width, height: height)
-        )
-        canvas.lockFocus()
         guard let context = NSGraphicsContext.current?.cgContext else {
             throw PdfMakingError.failedToGeneratePdf
         }
-
-        context.beginPDFPage([:] as CFDictionary)
         #elseif os(iOS)
-        UIGraphicsBeginPDFPage()
-        UIGraphicsBeginImageContext(CGSize(width: width, height: height))
-        guard let context = UIGraphicsGetCurrentContext() else {
-            throw PdfMakingError.failedToGeneratePdf
-        }
+        let pdfContext = UIGraphicsPDFRendererContext()
+        let context = pdfContext.cgContext
         #endif
+        var mediaBoxPerPage = CGRect(
+            origin: .zero,
+            size: CGSize(
+                width: width,
+                height: pageHeight
+            )
+        )
+        let coreInfo = [
+            kCGPDFContextTitle as CFString: metadata.title,
+            kCGPDFContextAuthor as CFString: metadata.author
+        ]
+        context.beginPDFPage(coreInfo as CFDictionary)
 
         context.setFillColor(CGColor(
             red: 250/255,
@@ -77,7 +88,12 @@ class PdfMaker: PdfMakerType {
             blue: 250/255,
             alpha: 1)
         )
-        context.fill(CGRect(origin: .zero, size: CGSize(width: width, height: height)))
+        context.fill(
+            CGRect(
+                origin: .zero,
+                size: CGSize(width: width, height: height)
+            )
+        )
 
         context.setLineWidth(1)
         #if os(macOS)
@@ -97,37 +113,126 @@ class PdfMaker: PdfMakerType {
         let rowHeight = Int(height) / rowCount
         let columnWidth = Int(width) / columnCount
 
+        var pageNumber: Int = 1
+        var numberOfRowsInPage: Int = rowHeight / pageHeight
+        var startRowIndex: Int = 0
 
-        for i in 0..<columnCount {
+        while pageNumber * pageHeight <= height {
+            context.beginPage(mediaBox: &mediaBoxPerPage)
+            setColumnText(
+                context: context,
+                columns: csv.columnNames,
+                boxWidth: columnWidth,
+                boxHeight: rowHeight,
+                totalHeight: pageHeight
+            )
+            let rows = csv.rows.filter({
+                (startRowIndex..<startRowIndex+numberOfRowsInPage)
+                    .contains($0.index)
+            })
+            setRowText(
+                context: context,
+                rows: rows,
+                from: startRowIndex,
+                rowCountPerPage: numberOfRowsInPage,
+                width: columnWidth,
+                height: rowHeight,
+                totalWidth: width
+            )
+            pageNumber += 1
+            startRowIndex += numberOfRowsInPage
+            context.endPage()
+        }
+
+        context.drawPath(using: .stroke)
+        #if os(iOS)
+        UIGraphicsEndPDFContext()
+        #endif
+        context.endPDFPage()
+
+        context.closePDF()
+
+        guard let data = context.data?.load(as: Data.self) else {
+            throw PdfMakingError.failedToGeneratePdf
+        }
+        return PDFDocument(data: data)!
+    }
+
+    func setMetadata(_ metadata: PDFMetadata) {
+        self.metadata = metadata
+    }
+}
+
+extension PdfMaker {
+    private func setRowText(
+        context: CGContext,
+        rows: [Csv.Row],
+        from start: Int,
+        rowCountPerPage rowCount: Int,
+        width: Int,
+        height: Int,
+        totalWidth: Int
+    ) {
+        for i in start..<start+rowCount {
+            let row = rows[i]
             context.move(
                 to: CGPoint(
-                    x: i * columnWidth,
+                    x: 0,
+                    y: i * height
+                )
+            )
+            context.addLine(
+                to: CGPoint(
+                    x: totalWidth,
+                    y: i * height
+                )
+            )
+            for text in row.values {
+                let str = NSAttributedString(
+                    string: text,
+                    attributes: [
+                        .font: Font.systemFont(ofSize: fontSize, weight: .bold)
+                    ]
+                )
+                let size = str.string.getSize(fontSize: fontSize)
+                let originX = i * width + width / 2 - Int(size.width) / 2
+    #if os(macOS)
+                let originY = height - Int(size.height) / 2 - height / 2
+    #elseif os(iOS)
+                let originY = Int(size.height) / 2
+                #endif
+                context.saveGState()
+                str._draw(
+                    at: Rect(
+                        origin: CGPoint(x: originX, y: originY),
+                        size: CGSize(width: width, height: height)
+                    )
+                )
+                context.restoreGState()
+            }
+        }
+    }
+
+    private func setColumnText(
+        context: CGContext,
+        columns: [Csv.ColumnName],
+        boxWidth width: Int,
+        boxHeight height: Int,
+        totalHeight: Int
+    ) {
+        for (i, column) in columns.enumerated() {
+            context.move(
+                to: CGPoint(
+                    x: i * width,
                     y: 0
                 )
             )
             context.addLine(
                 to: CGPoint(
-                    x: i * columnWidth,
-                    y: Int(height)
+                    x: i * width,
+                    y: totalHeight
                 )
             )
-        }
-        for j in 0..<rowCount {
-            context.move(
-                to: CGPoint(
-                    x: 0,
-                    y: j * rowHeight
-                )
-            )
-            context.addLine(
-                to: CGPoint(
-                    x: Int(width),
-                    y: j * rowHeight
-                )
-            )
-        }
-
-        for (i, column) in csv.columnNames.enumerated() {
             let str = NSAttributedString(
                 string: column.value,
                 attributes: [
@@ -135,9 +240,9 @@ class PdfMaker: PdfMakerType {
                 ]
             )
             let size = str.string.getSize(fontSize: fontSize)
-            let originX = i * columnWidth + columnWidth / 2 - Int(size.width) / 2
+            let originX = i * width + width / 2 - Int(size.width) / 2
             #if os(macOS)
-            let originY = height - Int(size.height) / 2 - rowHeight / 2
+            let originY = height - Int(size.height) / 2 - height / 2
             #elseif os(iOS)
             let originY = Int(size.height) / 2
             #endif
@@ -145,52 +250,10 @@ class PdfMaker: PdfMakerType {
             str._draw(
                 at: Rect(
                     origin: CGPoint(x: originX, y: originY),
-                    size: CGSize(width: columnWidth, height: rowHeight)
+                    size: CGSize(width: width, height: height)
                 )
             )
             context.restoreGState()
         }
-
-        for (var i, row) in csv.rows.enumerated() {
-            i += 1
-            for (j, item) in row.values.enumerated() {
-                let str = NSAttributedString(
-                    string: item,
-                    attributes: [
-                        .font: Font.systemFont(ofSize: fontSize)
-                    ]
-                )
-                let size = str.string.getSize(fontSize: fontSize)
-                let originX = j * columnWidth + columnWidth / 2 - Int(size.width) / 2
-#if os(macOS)
-                let originY = height - (i+1) * rowHeight + Int(size.height) / 2
-#elseif os(iOS)
-                let originY = i * rowHeight + rowHeight / 2 - Int(size.height) / 2
-#endif
-                context.saveGState()
-                str._draw(
-                    at: Rect(
-                        origin: CGPoint(x: originX, y: originY),
-                        size: size
-                    )
-                )
-                context.restoreGState()
-            }
-        }
-        context.drawPath(using: .stroke)
-        #if os(macOS)
-        canvas.unlockFocus()
-        context.endPDFPage()
-        #elseif os(iOS)
-        UIGraphicsEndPDFContext()
-        #endif
-
-        guard let data = context.makeImage()?.convertToData(),
-            let document = PDFDocument(data: data) else {
-            throw PdfMakingError.failedToGeneratePdf
-        }
-
-        return document
     }
 }
-
