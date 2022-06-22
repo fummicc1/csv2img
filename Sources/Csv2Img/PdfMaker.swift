@@ -3,7 +3,7 @@ import CoreGraphics
 import PDFKit
 
 public enum PdfMakingError: Error {
-    /// Failed to get current `CGContext`.
+    /// Failed to get/create `CGContext`.
     case noContextAvailabe
     case failedToGeneratePdf
 }
@@ -58,17 +58,6 @@ class PdfMaker: PdfMakerType {
 
         let pageHeight = min(480, height)
 
-
-
-        #if os(macOS)
-        guard let window = NSApplication.shared.keyWindow else {
-            throw PdfMakingError.noContextAvailabe
-        }
-        let context = NSGraphicsContext(window: window).cgContext
-        #elseif os(iOS)
-        let pdfContext = UIGraphicsPDFRendererContext()
-        let context = pdfContext.cgContext
-        #endif
         var mediaBoxPerPage = CGRect(
             origin: .zero,
             size: CGSize(
@@ -80,6 +69,20 @@ class PdfMaker: PdfMakerType {
             kCGPDFContextTitle as CFString: metadata.title,
             kCGPDFContextAuthor as CFString: metadata.author
         ]
+
+        var totalMediaBox = CGRect(
+            origin: .zero,
+            size: CGSize(width: width, height: height)
+        )
+        var data = CFDataCreateMutable(nil, 0)!
+        var consumer = CGDataConsumer(data: data)!
+        guard let context = CGContext(
+            consumer: consumer,
+            mediaBox: &totalMediaBox,
+            nil
+        ) else {
+            throw PdfMakingError.noContextAvailabe
+        }
         context.beginPDFPage(coreInfo as CFDictionary)
 
         context.setFillColor(CGColor(

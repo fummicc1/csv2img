@@ -7,8 +7,8 @@ public struct PDFMetadata {
         self.title = title
     }
 
-    /// `author`. author of pdf.
+    /// `author`. author of document.
     public var author: String
-    /// `title`. pdf-title.
+    /// `title`. title of document.
     public var title: String
 }
