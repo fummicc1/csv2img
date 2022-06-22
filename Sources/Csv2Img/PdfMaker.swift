@@ -40,7 +40,6 @@ class PdfMaker: PdfMakerType {
     func make(
         csv: Csv
     ) throws -> PDFDocument {
-        var pages: [PDFPage] = []
         let horizontalSpace = 8
         let verticalSpace = 12
         let textSizeList =
@@ -114,7 +113,7 @@ class PdfMaker: PdfMakerType {
         let columnWidth = Int(width) / columnCount
 
         var pageNumber: Int = 1
-        var numberOfRowsInPage: Int = rowHeight / pageHeight
+        let numberOfRowsInPage: Int = rowHeight / pageHeight
         var startRowIndex: Int = 0
 
         while pageNumber * pageHeight <= height {

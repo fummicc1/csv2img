@@ -91,7 +91,7 @@ extension Csv {
             case .png:
                 return CGImage.self
             case .pdf:
-                return CGImage.self
+                return PDFDocument.self
             }
         }
     }
