@@ -61,9 +61,7 @@ class PdfMaker: PdfMakerType {
 
 
         #if os(macOS)
-        guard let context = NSGraphicsContext.current?.cgContext else {
-            throw PdfMakingError.failedToGeneratePdf
-        }
+        let context = NSGraphicsContext().cgContext
         #elseif os(iOS)
         let pdfContext = UIGraphicsPDFRendererContext()
         let context = pdfContext.cgContext
