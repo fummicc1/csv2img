@@ -70,15 +70,11 @@ class PdfMaker: PdfMakerType {
             kCGPDFContextAuthor as CFString: metadata.author
         ]
 
-        var totalMediaBox = CGRect(
-            origin: .zero,
-            size: CGSize(width: width, height: height)
-        )
-        var data = CFDataCreateMutable(nil, 0)!
-        var consumer = CGDataConsumer(data: data)!
+        let data = CFDataCreateMutable(nil, 0)!
+        let consumer = CGDataConsumer(data: data)!
         guard let context = CGContext(
             consumer: consumer,
-            mediaBox: &totalMediaBox,
+            mediaBox: &mediaBoxPerPage,
             nil
         ) else {
             throw PdfMakingError.noContextAvailabe
