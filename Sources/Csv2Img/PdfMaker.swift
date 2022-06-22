@@ -117,7 +117,6 @@ class PdfMaker: PdfMakerType {
         var startRowIndex: Int = 0
 
         while pageNumber * pageHeight <= height {
-            context.beginPage(mediaBox: &mediaBoxPerPage)
             setColumnText(
                 context: context,
                 columns: csv.columnNames,
@@ -140,7 +139,6 @@ class PdfMaker: PdfMakerType {
             )
             pageNumber += 1
             startRowIndex += numberOfRowsInPage
-            context.endPage()
         }
 
         context.drawPath(using: .stroke)
