@@ -155,10 +155,7 @@ class PdfMaker: PdfMakerType {
 
         context.closePDF()
 
-        guard let data = context.data?.load(as: Data.self) else {
-            throw PdfMakingError.failedToGeneratePdf
-        }
-        return PDFDocument(data: data)!
+        return PDFDocument(data: data as Data)!
     }
 
     func setMetadata(_ metadata: PDFMetadata) {
