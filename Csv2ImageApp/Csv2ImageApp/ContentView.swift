@@ -42,7 +42,7 @@ struct ContentView: View {
     @State private var completeSavingFile: Bool = false
     @State private var savedOutputFileURL: URL?
     @State private var contentMode: ContentMode = .create
-    @State private var exportType: Csv.ExportType = .png
+    @State private var exportType: Csv.ExportType = .pdf
     @StateObject var historyModel: HistoryModel
     @Environment(\.managedObjectContext) var context: NSManagedObjectContext
 
@@ -114,7 +114,7 @@ struct ContentView: View {
                             HStack {
                                 Spacer()
                                 VStack {
-                                    Text("Output Image")
+                                    Text("Output")
                                         .font(.title3)
                                         .bold()
                                     if exportType == .png {

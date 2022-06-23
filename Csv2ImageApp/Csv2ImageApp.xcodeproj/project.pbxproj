@@ -7,15 +7,14 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		D3095CC6286394720086EEEE /* Csv2Img in Frameworks */ = {isa = PBXBuildFile; productRef = D3095CC5286394720086EEEE /* Csv2Img */; };
 		D30B17E6285F865700EA92B5 /* Csv2Img.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = D30B17E4285F865700EA92B5 /* Csv2Img.xcdatamodeld */; };
 		D30B17E7285F865700EA92B5 /* Csv2Img.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = D30B17E4285F865700EA92B5 /* Csv2Img.xcdatamodeld */; };
 		D30B1811285F8A3400EA92B5 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3A4EB19284F11A3002E3499 /* ContentView.swift */; };
 		D30B181A285F8A5300EA92B5 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3A4EB19284F11A3002E3499 /* ContentView.swift */; };
 		D30B181B285F8A6100EA92B5 /* Csv2ImageAppApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3A4EB17284F11A3002E3499 /* Csv2ImageAppApp.swift */; };
-		D30B181D285F902800EA92B5 /* Csv2Img in Frameworks */ = {isa = PBXBuildFile; productRef = D30B181C285F902800EA92B5 /* Csv2Img */; };
 		D330D5D5285F962000F49491 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D3A4EB1B284F11A4002E3499 /* Assets.xcassets */; };
 		D34680E02856C9F500FDC132 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D34680DF2856C9F500FDC132 /* Preview Assets.xcassets */; };
-		D34680E72856CA2300FDC132 /* Csv2Img in Frameworks */ = {isa = PBXBuildFile; productRef = D34680E62856CA2300FDC132 /* Csv2Img */; };
 		D359BADA28621B85006DFDCE /* SwiftUI+PdfDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = D359BAD928621B85006DFDCE /* SwiftUI+PdfDocument.swift */; };
 		D359BADC28621BFE006DFDCE /* Type.swift in Sources */ = {isa = PBXBuildFile; fileRef = D359BADB28621BFE006DFDCE /* Type.swift */; };
 		D35DB0D4285FA754009C252D /* CsvViewer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D35DB0D3285FA754009C252D /* CsvViewer.swift */; };
@@ -58,6 +57,7 @@
 		D35DB0CE285FA334009C252D /* Csv2Img 2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "Csv2Img 2.xcdatamodel"; sourceTree = "<group>"; };
 		D35DB0D3285FA754009C252D /* CsvViewer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CsvViewer.swift; sourceTree = "<group>"; };
 		D35DB0D5285FADA5009C252D /* HistoryModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryModel.swift; sourceTree = "<group>"; };
+		D3736B27286393D8004C20C8 /* Csv2Img */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = Csv2Img; path = ..; sourceTree = "<group>"; };
 		D3A4EB14284F11A3002E3499 /* Csv2ImageApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Csv2ImageApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D3A4EB17284F11A3002E3499 /* Csv2ImageAppApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Csv2ImageAppApp.swift; sourceTree = "<group>"; };
 		D3A4EB19284F11A3002E3499 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -76,7 +76,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D34680E72856CA2300FDC132 /* Csv2Img in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -84,7 +83,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D30B181D285F902800EA92B5 /* Csv2Img in Frameworks */,
+				D3095CC6286394720086EEEE /* Csv2Img in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -139,9 +138,18 @@
 			path = "Preview Content";
 			sourceTree = "<group>";
 		};
+		D3736B26286393D8004C20C8 /* Packages */ = {
+			isa = PBXGroup;
+			children = (
+				D3736B27286393D8004C20C8 /* Csv2Img */,
+			);
+			name = Packages;
+			sourceTree = "<group>";
+		};
 		D3A4EB0B284F11A3002E3499 = {
 			isa = PBXGroup;
 			children = (
+				D3736B26286393D8004C20C8 /* Packages */,
 				D3A4EB16284F11A3002E3499 /* Csv2ImageApp */,
 				D3A4EB28284F11A4002E3499 /* Csv2ImageAppTests */,
 				D3A4EB32284F11A4002E3499 /* Csv2ImageAppUITests */,
@@ -222,7 +230,6 @@
 			);
 			name = Csv2ImageiOSApp;
 			packageProductDependencies = (
-				D34680E62856CA2300FDC132 /* Csv2Img */,
 			);
 			productName = Csv2ImageiOSApp;
 			productReference = D34680D62856C9F400FDC132 /* Csv2ImageiOSApp.app */;
@@ -242,7 +249,7 @@
 			);
 			name = Csv2ImageApp;
 			packageProductDependencies = (
-				D30B181C285F902800EA92B5 /* Csv2Img */,
+				D3095CC5286394720086EEEE /* Csv2Img */,
 			);
 			productName = Csv2ImageApp;
 			productReference = D3A4EB14284F11A3002E3499 /* Csv2ImageApp.app */;
@@ -320,7 +327,6 @@
 			);
 			mainGroup = D3A4EB0B284F11A3002E3499;
 			packageReferences = (
-				D3BD21FA2855D2F6004B53FE /* XCRemoteSwiftPackageReference "csv2img" */,
 			);
 			productRefGroup = D3A4EB15284F11A3002E3499 /* Products */;
 			projectDirPath = "";
@@ -817,26 +823,9 @@
 		};
 /* End XCConfigurationList section */
 
-/* Begin XCRemoteSwiftPackageReference section */
-		D3BD21FA2855D2F6004B53FE /* XCRemoteSwiftPackageReference "csv2img" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/fummicc1/csv2img";
-			requirement = {
-				branch = "feature/pdf_generator_#4";
-				kind = branch;
-			};
-		};
-/* End XCRemoteSwiftPackageReference section */
-
 /* Begin XCSwiftPackageProductDependency section */
-		D30B181C285F902800EA92B5 /* Csv2Img */ = {
+		D3095CC5286394720086EEEE /* Csv2Img */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = D3BD21FA2855D2F6004B53FE /* XCRemoteSwiftPackageReference "csv2img" */;
-			productName = Csv2Img;
-		};
-		D34680E62856CA2300FDC132 /* Csv2Img */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = D3BD21FA2855D2F6004B53FE /* XCRemoteSwiftPackageReference "csv2img" */;
 			productName = Csv2Img;
 		};
 /* End XCSwiftPackageProductDependency section */

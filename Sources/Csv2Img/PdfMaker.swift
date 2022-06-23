@@ -56,25 +56,26 @@ class PdfMaker: PdfMakerType {
         let width = (Int(longestWidth) + horizontalSpace) * csv.columnNames.count
         let height = (csv.rows.count + 1) * (Int(longestHeight) + verticalSpace)
 
-        let pageHeight = min(480, height)
+        let maxPageHeight = min(480, height)
 
-        var mediaBoxPerPage = CGRect(
+        var mediaBox = CGRect(
             origin: .zero,
             size: CGSize(
                 width: width,
-                height: pageHeight
+                height: maxPageHeight
             )
         )
+
         let coreInfo = [
             kCGPDFContextTitle as CFString: metadata.title,
             kCGPDFContextAuthor as CFString: metadata.author
         ]
 
-        let data = CFDataCreateMutable(nil, 0)!
+        let data = CFDataCreateMutable(nil, 32 * Int(1 << 40))!
         let consumer = CGDataConsumer(data: data)!
         guard let context = CGContext(
             consumer: consumer,
-            mediaBox: &mediaBoxPerPage,
+            mediaBox: &mediaBox,
             nil
         ) else {
             throw PdfMakingError.noContextAvailabe
@@ -82,9 +83,9 @@ class PdfMaker: PdfMakerType {
         context.beginPDFPage(coreInfo as CFDictionary)
 
         context.setFillColor(CGColor(
-            red: 250/255,
-            green: 250/255,
-            blue: 250/255,
+            red: 255/255,
+            green: 255/255,
+            blue: 255/255,
             alpha: 1)
         )
         context.fill(
@@ -101,47 +102,69 @@ class PdfMaker: PdfMakerType {
         context.setStrokeColor(Color.separator.cgColor)
         #endif
         context.setFillColor(CGColor(
-            red: 22/255,
-            green: 22/255,
-            blue: 22/255,
+            red: 33/255,
+            green: 33/255,
+            blue: 33/255,
             alpha: 1
         ))
 
-        let columnCount = csv.columnNames.count
-        let rowCount = csv.rows.count + 1
-        let rowHeight = Int(height) / rowCount
-        let columnWidth = Int(width) / columnCount
+        let rowHeight: Int = Int(longestHeight) + verticalSpace
+        let columnWidth: Int = Int(longestWidth) + horizontalSpace
 
-        var pageNumber: Int = 1
-        let numberOfRowsInPage: Int = rowHeight / pageHeight
+        var pageNumber: Int = 0
+        // `-1` is due to column space.
+        let maxNumberOfRowsInPage: Int = maxPageHeight / rowHeight - 1
         var startRowIndex: Int = 0
 
-        while pageNumber * pageHeight <= height {
+        while pageNumber * maxPageHeight < height {
+            if pageNumber > 0 {
+                if pageNumber == 1 {
+                    context.endPage()
+                }
+                let pageHeight = min(
+                    maxPageHeight,
+                    height - pageNumber * maxPageHeight
+                )
+                var mediaBoxPerPage = CGRect(
+                    origin: .zero,
+                    size: CGSize(
+                        width: width,
+                        height: pageHeight
+                    )
+                )
+                context.beginPage(mediaBox: &mediaBoxPerPage)
+            }
             setColumnText(
                 context: context,
                 columns: csv.columnNames,
                 boxWidth: columnWidth,
                 boxHeight: rowHeight,
-                totalHeight: pageHeight
+                totalHeight: maxPageHeight
             )
+            // `Csv.Row.index` begins with `1`.
             let rows = csv.rows.filter({
-                (startRowIndex..<startRowIndex+numberOfRowsInPage)
-                    .contains($0.index)
+                (startRowIndex..<startRowIndex+maxNumberOfRowsInPage)
+                    .contains($0.index-1)
             })
             setRowText(
                 context: context,
                 rows: rows,
                 from: startRowIndex,
-                rowCountPerPage: numberOfRowsInPage,
+                rowCountPerPage: maxNumberOfRowsInPage,
                 width: columnWidth,
                 height: rowHeight,
-                totalWidth: width
+                totalWidth: width,
+                totalHeight: min(maxPageHeight, rowHeight * (rows.count + 1))
             )
-            pageNumber += 1
-            startRowIndex += numberOfRowsInPage
-        }
 
-        context.drawPath(using: .stroke)
+            context.drawPath(using: .stroke)
+            if pageNumber > 0 {
+                context.endPage()
+            }
+
+            pageNumber += 1
+            startRowIndex += maxNumberOfRowsInPage
+        }
         #if os(iOS)
         UIGraphicsEndPDFContext()
         #endif
@@ -165,46 +188,79 @@ extension PdfMaker {
         rowCountPerPage rowCount: Int,
         width: Int,
         height: Int,
-        totalWidth: Int
+        totalWidth: Int,
+        totalHeight: Int
     ) {
         for i in start..<start+rowCount {
+            if rows.count <= i {
+                break
+            }
             let row = rows[i]
             context.move(
                 to: CGPoint(
                     x: 0,
-                    y: i * height
+                    y: (rowCount - i) * height
                 )
             )
             context.addLine(
                 to: CGPoint(
                     x: totalWidth,
-                    y: i * height
+                    y: (rowCount - i) * height
                 )
             )
-            for text in row.values {
+
+#if os(macOS)
+            let color = NSColor.labelColor.cgColor
+#elseif os(iOS)
+            let color = UIColor.label.cgColor
+#endif
+            for (j, text) in row.values.enumerated() {
+                if text.isEmpty {
+                    continue
+                }
                 let str = NSAttributedString(
                     string: text,
                     attributes: [
-                        .font: Font.systemFont(ofSize: fontSize, weight: .bold)
+                        .font: Font.systemFont(ofSize: fontSize, weight: .bold),
+                        .foregroundColor: color
                     ]
                 )
                 let size = str.string.getSize(fontSize: fontSize)
-                let originX = i * width + width / 2 - Int(size.width) / 2
+                let leadingSpaceInBox = (width - Int(size.width)) / 2
+                let originX = j * width + leadingSpaceInBox
+                let topSpaceInBox = (height - Int(size.height)) / 2
     #if os(macOS)
-                let originY = height - Int(size.height) / 2 - height / 2
+                let originY = (rows.count - (i + 1)) * height + topSpaceInBox
     #elseif os(iOS)
-                let originY = Int(size.height) / 2
+                let originY = totalHeight - i * height + topSpaceInBox
                 #endif
-                context.saveGState()
-                str._draw(
-                    at: Rect(
+                let framesetter = CTFramesetterCreateWithAttributedString(str)
+                context.textMatrix = CGAffineTransform.identity
+                let framePath = CGPath(
+                    rect: CGRect(
                         origin: CGPoint(x: originX, y: originY),
-                        size: CGSize(width: width, height: height)
-                    )
+                        size: size
+                    ),
+                    transform: nil
                 )
+                let frameRef = CTFramesetterCreateFrame(
+                    framesetter,
+                    CFRange(location: 0, length: 0),
+                    framePath,
+                    nil
+                )
+                context.saveGState()
+                CTFrameDraw(frameRef, context)
                 context.restoreGState()
             }
         }
+        // the bottoming line.
+        context.move(
+            to: CGPoint(
+                x: 0,
+                y: totalHeight - rows.count * height
+            )
+        )
     }
 
     private func setColumnText(
@@ -227,26 +283,42 @@ extension PdfMaker {
                     y: totalHeight
                 )
             )
+#if os(macOS)
+            let color = NSColor.labelColor.cgColor
+#elseif os(iOS)
+            let color = UIColor.label.cgColor
+#endif
             let str = NSAttributedString(
                 string: column.value,
                 attributes: [
-                    .font: Font.systemFont(ofSize: fontSize, weight: .bold)
+                    .font: Font.systemFont(ofSize: fontSize, weight: .bold),
+                    .foregroundColor: color
                 ]
             )
             let size = str.string.getSize(fontSize: fontSize)
-            let originX = i * width + width / 2 - Int(size.width) / 2
+            let originX = i * width + (width - Int(size.width)) / 2
             #if os(macOS)
-            let originY = height - Int(size.height) / 2 - height / 2
+            let originY = totalHeight - (height + Int(size.height)) / 2
             #elseif os(iOS)
             let originY = Int(size.height) / 2
             #endif
+            let framesetter = CTFramesetterCreateWithAttributedString(str)
             context.saveGState()
-            str._draw(
-                at: Rect(
+            context.textMatrix = CGAffineTransform.identity
+            let framePath = CGPath(
+                rect: CGRect(
                     origin: CGPoint(x: originX, y: originY),
-                    size: CGSize(width: width, height: height)
-                )
+                    size: size
+                ),
+                transform: nil
             )
+            let frameRef = CTFramesetterCreateFrame(
+                framesetter,
+                CFRange(location: 0, length: 0),
+                framePath,
+                nil
+            )
+            CTFrameDraw(frameRef, context)
             context.restoreGState()
         }
     }

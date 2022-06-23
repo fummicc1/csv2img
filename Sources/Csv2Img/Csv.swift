@@ -233,25 +233,17 @@ extension Csv {
             rows: []
         )
         var lines = str.components(separatedBy: CharacterSet(charactersIn: "\r\n"))
-        lines = lines.filter({ !$0.isEmpty })
-        var ignoredIndexes: [Int] = []
+        lines = lines.filter({ $0 != "" })
         for (i, line) in lines.enumerated() {
             var items = line
                 .split(separator: Character(separator), omittingEmptySubsequences: false)
                 .map({ String($0) })
             if i == 0 {
                 csv.columnNames = items.enumerated().compactMap({ (index, name) in
-                    if name.isEmpty {
-                        ignoredIndexes.append(index)
-                        return nil
-                    }
                     return ColumnName(value: name)
                 })
             } else {
                 items = items.enumerated().compactMap { (index, item) in
-                    if ignoredIndexes.contains(index) {
-                        return nil
-                    }
                     let str: String
                     if let maxLength = maxLength, item.count > maxLength {
                         print("Too long value: \(item), it is shortened.")
