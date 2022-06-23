@@ -5,7 +5,7 @@ import PackageDescription
 
 let package = Package(
     name: "Csv2Img",
-    platforms: [.macOS(.v11), .iOS(.v13)],
+    platforms: [.macOS(.v11), .iOS(.v14)],
     products: [
         // Products define the executables and libraries a package produces, and make them visible to other packages.
         .library(
