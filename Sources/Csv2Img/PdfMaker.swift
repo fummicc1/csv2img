@@ -83,33 +83,8 @@ class PdfMaker: PdfMakerType {
         ) else {
             throw PdfMakingError.noContextAvailabe
         }
+        // Maybe also create first page.
         context.beginPDFPage(coreInfo as CFDictionary)
-
-        context.setFillColor(CGColor(
-            red: 255/255,
-            green: 255/255,
-            blue: 255/255,
-            alpha: 1)
-        )
-        context.fill(
-            CGRect(
-                origin: .zero,
-                size: CGSize(width: width, height: height)
-            )
-        )
-
-        context.setLineWidth(1)
-        #if os(macOS)
-        context.setStrokeColor(Color.separatorColor.cgColor)
-        #elseif os(iOS)
-        context.setStrokeColor(Color.separator.cgColor)
-        #endif
-        context.setFillColor(CGColor(
-            red: 33/255,
-            green: 33/255,
-            blue: 33/255,
-            alpha: 1
-        ))
 
         let rowHeight: Int = Int(longestHeight) + verticalSpace
         let columnWidth: Int = Int(longestWidth) + horizontalSpace
@@ -125,9 +100,7 @@ class PdfMaker: PdfMakerType {
                 height - pageNumber * maxPageHeight
             )
             if pageNumber > 0 {
-                if pageNumber == 1 {
-                    context.endPage()
-                }
+                context.endPage()
                 var mediaBoxPerPage = CGRect(
                     origin: .zero,
                     size: CGSize(
@@ -137,6 +110,33 @@ class PdfMaker: PdfMakerType {
                 )
                 context.beginPage(mediaBox: &mediaBoxPerPage)
             }
+
+            context.setFillColor(CGColor(
+                red: 255/255,
+                green: 255/255,
+                blue: 255/255,
+                alpha: 1)
+            )
+            context.fill(
+                CGRect(
+                    origin: .zero,
+                    size: CGSize(width: width, height: height)
+                )
+            )
+
+            context.setLineWidth(1)
+            #if os(macOS)
+            context.setStrokeColor(Color.separatorColor.cgColor)
+            #elseif os(iOS)
+            context.setStrokeColor(Color.separator.cgColor)
+            #endif
+            context.setFillColor(CGColor(
+                red: 33/255,
+                green: 33/255,
+                blue: 33/255,
+                alpha: 1
+            ))
+
             setColumnText(
                 context: context,
                 columns: csv.columnNames,
@@ -152,7 +152,7 @@ class PdfMaker: PdfMakerType {
             setRowText(
                 context: context,
                 rows: rows,
-                from: startRowIndex,
+                from: 0,
                 rowCountPerPage: maxNumberOfRowsInPage,
                 width: columnWidth,
                 height: rowHeight,
@@ -161,13 +161,11 @@ class PdfMaker: PdfMakerType {
             )
 
             context.drawPath(using: .stroke)
-            if pageNumber > 0 {
-                context.endPage()
-            }
 
             pageNumber += 1
             startRowIndex += maxNumberOfRowsInPage
         }
+        context.endPage()
         #if os(iOS)
         UIGraphicsEndPDFContext()
         #endif
