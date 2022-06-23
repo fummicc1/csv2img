@@ -69,11 +69,6 @@ class PdfMaker: PdfMakerType {
             )
         )
 
-        let coreInfo = [
-            kCGPDFContextTitle as CFString: metadata.title,
-            kCGPDFContextAuthor as CFString: metadata.author
-        ]
-
         let data = CFDataCreateMutable(nil, 32 * Int(1 << 40))!
         let consumer = CGDataConsumer(data: data)!
         guard let context = CGContext(
@@ -83,8 +78,6 @@ class PdfMaker: PdfMakerType {
         ) else {
             throw PdfMakingError.noContextAvailabe
         }
-        // Maybe also create first page.
-        context.beginPDFPage(coreInfo as CFDictionary)
 
         let rowHeight: Int = Int(longestHeight) + verticalSpace
         let columnWidth: Int = Int(longestWidth) + horizontalSpace
@@ -99,17 +92,19 @@ class PdfMaker: PdfMakerType {
                 maxPageHeight,
                 height - pageNumber * maxPageHeight
             )
-            if pageNumber > 0 {
-                context.endPage()
-                var mediaBoxPerPage = CGRect(
-                    origin: .zero,
-                    size: CGSize(
-                        width: width,
-                        height: pageHeight
-                    )
+            let mediaBoxPerPage = CGRect(
+                origin: .zero,
+                size: CGSize(
+                    width: width,
+                    height: pageHeight
                 )
-                context.beginPage(mediaBox: &mediaBoxPerPage)
-            }
+            )
+            let coreInfo = [
+                kCGPDFContextTitle as CFString: metadata.title,
+                kCGPDFContextAuthor as CFString: metadata.author,
+                kCGPDFContextMediaBox: mediaBoxPerPage
+            ] as [CFString : Any]
+            context.beginPDFPage(coreInfo as CFDictionary)
 
             context.setFillColor(CGColor(
                 red: 255/255,
@@ -164,12 +159,13 @@ class PdfMaker: PdfMakerType {
 
             pageNumber += 1
             startRowIndex += maxNumberOfRowsInPage
+
+            context.endPDFPage()
         }
-        context.endPage()
+
         #if os(iOS)
         UIGraphicsEndPDFContext()
         #endif
-        context.endPDFPage()
 
         context.closePDF()
 
