@@ -17,7 +17,7 @@
     <a title="Classes  Reference"></a>
     <header>
       <div class="content-wrapper">
-        <p><a href="index.html">Csv2Img Docs</a> (59% documented)</p>
+        <p><a href="index.html">Csv2Img Docs</a> (57% documented)</p>
         <div class="header-right">
           <form role="search" action="search.json">
             <input type="text" placeholder="Search documentation" data-typeahead>
@@ -40,6 +40,21 @@
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
                 <a href="Classes/AnyCsvExportable.html">AnyCsvExportable</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/Csv.html">Csv</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/Csv/ExportType.html">– ExportType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/Csv/Row.html">– Row</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/Csv/ColumnName.html">– ColumnName</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/Csv/Error.html">– Error</a>
               </li>
             </ul>
           </li>
@@ -86,19 +101,7 @@
             <a href="Structs.html">Structures</a>
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
-                <a href="Structs/Csv.html">Csv</a>
-              </li>
-              <li class="nav-group-task">
-                <a href="Structs/Csv/ExportType.html">– ExportType</a>
-              </li>
-              <li class="nav-group-task">
-                <a href="Structs/Csv/Row.html">– Row</a>
-              </li>
-              <li class="nav-group-task">
-                <a href="Structs/Csv/ColumnName.html">– ColumnName</a>
-              </li>
-              <li class="nav-group-task">
-                <a href="Structs/Csv/Error.html">– Error</a>
+                <a href="Structs/PDFMetadata.html">PDFMetadata</a>
               </li>
             </ul>
           </li>
@@ -114,6 +117,53 @@
           <section class="section task-group-section">
             <div class="task-group">
               <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:7Csv2Img3CsvC"></a>
+                    <a name="//apple_ref/swift/Class/Csv" class="dashAnchor"></a>
+                    <a class="token" href="#/s:7Csv2Img3CsvC">Csv</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Csv data structure</p>
+
+<p><code>Csv</code> is a struct to store information to parse csv into table.</p>
+
+<p><code>Csv</code> automatically recognize first row as column and others as rows.</p>
+<pre class="highlight swift"><code> <span class="k">let</span> <span class="nv">rawCsv</span> <span class="o">=</span> <span class="s">"""
+ a,b,c
+ 1,2,3
+ 4,5,6
+ 7,8,9
+ 10,11,12
+ """</span>
+ <span class="k">let</span> <span class="nv">csv</span> <span class="o">=</span> <span class="kt">Csv</span><span class="o">.</span><span class="nf">fromString</span><span class="p">(</span><span class="n">rawCsv</span><span class="p">)</span>
+ <span class="kt">Output</span><span class="p">:</span>
+ <span class="o">|</span> <span class="n">a</span>  <span class="o">|</span> <span class="n">b</span>  <span class="o">|</span> <span class="n">c</span>  <span class="o">|</span>
+ <span class="o">|</span> <span class="mi">1</span>  <span class="o">|</span> <span class="mi">2</span>  <span class="o">|</span> <span class="mi">3</span>  <span class="o">|</span>
+ <span class="o">|</span> <span class="mi">4</span>  <span class="o">|</span> <span class="mi">5</span>  <span class="o">|</span> <span class="mi">6</span>  <span class="o">|</span>
+ <span class="o">|</span> <span class="mi">7</span>  <span class="o">|</span> <span class="mi">8</span>  <span class="o">|</span> <span class="mi">9</span>  <span class="o">|</span>
+ <span class="o">|</span> <span class="mi">10</span> <span class="o">|</span> <span class="mi">11</span> <span class="o">|</span> <span class="mi">12</span> <span class="o">|</span>
+</code></pre>
+
+                        <a href="Classes/Csv.html" class="slightly-smaller">See more</a>
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">class</span> <span class="kt">Csv</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
                 <li class="item">
                   <div>
                     <code>
@@ -147,7 +197,7 @@
           </section>
         </section>
         <section id="footer">
-          <p>&copy; 2022 <a class="link" href="https://fummicc1.dev" target="_blank" rel="external noopener">fummicc1</a>. All rights reserved. (Last updated: 2022-06-22)</p>
+          <p>&copy; 2022 <a class="link" href="https://fummicc1.dev" target="_blank" rel="external noopener">fummicc1</a>. All rights reserved. (Last updated: 2022-06-23)</p>
           <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external noopener">jazzy ♪♫ v0.14.2</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external noopener">Realm</a> project.</p>
         </section>
       </article>

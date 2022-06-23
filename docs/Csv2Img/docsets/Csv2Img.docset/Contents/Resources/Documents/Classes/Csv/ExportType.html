@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>Row Structure Reference</title>
+    <title>ExportType Enumeration Reference</title>
     <link rel="stylesheet" type="text/css" href="../../css/jazzy.css" />
     <link rel="stylesheet" type="text/css" href="../../css/highlight.css" />
     <meta charset='utf-8'>
@@ -13,11 +13,11 @@
     <script src="../../js/jazzy.search.js" defer></script>
   </head>
   <body>
-    <a name="//apple_ref/swift/Struct/Row" class="dashAnchor"></a>
-    <a title="Row Structure Reference"></a>
+    <a name="//apple_ref/swift/Enum/ExportType" class="dashAnchor"></a>
+    <a title="ExportType Enumeration Reference"></a>
     <header>
       <div class="content-wrapper">
-        <p><a href="../../index.html">Csv2Img Docs</a> (59% documented)</p>
+        <p><a href="../../index.html">Csv2Img Docs</a> (57% documented)</p>
         <div class="header-right">
           <form role="search" action="../../search.json">
             <input type="text" placeholder="Search documentation" data-typeahead>
@@ -29,7 +29,7 @@
       <p id="breadcrumbs">
         <a href="../../index.html">Csv2Img Reference</a>
         <img id="carat" src="../../img/carat.png" alt=""/>
-        Row Structure Reference
+        ExportType Enumeration Reference
       </p>
     </div>
     <div class="content-wrapper">
@@ -40,6 +40,21 @@
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
                 <a href="../../Classes/AnyCsvExportable.html">AnyCsvExportable</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../../Classes/Csv.html">Csv</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../../Classes/Csv/ExportType.html">– ExportType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../../Classes/Csv/Row.html">– Row</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../../Classes/Csv/ColumnName.html">– ColumnName</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../../Classes/Csv/Error.html">– Error</a>
               </li>
             </ul>
           </li>
@@ -86,19 +101,7 @@
             <a href="../../Structs.html">Structures</a>
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
-                <a href="../../Structs/Csv.html">Csv</a>
-              </li>
-              <li class="nav-group-task">
-                <a href="../../Structs/Csv/ExportType.html">– ExportType</a>
-              </li>
-              <li class="nav-group-task">
-                <a href="../../Structs/Csv/Row.html">– Row</a>
-              </li>
-              <li class="nav-group-task">
-                <a href="../../Structs/Csv/ColumnName.html">– ColumnName</a>
-              </li>
-              <li class="nav-group-task">
-                <a href="../../Structs/Csv/Error.html">– Error</a>
+                <a href="../../Structs/PDFMetadata.html">PDFMetadata</a>
               </li>
             </ul>
           </li>
@@ -107,29 +110,15 @@
       <article class="main-content">
         <section>
           <section class="section">
-            <h1>Row</h1>
+            <h1>ExportType</h1>
               <div class="declaration">
                 <div class="language">
                   
-                  <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">struct</span> <span class="kt">Row</span></code></pre>
+                  <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">enum</span> <span class="kt">ExportType</span> <span class="p">:</span> <span class="kt">String</span></code></pre>
 
                 </div>
               </div>
-            <p>Row (a line)</p>
-
-<p>Row is hrizontally separated group except first line.</p>
-
-<p>First line is treated as <code><a href="../../Structs/Csv/ColumnName.html">ColumnName</a></code>.</p>
-
-<p>eg.</p>
-
-<p>1 2 3 4</p>
-
-<p>5 6 7 8</p>
-
-<p>→Row is [5, 6, 7, 8].</p>
-
-<p>Because this class is usually initialized via <code><a href="../../Structs/Csv.html">Csv</a></code>, you do not have to take care about <code>Row</code> in detail.</p>
+            <p><code>ExportType</code> is a enum that expresses</p>
 
           </section>
           <section class="section task-group-section">
@@ -138,9 +127,9 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:7Csv2Img3CsvV3RowV5index6valuesAESi_SaySSGtcfc"></a>
-                    <a name="//apple_ref/swift/Method/init(index:values:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:7Csv2Img3CsvV3RowV5index6valuesAESi_SaySSGtcfc">init(index:<wbr>values:<wbr>)</a>
+                    <a name="/s:7Csv2Img3CsvC10ExportTypeO3pngyA2EmF"></a>
+                    <a name="//apple_ref/swift/Element/png" class="dashAnchor"></a>
+                    <a class="token" href="#/s:7Csv2Img3CsvC10ExportTypeO3pngyA2EmF">png</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -148,14 +137,14 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Undocumented</p>
+                        <p><code>png</code> output</p>
 
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="nf">init</span><span class="p">(</span><span class="nv">index</span><span class="p">:</span> <span class="kt">Int</span><span class="p">,</span> <span class="nv">values</span><span class="p">:</span> <span class="p">[</span><span class="kt">String</span><span class="p">])</span></code></pre>
+                          <pre class="highlight swift"><code><span class="k">case</span> <span class="n">png</span></code></pre>
 
                         </div>
                       </div>
@@ -165,9 +154,9 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:7Csv2Img3CsvV3RowV5indexSivp"></a>
-                    <a name="//apple_ref/swift/Property/index" class="dashAnchor"></a>
-                    <a class="token" href="#/s:7Csv2Img3CsvV3RowV5indexSivp">index</a>
+                    <a name="/s:7Csv2Img3CsvC10ExportTypeO3pdfyA2EmF"></a>
+                    <a name="//apple_ref/swift/Element/pdf" class="dashAnchor"></a>
+                    <a class="token" href="#/s:7Csv2Img3CsvC10ExportTypeO3pdfyA2EmF">pdf</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -175,14 +164,14 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Undocumented</p>
+                        <p><code>pdf</code> output (Work In Progress)</p>
 
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">index</span><span class="p">:</span> <span class="kt">Int</span></code></pre>
+                          <pre class="highlight swift"><code><span class="k">case</span> <span class="n">pdf</span></code></pre>
 
                         </div>
                       </div>
@@ -192,9 +181,9 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:7Csv2Img3CsvV3RowV6valuesSaySSGvp"></a>
-                    <a name="//apple_ref/swift/Property/values" class="dashAnchor"></a>
-                    <a class="token" href="#/s:7Csv2Img3CsvV3RowV6valuesSaySSGvp">values</a>
+                    <a name="/s:7Csv2Img3CsvC10ExportTypeO06outputE0AA0C10Exportable_pXpvp"></a>
+                    <a name="//apple_ref/swift/Property/outputType" class="dashAnchor"></a>
+                    <a class="token" href="#/s:7Csv2Img3CsvC10ExportTypeO06outputE0AA0C10Exportable_pXpvp">outputType</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -209,7 +198,61 @@
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">values</span><span class="p">:</span> <span class="p">[</span><span class="kt">String</span><span class="p">]</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">outputType</span><span class="p">:</span> <span class="kt"><a href="../../Protocols.html#/s:7Csv2Img13CsvExportableP">CsvExportable</a></span><span class="o">.</span><span class="k">Type</span> <span class="p">{</span> <span class="k">get</span> <span class="p">}</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:7Csv2Img3CsvC10ExportTypeO13fileExtensionSSvp"></a>
+                    <a name="//apple_ref/swift/Property/fileExtension" class="dashAnchor"></a>
+                    <a class="token" href="#/s:7Csv2Img3CsvC10ExportTypeO13fileExtensionSSvp">fileExtension</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">fileExtension</span><span class="p">:</span> <span class="kt">String</span> <span class="p">{</span> <span class="k">get</span> <span class="p">}</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:7Csv2Img3CsvC10ExportTypeO02utE007UniformE11Identifiers6UTTypeVvp"></a>
+                    <a name="//apple_ref/swift/Property/utType" class="dashAnchor"></a>
+                    <a class="token" href="#/s:7Csv2Img3CsvC10ExportTypeO02utE007UniformE11Identifiers6UTTypeVvp">utType</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">utType</span><span class="p">:</span> <span class="kt">UTType</span> <span class="p">{</span> <span class="k">get</span> <span class="p">}</span></code></pre>
 
                         </div>
                       </div>
@@ -221,7 +264,7 @@
           </section>
         </section>
         <section id="footer">
-          <p>&copy; 2022 <a class="link" href="https://fummicc1.dev" target="_blank" rel="external noopener">fummicc1</a>. All rights reserved. (Last updated: 2022-06-22)</p>
+          <p>&copy; 2022 <a class="link" href="https://fummicc1.dev" target="_blank" rel="external noopener">fummicc1</a>. All rights reserved. (Last updated: 2022-06-23)</p>
           <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external noopener">jazzy ♪♫ v0.14.2</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external noopener">Realm</a> project.</p>
         </section>
       </article>
