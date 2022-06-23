@@ -20,7 +20,22 @@ Convert Csv into png image.
 
 ![Import Csv file from network resource.](https://raw.githubusercontent.com/fummicc1/csv2img/main/Gifs/v1.0.0/02.gif)
 
+
+
+
+
 #### Choose output-mode from `png` and `pdf`.
+
+- Pdf Mode
+
+https://user-images.githubusercontent.com/44002126/175224770-b993bae0-0bc7-48c9-950f-6d006df424c6.mov
+
+- Png Mode (There are many rows and columns, in such a case, it is better to use pdf mode)
+
+<img width="1440" alt="スクリーンショット 2022-06-23 14 50 58" src="https://user-images.githubusercontent.com/44002126/175224908-4a50a663-7856-416b-8e54-7207c8cf3e9f.png">
+
+
+
 
 ### iOS App
 
