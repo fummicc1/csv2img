@@ -2,35 +2,35 @@
   "warnings": [
     {
       "file": "/Users/fumiyatanaka/Work/iOSDev/Csv2Img/Sources/Csv2Img/Csv.swift",
-      "line": 78,
+      "line": 115,
       "symbol": "Csv.Row.init(index:values:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/fumiyatanaka/Work/iOSDev/Csv2Img/Sources/Csv2Img/Csv.swift",
-      "line": 83,
+      "line": 120,
       "symbol": "Csv.Row.index",
       "symbol_kind": "source.lang.swift.decl.var.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/fumiyatanaka/Work/iOSDev/Csv2Img/Sources/Csv2Img/Csv.swift",
-      "line": 84,
+      "line": 121,
       "symbol": "Csv.Row.values",
       "symbol_kind": "source.lang.swift.decl.var.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/fumiyatanaka/Work/iOSDev/Csv2Img/Sources/Csv2Img/Csv.swift",
-      "line": 105,
+      "line": 142,
       "symbol": "Csv.ColumnName.init(value:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/fumiyatanaka/Work/iOSDev/Csv2Img/Sources/Csv2Img/Csv.swift",
-      "line": 109,
+      "line": 146,
       "symbol": "Csv.ColumnName.value",
       "symbol_kind": "source.lang.swift.decl.var.instance",
       "warning": "undocumented"
@@ -39,6 +39,90 @@
       "file": "/Users/fumiyatanaka/Work/iOSDev/Csv2Img/Sources/Csv2Img/Image+Data.swift",
       "line": 7,
       "symbol": "CGImage.convertToData()",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/fumiyatanaka/Work/iOSDev/Csv2Img/Sources/Csv2Img/ImageMaker.swift",
+      "line": 18,
+      "symbol": "ImageMakingError",
+      "symbol_kind": "source.lang.swift.decl.enum",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/fumiyatanaka/Work/iOSDev/Csv2Img/Sources/Csv2Img/ImageMaker.swift",
+      "line": 21,
+      "symbol": "ImageMakingError.failedCreateImage(_:)",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/fumiyatanaka/Work/iOSDev/Csv2Img/Sources/Csv2Img/Maker.swift",
+      "line": 3,
+      "symbol": "Maker",
+      "symbol_kind": "source.lang.swift.decl.protocol",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/fumiyatanaka/Work/iOSDev/Csv2Img/Sources/Csv2Img/Maker.swift",
+      "line": 4,
+      "symbol": "Maker.Exportable",
+      "symbol_kind": "source.lang.swift.decl.associatedtype",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/fumiyatanaka/Work/iOSDev/Csv2Img/Sources/Csv2Img/Maker.swift",
+      "line": 5,
+      "symbol": "Maker.make(csv:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/fumiyatanaka/Work/iOSDev/Csv2Img/Sources/Csv2Img/Maker.swift",
+      "line": 6,
+      "symbol": "Maker.setFontSize(_:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/fumiyatanaka/Work/iOSDev/Csv2Img/Sources/Csv2Img/PdfMaker.swift",
+      "line": 5,
+      "symbol": "PdfMakingError",
+      "symbol_kind": "source.lang.swift.decl.enum",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/fumiyatanaka/Work/iOSDev/Csv2Img/Sources/Csv2Img/PdfMaker.swift",
+      "line": 8,
+      "symbol": "PdfMakingError.failedToGeneratePdf",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/fumiyatanaka/Work/iOSDev/Csv2Img/Sources/Csv2Img/TypeConvertible.swift",
+      "line": 5,
+      "symbol": "CsvExportable",
+      "symbol_kind": "source.lang.swift.decl.protocol",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/fumiyatanaka/Work/iOSDev/Csv2Img/Sources/Csv2Img/TypeConvertible.swift",
+      "line": 8,
+      "symbol": "AnyCsvExportable",
+      "symbol_kind": "source.lang.swift.decl.class",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/fumiyatanaka/Work/iOSDev/Csv2Img/Sources/Csv2Img/TypeConvertible.swift",
+      "line": 10,
+      "symbol": "AnyCsvExportable.base",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/fumiyatanaka/Work/iOSDev/Csv2Img/Sources/Csv2Img/TypeConvertible.swift",
+      "line": 12,
+      "symbol": "AnyCsvExportable.init(_:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     }

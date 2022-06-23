@@ -16,8 +16,8 @@ extension CsvConfig {
         return NSFetchRequest<CsvConfig>(entityName: "CsvConfig")
     }
 
-    @NSManaged public var separator: String?
     @NSManaged public var fontSize: Int32
+    @NSManaged public var separator: String?
 
 }
 

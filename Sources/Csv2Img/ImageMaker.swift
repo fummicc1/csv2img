@@ -15,14 +15,24 @@ import CoreGraphics
 import CoreText
 
 
+public enum ImageMakingError: Error {
+    /// Failed to get current `CGContext`
+    case noContextAvailable
+    case failedCreateImage(CGContext)
+}
+
 /// No overview available
-protocol ImageMakerType {
-    func make(csv: Csv) -> CGImage
+protocol ImageMakerType: Maker {
+    var latestOutput: CGImage? { get }
+    func make(csv: Csv) throws -> CGImage
     func setFontSize(_ size: CGFloat)
 }
 
 /// `ImageMarker` generate png-image from ``Csv``.
 class ImageMaker: ImageMakerType {
+
+    typealias Exportable = CGImage
+
     init(
         fontSize: CGFloat
     ) {
@@ -31,6 +41,8 @@ class ImageMaker: ImageMakerType {
 
     var fontSize: CGFloat
 
+    var latestOutput: CGImage?
+
     func setFontSize(_ size: CGFloat) {
         self.fontSize = size
     }
@@ -38,8 +50,7 @@ class ImageMaker: ImageMakerType {
     /// generate png-image data from ``Csv``.
     func make(
         csv: Csv
-    ) -> CGImage {
-
+    ) throws -> CGImage {
         let horizontalSpace = 8
         let verticalSpace = 12
         let textSizeList =
@@ -62,12 +73,12 @@ class ImageMaker: ImageMakerType {
         )
         canvas.lockFocus()
         guard let context = NSGraphicsContext.current?.cgContext else {
-            fatalError()
+            throw ImageMakingError.noContextAvailable
         }
         #elseif os(iOS)
         UIGraphicsBeginImageContext(CGSize(width: width, height: height))
         guard let context = UIGraphicsGetCurrentContext() else {
-            fatalError()
+            throw ImageMakingError.noContextAvailable
         }
         #endif
 
@@ -179,13 +190,15 @@ class ImageMaker: ImageMakerType {
         }
         context.drawPath(using: .stroke)
         guard let image = context.makeImage() else {
-            fatalError()
+            throw ImageMakingError.failedCreateImage(context)
         }
         #if os(macOS)
         canvas.unlockFocus()
         #elseif os(iOS)
         UIGraphicsEndImageContext()
         #endif
+
+        self.latestOutput = image
 
         return image
     }
