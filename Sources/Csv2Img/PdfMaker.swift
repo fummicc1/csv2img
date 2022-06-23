@@ -10,6 +10,7 @@ public enum PdfMakingError: Error {
 
 /// No overview available
 protocol PdfMakerType: Maker {
+    var latestOutput: PDFDocument? { get }
     func make(csv: Csv) throws -> PDFDocument
     func setMetadata(_ metadata: PDFMetadata)
     func setFontSize(_ size: CGFloat)
@@ -30,6 +31,8 @@ class PdfMaker: PdfMakerType {
 
     var fontSize: CGFloat
     var metadata: PDFMetadata
+
+    var latestOutput: PDFDocument?
 
     func setFontSize(_ size: CGFloat) {
         self.fontSize = size
@@ -117,14 +120,14 @@ class PdfMaker: PdfMakerType {
         var startRowIndex: Int = 0
 
         while pageNumber * maxPageHeight < height {
+            let pageHeight = min(
+                maxPageHeight,
+                height - pageNumber * maxPageHeight
+            )
             if pageNumber > 0 {
                 if pageNumber == 1 {
                     context.endPage()
                 }
-                let pageHeight = min(
-                    maxPageHeight,
-                    height - pageNumber * maxPageHeight
-                )
                 var mediaBoxPerPage = CGRect(
                     origin: .zero,
                     size: CGSize(
@@ -154,7 +157,7 @@ class PdfMaker: PdfMakerType {
                 width: columnWidth,
                 height: rowHeight,
                 totalWidth: width,
-                totalHeight: min(maxPageHeight, rowHeight * (rows.count + 1))
+                totalHeight: pageHeight
             )
 
             context.drawPath(using: .stroke)
@@ -172,7 +175,9 @@ class PdfMaker: PdfMakerType {
 
         context.closePDF()
 
-        return PDFDocument(data: data as Data)!
+        let document = PDFDocument(data: data as Data)!
+        self.latestOutput = document
+        return document
     }
 
     func setMetadata(_ metadata: PDFMetadata) {

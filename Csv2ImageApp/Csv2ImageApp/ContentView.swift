@@ -110,7 +110,7 @@ struct ContentView: View {
                             }
                             .padding()
                         }
-                        if let csv = csv, let out = try? csv.generate(fontSize: 12, exportType: exportType) {
+                        if var csv = csv, let out = try? csv.generate(fontSize: 12, exportType: exportType) {
                             HStack {
                                 Spacer()
                                 VStack {
@@ -183,14 +183,14 @@ struct ContentView: View {
                     output.generatedAt = Date()
 #if os(macOS)
                     let panel = NSSavePanel()
-                    panel.allowedContentTypes = [.png]
+                    panel.allowedContentTypes = [exportType.utType]
                     panel.begin { response in
                         switch response {
                         case .OK:
                             if let url = panel.url {
-                                let ok = csv?.write(to: url)
-                                completeSavingFile = ok ?? false
-                                output.png = csv?.pngData(fontSize: CGFloat(fontSize))
+                                let data = csv?.write(to: url)
+                                completeSavingFile = data != nil
+                                output.png = data
                                 do {
                                     try context.save()
                                 } catch {
@@ -202,7 +202,10 @@ struct ContentView: View {
                         }
                     }
 #elseif os(iOS)
-                    guard let data = csv?.pngData(fontSize: CGFloat(fontSize)) else {
+                    guard let data = csv?.generate(
+                        fontSize: CGFloat(fontSize),
+                        exportType: exportType
+                    ) else {
                         return
                     }
                     output.png = data

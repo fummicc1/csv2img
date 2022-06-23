@@ -1,5 +1,6 @@
 import Foundation
 import CoreGraphics
+import UniformTypeIdentifiers
 import PDFKit
 
 /** Csv data structure
@@ -25,7 +26,7 @@ import PDFKit
  | 10 | 11 | 12 |
  ```
 */
-public struct Csv {
+public class Csv {
 
     /// initialization
     ///
@@ -66,9 +67,6 @@ public struct Csv {
     /// ``PdfMaker`` has responsibility to generate pdf-image from csv.
     private let pdfMarker: PdfMaker
 
-    /// `data` has result of converstion from csv to png-image.
-    private var data: Data?
-
     /// `rawString` is original String read from Resource (either Local or Network).
     public var rawString: String
 
@@ -80,18 +78,31 @@ extension Csv {
     /**
     `ExportType` is a enum that expresses
      */
-    public enum ExportType {
+    public enum ExportType: String {
         /// `png` output
         case png
         /// `pdf` output (Work In Progress)
         case pdf
 
-        var outputType: CsvExportable.Type {
+        public var outputType: CsvExportable.Type {
             switch self {
             case .png:
                 return CGImage.self
             case .pdf:
                 return PDFDocument.self
+            }
+        }
+
+        public var fileExtension: String {
+            self.rawValue
+        }
+
+        public var utType: UTType {
+            switch self {
+            case .png:
+                return .png
+            case .pdf:
+                return .pdf
             }
         }
     }
@@ -226,7 +237,7 @@ extension Csv {
     ///     - separator: Default separator in a row is `","`. You cloud change it by giving separator to `separator` parameter.
     ///     - maxLength: Default value is nil. if `maxLength` is not nil, every row-item length is limited by `maxLength`.
     public static func fromString(_ str: String, separator: String = ",", maxLength: Int? = nil) -> Csv {
-        var csv = Csv(
+        let csv = Csv(
             separator: separator,
             rawString: str,
             columnNames: [],
@@ -314,6 +325,7 @@ extension Csv {
         fontSize: CGFloat? = nil,
         exportType: ExportType = .png
     ) throws -> AnyCsvExportable {
+        self.exportType = exportType
         let maker: any Maker
         switch exportType {
         case .png:
@@ -351,13 +363,21 @@ extension Csv {
 
     /**
      - parameters:
-        - to url: local file path where png-image will be saved.
+        - to url: local file path where [png, pdf] image will be saved.
      - Returns: If saving csv image to file, returns `true`. Otherwise, return `False`.
      */
-    public func write(to url: URL) -> Bool {
-        let data: Data? = pngData()
+    public func write(to url: URL) -> Data? {
+        let data: Data?
+        if exportType == .png {
+            data = imageMarker.latestOutput?.convertToData()
+        } else if exportType == .pdf {
+            pdfMarker.latestOutput?.write(to: url)
+            return pdfMarker.latestOutput?.dataRepresentation()
+        } else {
+            data = nil
+        }
         guard let data = data else {
-            return false
+            return nil
         }
         do {
             if !FileManager.default.fileExists(atPath: url.absoluteString) {
@@ -365,10 +385,10 @@ extension Csv {
             } else {
                 try data.write(to: url)
             }
-            return true
+            return data
         } catch {
             print(error)
-            return false
+            return nil
         }
     }
 }

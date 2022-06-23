@@ -23,6 +23,7 @@ public enum ImageMakingError: Error {
 
 /// No overview available
 protocol ImageMakerType: Maker {
+    var latestOutput: CGImage? { get }
     func make(csv: Csv) throws -> CGImage
     func setFontSize(_ size: CGFloat)
 }
@@ -39,6 +40,8 @@ class ImageMaker: ImageMakerType {
     }
 
     var fontSize: CGFloat
+
+    var latestOutput: CGImage?
 
     func setFontSize(_ size: CGFloat) {
         self.fontSize = size
@@ -194,6 +197,8 @@ class ImageMaker: ImageMakerType {
         #elseif os(iOS)
         UIGraphicsEndImageContext()
         #endif
+
+        self.latestOutput = image
 
         return image
     }
