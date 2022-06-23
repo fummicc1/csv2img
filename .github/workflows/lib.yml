@@ -1,6 +1,6 @@
 name: "[Csv2Img] Build and Test Sources"
 
-on: 
+on:
   push:
     branches:
       - main
@@ -12,12 +12,12 @@ on:
 jobs:
   test:
     name: "Build Csv2Img"
-    runs-on: macos-11
+    runs-on: macos-12
     steps:
       - uses: actions/checkout@v3
       - uses: maxim-lobanov/setup-xcode@v1
         with:
-          xcode-version: latest-stable      
+          xcode-version: latest-stable
       - name: Install xcpretty
         run: bundle install
       - name: Build and Test
