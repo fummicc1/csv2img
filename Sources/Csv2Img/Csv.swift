@@ -173,6 +173,8 @@ extension Csv {
         case invalidLocalResource(url: String, data: Data)
         /// If file is not accessible due to security issue.
         case cannotAccessFile(url: String)
+        /// given `exportType` is invalid.
+        case invalidExportType(ExportType)
     }
 
     /// Generate `Csv` from `String` data.
@@ -326,23 +328,25 @@ extension Csv {
         exportType: ExportType = .png
     ) throws -> AnyCsvExportable {
         self.exportType = exportType
-        let maker: any Maker
+        var maker: Any?
         switch exportType {
         case .png:
             maker = self.imageMarker
         case .pdf:
             maker = self.pdfMarker
-            break
         }
-        if let fontSize = fontSize {
-            maker.setFontSize(fontSize)
+        if let maker = maker as? ImageMaker {
+            if let fontSize = fontSize {
+                maker.setFontSize(fontSize)
+            }
+            return AnyCsvExportable(try maker.make(csv: self))
+        } else if let maker = maker as? PdfMaker {
+            if let fontSize = fontSize {
+                maker.setFontSize(fontSize)
+            }
+            return AnyCsvExportable(try maker.make(csv: self))
         }
-        if exportType.outputType == CGImage.self {
-            return AnyCsvExportable(try maker.make(csv: self) as! CGImage)
-        } else if exportType.outputType == PDFDocument.self {
-            return AnyCsvExportable(try maker.make(csv: self) as! PDFDocument)
-        }
-        fatalError()
+        throw Error.invalidExportType(exportType)
     }
 
     /**

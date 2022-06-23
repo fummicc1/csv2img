@@ -1,4 +1,4 @@
-import CoreFoundation
+import Foundation
 
 public protocol Maker {
     associatedtype Exportable: CsvExportable
