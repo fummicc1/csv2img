@@ -1,0 +1,30 @@
+name: Application Bug Report
+description: File a bug report
+title: "[app]: "
+labels: ["bug"]
+assignees:
+  - fummicc1
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to fill out this bug report!
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: Please write What happened and your expectation.
+      placeholder: Tell us what you see!
+      value: "A Bug happened!"
+    validations:
+      required: true
+  - type: dropdown
+    id: version
+    attributes:
+      label: Version
+      description: 実行していたソフトウェアのバージョンは?
+      options:
+        - 1.2.1
+        - 1.3.0
+    validations:
+      required: true
