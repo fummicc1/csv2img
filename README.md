@@ -2,7 +2,6 @@
 
 [![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Ffummicc1%2Fcsv2img%2Fbadge%3Ftype%3Dswift-versions)](https://swiftpackageindex.com/fummicc1/csv2img) [![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Ffummicc1%2Fcsv2img%2Fbadge%3Ftype%3Dplatforms)](https://swiftpackageindex.com/fummicc1/csv2img)
 
-
 # Csv2ImageApp
 
 Convert Csv into png image.
@@ -20,6 +19,8 @@ Convert Csv into png image.
 - Import Csv file from network resource.
 
 ![Import Csv file from network resource.](https://raw.githubusercontent.com/fummicc1/csv2img/main/Gifs/v1.0.0/02.gif)
+
+#### Choose output-mode from `png` and `pdf`.
 
 ### iOS App
 
