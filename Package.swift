@@ -3,6 +3,11 @@
 
 import PackageDescription
 
+let argumentParser: PackageDescription.Package.Dependency = .package(
+    url: "https://github.com/apple/swift-argument-parser",
+    .upToNextMinor(from: "1.1.0")
+)
+
 let package = Package(
     name: "Csv2Img",
     platforms: [.macOS(.v11), .iOS(.v14)],
@@ -20,11 +25,7 @@ let package = Package(
     dependencies: [
         // Dependencies declare other packages that this package depends on.
         // .package(url: /* package url */, from: "1.0.0"),
-        .package(
-            name: "ArgumentParser",
-            url: "https://github.com/apple/swift-argument-parser",
-            from: .init(1, 0, 0)
-        )
+        argumentParser
     ],
     targets: [
         // Targets are the basic building blocks of a package. A target can define a module or a test suite.
@@ -37,7 +38,13 @@ let package = Package(
             dependencies: ["Csv2Img"]),
         .executableTarget(
             name: "Csv2ImgCmd",
-            dependencies: ["Csv2Img", "ArgumentParser"]            
+            dependencies: [
+                "Csv2Img",
+                .product(
+                    name: "ArgumentParser",
+                    package: "swift-argument-parser"
+                )
+            ]
         )
     ]
 )
