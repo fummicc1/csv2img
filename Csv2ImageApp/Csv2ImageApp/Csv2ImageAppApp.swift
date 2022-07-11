@@ -33,6 +33,7 @@ struct Csv2ImageAppApp: App {
             if let error = error {
                 print(error)
                 assertionFailure(error.localizedDescription)
+                return
             }
         }
         container.viewContext.automaticallyMergesChangesFromParent = true
@@ -41,9 +42,7 @@ struct Csv2ImageAppApp: App {
 
     var body: some Scene {
         WindowGroup {
-            ContentView(
-                historyModel: HistoryModel(context: persistentController.viewContext)
-            )
+            ContentView()
                 .environment(
                     \.managedObjectContext, persistentController.viewContext
                 )

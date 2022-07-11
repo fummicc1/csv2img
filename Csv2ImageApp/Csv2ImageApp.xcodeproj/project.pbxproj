@@ -17,6 +17,11 @@
 		D34680E02856C9F500FDC132 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D34680DF2856C9F500FDC132 /* Preview Assets.xcassets */; };
 		D359BADA28621B85006DFDCE /* SwiftUI+PdfDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = D359BAD928621B85006DFDCE /* SwiftUI+PdfDocument.swift */; };
 		D359BADC28621BFE006DFDCE /* Type.swift in Sources */ = {isa = PBXBuildFile; fileRef = D359BADB28621BFE006DFDCE /* Type.swift */; };
+		D35D5999287C275100572F45 /* Csv2Img in Frameworks */ = {isa = PBXBuildFile; productRef = D35D5998287C275100572F45 /* Csv2Img */; };
+		D35D599C287C331000572F45 /* iOS_ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D35D599B287C331000572F45 /* iOS_ContentView.swift */; };
+		D35D599E287C332100572F45 /* macOS_ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D35D599D287C332100572F45 /* macOS_ContentView.swift */; };
+		D35D59A0287C334800572F45 /* ContentMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = D35D599F287C334800572F45 /* ContentMode.swift */; };
+		D35D59A2287C35C400572F45 /* CsvImageAppError.swift in Sources */ = {isa = PBXBuildFile; fileRef = D35D59A1287C35C400572F45 /* CsvImageAppError.swift */; };
 		D35DB0D4285FA754009C252D /* CsvViewer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D35DB0D3285FA754009C252D /* CsvViewer.swift */; };
 		D35DB0D6285FADA5009C252D /* HistoryModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D35DB0D5285FADA5009C252D /* HistoryModel.swift */; };
 		D3A4EB18284F11A3002E3499 /* Csv2ImageAppApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3A4EB17284F11A3002E3499 /* Csv2ImageAppApp.swift */; };
@@ -54,6 +59,10 @@
 		D34680DF2856C9F500FDC132 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		D359BAD928621B85006DFDCE /* SwiftUI+PdfDocument.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SwiftUI+PdfDocument.swift"; sourceTree = "<group>"; };
 		D359BADB28621BFE006DFDCE /* Type.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Type.swift; sourceTree = "<group>"; };
+		D35D599B287C331000572F45 /* iOS_ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iOS_ContentView.swift; sourceTree = "<group>"; };
+		D35D599D287C332100572F45 /* macOS_ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = macOS_ContentView.swift; sourceTree = "<group>"; };
+		D35D599F287C334800572F45 /* ContentMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentMode.swift; sourceTree = "<group>"; };
+		D35D59A1287C35C400572F45 /* CsvImageAppError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CsvImageAppError.swift; sourceTree = "<group>"; };
 		D35DB0CE285FA334009C252D /* Csv2Img 2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "Csv2Img 2.xcdatamodel"; sourceTree = "<group>"; };
 		D35DB0D3285FA754009C252D /* CsvViewer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CsvViewer.swift; sourceTree = "<group>"; };
 		D35DB0D5285FADA5009C252D /* HistoryModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryModel.swift; sourceTree = "<group>"; };
@@ -76,6 +85,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D35D5999287C275100572F45 /* Csv2Img in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -138,6 +148,15 @@
 			path = "Preview Content";
 			sourceTree = "<group>";
 		};
+		D35D599A287C32F700572F45 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				D35D599B287C331000572F45 /* iOS_ContentView.swift */,
+				D35D599D287C332100572F45 /* macOS_ContentView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
 		D3736B26286393D8004C20C8 /* Packages */ = {
 			isa = PBXGroup;
 			children = (
@@ -173,17 +192,20 @@
 		D3A4EB16284F11A3002E3499 /* Csv2ImageApp */ = {
 			isa = PBXGroup;
 			children = (
-				D30B17F4285F874000EA92B5 /* Generated */,
 				D3A4EB20284F11A4002E3499 /* Csv2ImageApp.entitlements */,
+				D35D599F287C334800572F45 /* ContentMode.swift */,
 				D3A4EB19284F11A3002E3499 /* ContentView.swift */,
 				D3A4EB17284F11A3002E3499 /* Csv2ImageAppApp.swift */,
-				D3A4EB1B284F11A4002E3499 /* Assets.xcassets */,
-				D3A4EB1D284F11A4002E3499 /* Preview Content */,
-				D30B17E4285F865700EA92B5 /* Csv2Img.xcdatamodeld */,
 				D35DB0D3285FA754009C252D /* CsvViewer.swift */,
 				D35DB0D5285FADA5009C252D /* HistoryModel.swift */,
 				D359BAD928621B85006DFDCE /* SwiftUI+PdfDocument.swift */,
 				D359BADB28621BFE006DFDCE /* Type.swift */,
+				D3A4EB1B284F11A4002E3499 /* Assets.xcassets */,
+				D30B17E4285F865700EA92B5 /* Csv2Img.xcdatamodeld */,
+				D30B17F4285F874000EA92B5 /* Generated */,
+				D3A4EB1D284F11A4002E3499 /* Preview Content */,
+				D35D599A287C32F700572F45 /* Views */,
+				D35D59A1287C35C400572F45 /* CsvImageAppError.swift */,
 			);
 			path = Csv2ImageApp;
 			sourceTree = "<group>";
@@ -230,6 +252,7 @@
 			);
 			name = Csv2ImageiOSApp;
 			packageProductDependencies = (
+				D35D5998287C275100572F45 /* Csv2Img */,
 			);
 			productName = Csv2ImageiOSApp;
 			productReference = D34680D62856C9F400FDC132 /* Csv2ImageiOSApp.app */;
@@ -390,6 +413,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D35D599C287C331000572F45 /* iOS_ContentView.swift in Sources */,
 				D35DB0D4285FA754009C252D /* CsvViewer.swift in Sources */,
 				D359BADA28621B85006DFDCE /* SwiftUI+PdfDocument.swift in Sources */,
 				D35DB0D6285FADA5009C252D /* HistoryModel.swift in Sources */,
@@ -397,6 +421,9 @@
 				D359BADC28621BFE006DFDCE /* Type.swift in Sources */,
 				D3A4EB18284F11A3002E3499 /* Csv2ImageAppApp.swift in Sources */,
 				D30B17E6285F865700EA92B5 /* Csv2Img.xcdatamodeld in Sources */,
+				D35D59A0287C334800572F45 /* ContentMode.swift in Sources */,
+				D35D599E287C332100572F45 /* macOS_ContentView.swift in Sources */,
+				D35D59A2287C35C400572F45 /* CsvImageAppError.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -825,6 +852,10 @@
 
 /* Begin XCSwiftPackageProductDependency section */
 		D3095CC5286394720086EEEE /* Csv2Img */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Csv2Img;
+		};
+		D35D5998287C275100572F45 /* Csv2Img */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = Csv2Img;
 		};

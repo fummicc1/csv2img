@@ -8,17 +8,18 @@
 import Foundation
 import CoreData
 
+
 class HistoryModel: ObservableObject {
     let context: NSManagedObjectContext
 
     @MainActor @Published var histories: [CsvOutput] = []
 
     init(context: NSManagedObjectContext) {
-        self.context = context
+        self.context = context        
 
         NotificationCenter.default.addObserver(
             forName: NSManagedObjectContext.didChangeObjectsNotification,
-            object: context.persistentStoreCoordinator,
+            object: nil,
             queue: nil
         ) { notification in
             if let added = notification.userInfo?[NSInsertedObjectsKey] as? Set<CsvOutput> {
@@ -57,5 +58,15 @@ class HistoryModel: ObservableObject {
         try context.save()
     }
 
-
+    func onAppear() {
+        Task {
+            do {
+                if let outputs = try context.fetch(CsvOutput.fetchRequest()) {
+                    await MainActor.run(body: {
+                        self.histories = outputs
+                    })
+                }
+            }
+        }
+    }
 }
