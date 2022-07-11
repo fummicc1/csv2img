@@ -5,12 +5,15 @@
 //  Created by Fumiya Tanaka on 2022/07/11.
 //
 
+
+#if os(macOS)
 import SwiftUI
 import CoreData
 import Csv2Img
+import AppKit
+import PDFKit
 
 
-#if os(macOS)
 struct macOS_ContentView: View {
     @State private var error: CsvImageAppError?
     @State private var networkURL: String = ""
@@ -22,71 +25,62 @@ struct macOS_ContentView: View {
     @State private var contentMode: ContentMode = .create
     @State private var exportType: Csv.ExportType = .pdf
     @StateObject var historyModel: HistoryModel
-    @Environment(\.managedObjectContext) var context: NSManagedObjectContext
+    @Environment(\.managedObjectContext) var context
 
     var body: some View {
         NavigationView {
-            List {
-                if case ContentMode.history(let history) = contentMode {
-                    if let raw = history.raw,
-                       let csv = Csv.fromString(raw),
-                       let config = history.config {
-                        if let out = try? csv.generate(
-                            fontSize: CGFloat(config.fontSize),
-                            exportType: self.exportType
-                        ) {
-                            if exportType == .png {
-                                let img = out.base as! CGImage
-                                CsvViewer(img: img)
-                            } else if exportType == .pdf {
-                                let pdf = out.base as! PDFDocument
-                                PdfDocumentView(document: pdf)
-                            }
+            if case ContentMode.history(let history) = contentMode {
+                if let raw = history.raw,
+                   let csv = Csv.fromString(raw),
+                   let config = history.config {
+                    if let out = try? csv.generate(
+                        fontSize: CGFloat(config.fontSize),
+                        exportType: self.exportType
+                    ) {
+                        if exportType == .png, let img = out.base as! CGImage? {
+                            CsvViewer(img: img)
+                        } else if exportType == .pdf, let pdf = out.base as! PDFDocument? {
+                            PdfDocumentView(document: pdf)
+                        } else {
+                            EmptyView()
                         }
                     }
-                } else {
-                    GeometryReader { proxy in
-                        VStack {
-                            if showNetworkFileImporter {
-                                HStack {
-                                    TextField("Input URL", text: $networkURL)
-                                    Button("OK") {
-                                        if let url = URL(string: networkURL) {
-                                            do {
-                                                self.csv = try Csv.fromURL(url)
-                                                showNetworkFileImporter = false
-                                            } catch {
-                                                self.error = .underlying(error)
-                                            }
-                                        } else {
-                                            self.error = CsvImageAppError.invalidNetworkURL(url: networkURL)
-                                        }
+                }
+            } else {
+                VStack {
+                    if showNetworkFileImporter {
+                        HStack {
+                            TextField("Input URL", text: $networkURL)
+                            Button("OK") {
+                                if let url = URL(string: networkURL) {
+                                    do {
+                                        self.csv = try Csv.fromURL(url)
+                                        showNetworkFileImporter = false
+                                    } catch {
+                                        self.error = .underlying(error)
                                     }
-                                }
-                                .padding()
-                            }
-                            if
-                                let csv = csv,
-                                let out = try? csv.generate(fontSize: 12, exportType: exportType)
-                            {
-                                HStack {
-                                    Spacer()
-                                    VStack {
-                                        Text("Output")
-                                            .font(.title3)
-                                            .bold()
-                                        if exportType == .png {
-                                            let img = out.base as! CGImage
-                                            CsvViewer(img: img)
-                                        } else if exportType == .pdf {
-                                            let pdf = out.base as! PDFDocument
-                                            PdfDocumentView(document: pdf)
-                                        }
-                                    }
-                                    .padding()
-                                    Spacer()
+                                } else {
+                                    self.error = CsvImageAppError.invalidNetworkURL(url: networkURL)
                                 }
                             }
+                        }
+                        .padding()
+                    }
+                    if let csv = csv, let out = try? csv.generate(fontSize: 12, exportType: exportType) {
+                        HStack {
+                            Spacer()
+                            VStack {
+                                Text("Output").font(.title3).bold()
+                                if exportType == .png, let img = out.base as! CGImage? {
+                                    CsvViewer(img: img)
+                                } else if exportType == .pdf, let pdf = out.base as! PDFDocument? {
+                                    PdfDocumentView(document: pdf)
+                                } else {
+                                    EmptyView()
+                                }
+                            }
+                            .padding()
+                            Spacer()
                         }
                     }
                 }
@@ -150,9 +144,10 @@ struct macOS_ContentView: View {
         return .principal
     }
 
-    private func toolBar() -> some View {
-        if contentMode == .create {
-            ToolbarItemGroup(placement: ToolbarItemPlacement.navigation) {
+    @ToolbarContentBuilder
+    private func toolBar() -> some ToolbarContent {
+        ToolbarItemGroup(placement: ToolbarItemPlacement.navigation) {
+            AnyView(
                 HStack {
                     if exportType == .png {
                         Text("Export as PNG")
@@ -190,9 +185,11 @@ struct macOS_ContentView: View {
                             .frame(width: 200)
                     }
                 }
-            }
-            ToolbarItemGroup(placement: getToolBarItemPlacement()) {
-                if csv != nil {
+            )
+        }
+        ToolbarItemGroup(placement: getToolBarItemPlacement()) {
+            if csv != nil {
+                AnyView(
                     Button {
                         let config = CsvConfig(context: context)
                         // TODO: Customizable config
@@ -226,13 +223,12 @@ struct macOS_ContentView: View {
                         Text("Save")
                             .foregroundColor(Color(nsColor: .windowBackgroundColor))
                     }
-                    .frame(width: 64)
-                    .background(Color.accentColor)
-                    .cornerRadius(12)
-                }
+                        .frame(width: 64)
+                        .background(Color.accentColor)
+                        .cornerRadius(12)
+                )
             }
         }
     }
-
 }
 #endif

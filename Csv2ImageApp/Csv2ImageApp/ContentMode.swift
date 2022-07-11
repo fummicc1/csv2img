@@ -8,7 +8,7 @@
 import Foundation
 
 
-enum ContentMode {
+enum ContentMode: Equatable {
     case create
     case history(CsvOutput)
 }

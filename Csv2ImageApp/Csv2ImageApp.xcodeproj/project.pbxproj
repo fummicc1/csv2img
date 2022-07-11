@@ -9,15 +9,9 @@
 /* Begin PBXBuildFile section */
 		D3095CC6286394720086EEEE /* Csv2Img in Frameworks */ = {isa = PBXBuildFile; productRef = D3095CC5286394720086EEEE /* Csv2Img */; };
 		D30B17E6285F865700EA92B5 /* Csv2Img.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = D30B17E4285F865700EA92B5 /* Csv2Img.xcdatamodeld */; };
-		D30B17E7285F865700EA92B5 /* Csv2Img.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = D30B17E4285F865700EA92B5 /* Csv2Img.xcdatamodeld */; };
-		D30B1811285F8A3400EA92B5 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3A4EB19284F11A3002E3499 /* ContentView.swift */; };
 		D30B181A285F8A5300EA92B5 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3A4EB19284F11A3002E3499 /* ContentView.swift */; };
-		D30B181B285F8A6100EA92B5 /* Csv2ImageAppApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3A4EB17284F11A3002E3499 /* Csv2ImageAppApp.swift */; };
-		D330D5D5285F962000F49491 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D3A4EB1B284F11A4002E3499 /* Assets.xcassets */; };
-		D34680E02856C9F500FDC132 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D34680DF2856C9F500FDC132 /* Preview Assets.xcassets */; };
 		D359BADA28621B85006DFDCE /* SwiftUI+PdfDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = D359BAD928621B85006DFDCE /* SwiftUI+PdfDocument.swift */; };
 		D359BADC28621BFE006DFDCE /* Type.swift in Sources */ = {isa = PBXBuildFile; fileRef = D359BADB28621BFE006DFDCE /* Type.swift */; };
-		D35D5999287C275100572F45 /* Csv2Img in Frameworks */ = {isa = PBXBuildFile; productRef = D35D5998287C275100572F45 /* Csv2Img */; };
 		D35D599C287C331000572F45 /* iOS_ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D35D599B287C331000572F45 /* iOS_ContentView.swift */; };
 		D35D599E287C332100572F45 /* macOS_ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D35D599D287C332100572F45 /* macOS_ContentView.swift */; };
 		D35D59A0287C334800572F45 /* ContentMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = D35D599F287C334800572F45 /* ContentMode.swift */; };
@@ -55,8 +49,6 @@
 		D330D5E0285F978D00F49491 /* CsvConfig+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CsvConfig+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		D330D5E1285F978D00F49491 /* CsvOutput+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CsvOutput+CoreDataClass.swift"; sourceTree = "<group>"; };
 		D330D5E2285F978D00F49491 /* CsvOutput+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CsvOutput+CoreDataProperties.swift"; sourceTree = "<group>"; };
-		D34680D62856C9F400FDC132 /* Csv2ImageiOSApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Csv2ImageiOSApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		D34680DF2856C9F500FDC132 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		D359BAD928621B85006DFDCE /* SwiftUI+PdfDocument.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SwiftUI+PdfDocument.swift"; sourceTree = "<group>"; };
 		D359BADB28621BFE006DFDCE /* Type.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Type.swift; sourceTree = "<group>"; };
 		D35D599B287C331000572F45 /* iOS_ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iOS_ContentView.swift; sourceTree = "<group>"; };
@@ -81,14 +73,6 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		D34680D32856C9F400FDC132 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				D35D5999287C275100572F45 /* Csv2Img in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		D3A4EB11284F11A3002E3499 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -132,22 +116,6 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		D34680D72856C9F400FDC132 /* Csv2ImageiOSApp */ = {
-			isa = PBXGroup;
-			children = (
-				D34680DE2856C9F500FDC132 /* Preview Content */,
-			);
-			path = Csv2ImageiOSApp;
-			sourceTree = "<group>";
-		};
-		D34680DE2856C9F500FDC132 /* Preview Content */ = {
-			isa = PBXGroup;
-			children = (
-				D34680DF2856C9F500FDC132 /* Preview Assets.xcassets */,
-			);
-			path = "Preview Content";
-			sourceTree = "<group>";
-		};
 		D35D599A287C32F700572F45 /* Views */ = {
 			isa = PBXGroup;
 			children = (
@@ -172,7 +140,6 @@
 				D3A4EB16284F11A3002E3499 /* Csv2ImageApp */,
 				D3A4EB28284F11A4002E3499 /* Csv2ImageAppTests */,
 				D3A4EB32284F11A4002E3499 /* Csv2ImageAppUITests */,
-				D34680D72856C9F400FDC132 /* Csv2ImageiOSApp */,
 				D3A4EB15284F11A3002E3499 /* Products */,
 				D34306A62855CA170035C6F0 /* Frameworks */,
 			);
@@ -184,7 +151,6 @@
 				D3A4EB14284F11A3002E3499 /* Csv2ImageApp.app */,
 				D3A4EB25284F11A4002E3499 /* Csv2ImageAppTests.xctest */,
 				D3A4EB2F284F11A4002E3499 /* Csv2ImageAppUITests.xctest */,
-				D34680D62856C9F400FDC132 /* Csv2ImageiOSApp.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -196,6 +162,7 @@
 				D35D599F287C334800572F45 /* ContentMode.swift */,
 				D3A4EB19284F11A3002E3499 /* ContentView.swift */,
 				D3A4EB17284F11A3002E3499 /* Csv2ImageAppApp.swift */,
+				D35D59A1287C35C400572F45 /* CsvImageAppError.swift */,
 				D35DB0D3285FA754009C252D /* CsvViewer.swift */,
 				D35DB0D5285FADA5009C252D /* HistoryModel.swift */,
 				D359BAD928621B85006DFDCE /* SwiftUI+PdfDocument.swift */,
@@ -205,7 +172,6 @@
 				D30B17F4285F874000EA92B5 /* Generated */,
 				D3A4EB1D284F11A4002E3499 /* Preview Content */,
 				D35D599A287C32F700572F45 /* Views */,
-				D35D59A1287C35C400572F45 /* CsvImageAppError.swift */,
 			);
 			path = Csv2ImageApp;
 			sourceTree = "<group>";
@@ -238,26 +204,6 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		D34680D52856C9F400FDC132 /* Csv2ImageiOSApp */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = D34680E12856C9F500FDC132 /* Build configuration list for PBXNativeTarget "Csv2ImageiOSApp" */;
-			buildPhases = (
-				D34680D22856C9F400FDC132 /* Sources */,
-				D34680D32856C9F400FDC132 /* Frameworks */,
-				D34680D42856C9F400FDC132 /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			name = Csv2ImageiOSApp;
-			packageProductDependencies = (
-				D35D5998287C275100572F45 /* Csv2Img */,
-			);
-			productName = Csv2ImageiOSApp;
-			productReference = D34680D62856C9F400FDC132 /* Csv2ImageiOSApp.app */;
-			productType = "com.apple.product-type.application";
-		};
 		D3A4EB13284F11A3002E3499 /* Csv2ImageApp */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = D3A4EB39284F11A4002E3499 /* Build configuration list for PBXNativeTarget "Csv2ImageApp" */;
@@ -324,9 +270,6 @@
 				LastSwiftUpdateCheck = 1340;
 				LastUpgradeCheck = 1400;
 				TargetAttributes = {
-					D34680D52856C9F400FDC132 = {
-						CreatedOnToolsVersion = 13.4.1;
-					};
 					D3A4EB13284F11A3002E3499 = {
 						CreatedOnToolsVersion = 13.4.1;
 					};
@@ -358,21 +301,11 @@
 				D3A4EB13284F11A3002E3499 /* Csv2ImageApp */,
 				D3A4EB24284F11A4002E3499 /* Csv2ImageAppTests */,
 				D3A4EB2E284F11A4002E3499 /* Csv2ImageAppUITests */,
-				D34680D52856C9F400FDC132 /* Csv2ImageiOSApp */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		D34680D42856C9F400FDC132 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				D330D5D5285F962000F49491 /* Assets.xcassets in Resources */,
-				D34680E02856C9F500FDC132 /* Preview Assets.xcassets in Resources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		D3A4EB12284F11A3002E3499 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -399,16 +332,6 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		D34680D22856C9F400FDC132 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				D30B181B285F8A6100EA92B5 /* Csv2ImageAppApp.swift in Sources */,
-				D30B1811285F8A3400EA92B5 /* ContentView.swift in Sources */,
-				D30B17E7285F865700EA92B5 /* Csv2Img.xcdatamodeld in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		D3A4EB10284F11A3002E3499 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -460,69 +383,6 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		D34680E22856C9F500FDC132 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 8;
-				DEVELOPMENT_ASSET_PATHS = "\"Csv2ImageiOSApp/Preview Content\"";
-				DEVELOPMENT_TEAM = S8WBNKMKYU;
-				ENABLE_PREVIEWS = YES;
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
-				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-				);
-				MARKETING_VERSION = 1.2;
-				PRODUCT_BUNDLE_IDENTIFIER = dev.fummicc1.Csv2ImageApp;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = iphoneos;
-				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = 1;
-			};
-			name = Debug;
-		};
-		D34680E32856C9F500FDC132 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 8;
-				DEVELOPMENT_ASSET_PATHS = "\"Csv2ImageiOSApp/Preview Content\"";
-				DEVELOPMENT_TEAM = S8WBNKMKYU;
-				ENABLE_PREVIEWS = YES;
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
-				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-				);
-				MARKETING_VERSION = 1.2;
-				PRODUCT_BUNDLE_IDENTIFIER = dev.fummicc1.Csv2ImageApp;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = iphoneos;
-				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = 1;
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
 		D3A4EB37284F11A4002E3499 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -803,15 +663,6 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		D34680E12856C9F500FDC132 /* Build configuration list for PBXNativeTarget "Csv2ImageiOSApp" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				D34680E22856C9F500FDC132 /* Debug */,
-				D34680E32856C9F500FDC132 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
 		D3A4EB0F284F11A3002E3499 /* Build configuration list for PBXProject "Csv2ImageApp" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -852,10 +703,6 @@
 
 /* Begin XCSwiftPackageProductDependency section */
 		D3095CC5286394720086EEEE /* Csv2Img */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = Csv2Img;
-		};
-		D35D5998287C275100572F45 /* Csv2Img */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = Csv2Img;
 		};

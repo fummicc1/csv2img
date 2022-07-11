@@ -17,7 +17,7 @@ struct ContentView: View {
 
     var body: some View {
         #if os(iOS)
-        fatalError()
+        VStack { }
         #elseif os(macOS)
         macOS_ContentView(historyModel: HistoryModel(context: context))
         #endif
