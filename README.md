@@ -6,43 +6,11 @@
 
 Convert Csv into png image.
 
-- App is distributed on App Store, [let's visit !](https://apps.apple.com/jp/app/csv2imageapp/id1628273936?l=en&mt=12)
-
 ## MacOS App
 
 ### Demo
 
-- Import Csv file from local computer.
-
-![Import Csv file from local computer.](https://raw.githubusercontent.com/fummicc1/csv2img/main/Gifs/v1.0.0/01.gif)
-
-- Import Csv file from network resource.
-
-![Import Csv file from network resource.](https://raw.githubusercontent.com/fummicc1/csv2img/main/Gifs/v1.0.0/02.gif)
-
-
-
-
-
-#### Choose output-mode from `png` and `pdf`.
-
-- Pdf Mode
-
-![名称未設定](https://user-images.githubusercontent.com/44002126/175226982-68d01546-3df4-4c2f-9490-6ea1b526ef49.gif)
-
-
-- Png Mode (There are many rows and columns, in such a case, it is better to use pdf mode)
-
-<img width="1440" alt="スクリーンショット 2022-06-23 14 50 58" src="https://user-images.githubusercontent.com/44002126/175224908-4a50a663-7856-416b-8e54-7207c8cf3e9f.png">
-
-
-
-
-### iOS App
-
-- export output image by sharing (like `Airdrop`, saving to `File` and so on).
-
-<img src="https://raw.githubusercontent.com/fummicc1/csv2img/main/Gifs/v1.1.0/01.gif" width=40%>
+![demo](https://user-images.githubusercontent.com/44002126/183291911-13b966f0-c0e2-4a02-a57c-9620edd4b0e1.gif)
 
 # Csv2Img (Library)
 
