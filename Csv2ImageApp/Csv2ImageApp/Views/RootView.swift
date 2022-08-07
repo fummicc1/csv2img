@@ -12,7 +12,7 @@ struct RootView: View {
     @State private var selectedCsv: SelectedCsvState?
 
     var body: some View {
-        if let selectedCsv {
+        if let selectedCsv = selectedCsv {
             GenerateOutputView(
                 model: GenerateOutputModel(
                     url: selectedCsv.url,

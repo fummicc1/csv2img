@@ -22,10 +22,10 @@ struct GenerateOutputState: Hashable {
         hasher.combine(url)
         hasher.combine(fileType)
         hasher.combine(exportType)
-        if let cgImage {
+        if let cgImage = cgImage {
             hasher.combine(cgImage.convertToData())
         }
-        if let pdfDocument {
+        if let pdfDocument = pdfDocument {
             hasher.combine(pdfDocument.dataRepresentation())
         }
     }
