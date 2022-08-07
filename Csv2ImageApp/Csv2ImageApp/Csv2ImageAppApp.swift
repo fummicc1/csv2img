@@ -9,6 +9,24 @@ import SwiftUI
 import CoreData
 
 
+enum CsvImageAppError: Swift.Error {
+    case invalidNetworkURL(url: String)
+    case outputFileNameIsEmpty
+    case underlying(Error)
+
+    var message: String {
+        switch self {
+        case .invalidNetworkURL(let url):
+            return "Invalid URL: \(url)"
+        case .outputFileNameIsEmpty:
+            return "Empty Output FileName"
+        case .underlying(let error):
+            return "\(error)"
+        }
+    }
+}
+
+
 @main
 struct Csv2ImageAppApp: App {
 

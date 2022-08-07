@@ -13,6 +13,7 @@ struct SelectCsvView_macOS: View {
 
     @State private var isTargeted: Bool = false
     @Binding var selectedImageUrl: URL?
+    @ObservedObject var model: SelectCsvModel
 
     var body: some View {
         BrandingFrameView {
@@ -20,12 +21,15 @@ struct SelectCsvView_macOS: View {
                 CText("Drop csv file here", font: .largeTitle)
 
                 Spacer().frame(height: 32)
-                Button {
-
-                } label: {
-                    CText("Alternatively, Choose from Finder", font: .title)
+                CButton.labeled("Alternatively, Choose from Finder") {
+                    Task {
+                        do {
+                            selectedImageUrl = try await model.selectFileOnDisk()                            
+                        } catch {
+                            print(error)
+                        }
+                    }
                 }
-
             }
         }
         .onDrop(of: [.fileURL], isTargeted: $isTargeted) { providers in
@@ -37,7 +41,7 @@ struct SelectCsvView_macOS: View {
                     print(error)
                     return
                 }
-                guard let data = data as? Data, let url = NSURL(absoluteURLWithDataRepresentation: data, relativeTo: nil) as? URL else {
+                guard let data = data as? Data, let url = URL(dataRepresentation: data, relativeTo: nil, isAbsolute: true) else {
                     return
                 }
                 if url.lastPathComponent.contains(".csv") {
@@ -53,7 +57,10 @@ struct SelectCsvView_macOS: View {
 
 struct SelectCsvView_macOS_Previews: PreviewProvider {
     static var previews: some View {
-        SelectCsvView_macOS(selectedImageUrl: .constant(nil))
+        SelectCsvView_macOS(
+            selectedImageUrl: .constant(nil),
+            model: SelectCsvModel()
+        )
     }
 }
 #endif

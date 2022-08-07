@@ -7,33 +7,16 @@
 
 import SwiftUI
 import Csv2Img
-import CoreData
-import PDFKit
 
-enum CsvImageAppError: Swift.Error {
-    case invalidNetworkURL(url: String)
-    case outputFileNameIsEmpty
-    case underlying(Error)
-
-    var message: String {
-        switch self {
-        case .invalidNetworkURL(let url):
-            return "Invalid URL: \(url)"
-        case .outputFileNameIsEmpty:
-            return "Empty Output FileName"
-        case .underlying(let error):
-            return "\(error)"
-        }
-    }
-}
 
 struct SelectCsvView: View {
 
     @Binding var selectedImageUrl: URL?
+    @ObservedObject var model: SelectCsvModel
 
     var body: some View {
         #if os(macOS)
-        SelectCsvView_macOS(selectedImageUrl: _selectedImageUrl)
+        SelectCsvView_macOS(selectedImageUrl: _selectedImageUrl, model: model)
         #elseif os(iOS)
         SelectCsvView_iOS()
         #endif

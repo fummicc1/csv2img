@@ -12,7 +12,7 @@ struct RootView: View {
     @State private var selectedImageUrl: URL?
 
     var body: some View {
-        SelectCsvView(selectedImageUrl: $selectedImageUrl)
+        SelectCsvView(selectedImageUrl: $selectedImageUrl, model: SelectCsvModel())
     }
 }
 

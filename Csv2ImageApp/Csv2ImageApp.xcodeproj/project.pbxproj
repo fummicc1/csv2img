@@ -27,6 +27,11 @@
 		D3C41319289F991500936C02 /* CText.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3C41318289F991500936C02 /* CText.swift */; };
 		D3C4131B289F9B7B00936C02 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3C4131A289F9B7B00936C02 /* RootView.swift */; };
 		D3C4131D289F9E3A00936C02 /* SelectCsvModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3C4131C289F9E3A00936C02 /* SelectCsvModel.swift */; };
+		D3C41320289FB11800936C02 /* GenerateOutputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3C4131F289FB11800936C02 /* GenerateOutputView.swift */; };
+		D3C41322289FB11F00936C02 /* GenerateOutputModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3C41321289FB11F00936C02 /* GenerateOutputModel.swift */; };
+		D3C41324289FB12F00936C02 /* GenerateOutputView+iOS.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3C41323289FB12F00936C02 /* GenerateOutputView+iOS.swift */; };
+		D3C41326289FB13800936C02 /* GenerateOutputView+macOS.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3C41325289FB13800936C02 /* GenerateOutputView+macOS.swift */; };
+		D3C41328289FB66400936C02 /* CButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3C41327289FB66400936C02 /* CButton.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -58,7 +63,7 @@
 		D35DB0D3285FA754009C252D /* CsvViewer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CsvViewer.swift; sourceTree = "<group>"; };
 		D35DB0D5285FADA5009C252D /* HistoryModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryModel.swift; sourceTree = "<group>"; };
 		D3736B27286393D8004C20C8 /* Csv2Img */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = Csv2Img; path = ..; sourceTree = "<group>"; };
-		D3A4EB14284F11A3002E3499 /* Csv2ImageApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Csv2ImageApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		D3A4EB14284F11A3002E3499 /* D_Csv2ImageApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = D_Csv2ImageApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D3A4EB17284F11A3002E3499 /* Csv2ImageAppApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Csv2ImageAppApp.swift; sourceTree = "<group>"; };
 		D3A4EB19284F11A3002E3499 /* SelectCsvView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectCsvView.swift; sourceTree = "<group>"; };
 		D3A4EB1B284F11A4002E3499 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -76,6 +81,11 @@
 		D3C41318289F991500936C02 /* CText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CText.swift; sourceTree = "<group>"; };
 		D3C4131A289F9B7B00936C02 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
 		D3C4131C289F9E3A00936C02 /* SelectCsvModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectCsvModel.swift; sourceTree = "<group>"; };
+		D3C4131F289FB11800936C02 /* GenerateOutputView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenerateOutputView.swift; sourceTree = "<group>"; };
+		D3C41321289FB11F00936C02 /* GenerateOutputModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenerateOutputModel.swift; sourceTree = "<group>"; };
+		D3C41323289FB12F00936C02 /* GenerateOutputView+iOS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "GenerateOutputView+iOS.swift"; sourceTree = "<group>"; };
+		D3C41325289FB13800936C02 /* GenerateOutputView+macOS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "GenerateOutputView+macOS.swift"; sourceTree = "<group>"; };
+		D3C41327289FB66400936C02 /* CButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CButton.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -145,7 +155,7 @@
 		D3A4EB15284F11A3002E3499 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				D3A4EB14284F11A3002E3499 /* Csv2ImageApp.app */,
+				D3A4EB14284F11A3002E3499 /* D_Csv2ImageApp.app */,
 				D3A4EB25284F11A4002E3499 /* Csv2ImageAppTests.xctest */,
 				D3A4EB2F284F11A4002E3499 /* Csv2ImageAppUITests.xctest */,
 			);
@@ -197,12 +207,14 @@
 		D3C4130D289F887400936C02 /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				D359BAD928621B85006DFDCE /* SwiftUI+PdfDocument.swift */,
-				D35DB0D3285FA754009C252D /* CsvViewer.swift */,
-				D3C4130E289F887C00936C02 /* SelectCsvView */,
 				D3C41310289F8B4B00936C02 /* BrandingFrameView.swift */,
+				D3C41327289FB66400936C02 /* CButton.swift */,
+				D35DB0D3285FA754009C252D /* CsvViewer.swift */,
 				D3C41318289F991500936C02 /* CText.swift */,
 				D3C4131A289F9B7B00936C02 /* RootView.swift */,
+				D359BAD928621B85006DFDCE /* SwiftUI+PdfDocument.swift */,
+				D3C4131E289FB10D00936C02 /* GenerateOutputView */,
+				D3C4130E289F887C00936C02 /* SelectCsvView */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -234,6 +246,17 @@
 			path = Generated;
 			sourceTree = "<group>";
 		};
+		D3C4131E289FB10D00936C02 /* GenerateOutputView */ = {
+			isa = PBXGroup;
+			children = (
+				D3C4131F289FB11800936C02 /* GenerateOutputView.swift */,
+				D3C41321289FB11F00936C02 /* GenerateOutputModel.swift */,
+				D3C41323289FB12F00936C02 /* GenerateOutputView+iOS.swift */,
+				D3C41325289FB13800936C02 /* GenerateOutputView+macOS.swift */,
+			);
+			path = GenerateOutputView;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -254,7 +277,7 @@
 				D3095CC5286394720086EEEE /* Csv2Img */,
 			);
 			productName = Csv2ImageApp;
-			productReference = D3A4EB14284F11A3002E3499 /* Csv2ImageApp.app */;
+			productReference = D3A4EB14284F11A3002E3499 /* D_Csv2ImageApp.app */;
 			productType = "com.apple.product-type.application";
 		};
 		D3A4EB24284F11A4002E3499 /* Csv2ImageAppTests */ = {
@@ -370,10 +393,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				D3C4130C289F886000936C02 /* SelectCsvView+iOS.swift in Sources */,
+				D3C41322289FB11F00936C02 /* GenerateOutputModel.swift in Sources */,
 				D35DB0D4285FA754009C252D /* CsvViewer.swift in Sources */,
 				D3C41319289F991500936C02 /* CText.swift in Sources */,
 				D359BADA28621B85006DFDCE /* SwiftUI+PdfDocument.swift in Sources */,
+				D3C41328289FB66400936C02 /* CButton.swift in Sources */,
 				D35DB0D6285FADA5009C252D /* HistoryModel.swift in Sources */,
+				D3C41324289FB12F00936C02 /* GenerateOutputView+iOS.swift in Sources */,
 				D30B181A285F8A5300EA92B5 /* SelectCsvView.swift in Sources */,
 				D359BADC28621BFE006DFDCE /* Type.swift in Sources */,
 				D3A4EB18284F11A3002E3499 /* Csv2ImageAppApp.swift in Sources */,
@@ -382,6 +408,8 @@
 				D30B17E6285F865700EA92B5 /* Csv2Img.xcdatamodeld in Sources */,
 				D3C41311289F8B4B00936C02 /* BrandingFrameView.swift in Sources */,
 				D3C4131D289F9E3A00936C02 /* SelectCsvModel.swift in Sources */,
+				D3C41320289FB11800936C02 /* GenerateOutputView.swift in Sources */,
+				D3C41326289FB13800936C02 /* GenerateOutputView+macOS.swift in Sources */,
 				D3C41314289F8D3D00936C02 /* XCAssets+Generated.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -566,7 +594,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 12.0;
 				MARKETING_VERSION = 1.2;
 				PRODUCT_BUNDLE_IDENTIFIER = dev.fummicc1.Csv2ImageApp_debug;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = "D_$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SUPPORTED_PLATFORMS = macosx;
 				SUPPORTS_MACCATALYST = NO;
