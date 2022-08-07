@@ -31,8 +31,7 @@ struct Csv2ImageAppApp: App {
         container.persistentStoreDescriptions = [description]
         container.loadPersistentStores { _, error in
             if let error = error {
-                print(error)
-                assertionFailure(error.localizedDescription)
+                assertionFailure("\(error)")
             }
         }
         container.viewContext.automaticallyMergesChangesFromParent = true
@@ -41,15 +40,10 @@ struct Csv2ImageAppApp: App {
 
     var body: some Scene {
         WindowGroup {
-            ContentView(
-                historyModel: HistoryModel(context: persistentController.viewContext)
-            )
+            RootView()
                 .environment(
                     \.managedObjectContext, persistentController.viewContext
                 )
-        }
-        .commands {
-            SidebarCommands()
         }
     }
 }
