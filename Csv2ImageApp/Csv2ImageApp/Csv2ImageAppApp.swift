@@ -62,6 +62,11 @@ struct Csv2ImageAppApp: App {
                 .environment(
                     \.managedObjectContext, persistentController.viewContext
                 )
+                .onReceive(NotificationCenter.default.publisher(for: NSApplication.willUpdateNotification), perform: { _ in
+                    for window in Application.shared.windows {
+                        window.standardWindowButton(.zoomButton)?.isEnabled = false
+                    }
+                })
         }
     }
 }
