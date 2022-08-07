@@ -16,3 +16,5 @@ swift package --allow-writing-to-directory ../Csv2ImgCmd_DocC/docs \
     --output-path ../Csv2ImgCmd_DocC/docs
 
 cp res/app_privacy_policy.html docs/app_privacy_policy.html
+rm docs/index.html
+cp README.md docs/index.md
