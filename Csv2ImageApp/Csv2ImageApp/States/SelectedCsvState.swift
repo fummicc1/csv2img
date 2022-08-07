@@ -1,5 +1,5 @@
 //
-//  SelectedCsvInfo.swift
+//  SelectedCsvState.swift
 //  Csv2ImageApp
 //
 //  Created by Fumiya Tanaka on 2022/08/07.
@@ -13,7 +13,7 @@ enum FileURLType {
     case network
 }
 
-struct SelectedCsvInfo: Hashable {
+struct SelectedCsvState: Hashable {
     let fileType: FileURLType
     let url: URL
 }

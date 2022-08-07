@@ -12,12 +12,16 @@ enum GenerateOutputModelError: Error {
 }
 
 class GenerateOutputModel: ObservableObject {
-    let url: URL
-    let urlType: FileURLType
+
+    @Published var state: GenerateOutputState
 
     init(url: URL, urlType: FileURLType) {
-        self.url = url
-        self.urlType = urlType
+        self.state = .init(
+            url: url,
+            fileType: urlType,
+            data: nil,
+            exportMode: .png
+        )
     }
 }
 

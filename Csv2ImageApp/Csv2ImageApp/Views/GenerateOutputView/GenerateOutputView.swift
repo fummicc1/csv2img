@@ -11,12 +11,16 @@ import SwiftUI
 struct GenerateOutputView: View {
 
     @ObservedObject var model: GenerateOutputModel
+    @Binding var backToPreviousPage: Bool
 
     var body: some View {
         #if os(iOS)
         GenerateOutputView_iOS()
         #elseif os(macOS)
-        GenerateOutputView_macOS(model: model)
+        GenerateOutputView_macOS(
+            model: model,
+            backToPreviousPage: $backToPreviousPage
+        )
         #endif
     }
 }
@@ -27,7 +31,8 @@ struct GenerateOutputView_Previews: PreviewProvider {
             model: GenerateOutputModel(
                 url: URL(string: "https://via.placeholder.com/150")!,
                 urlType: .network
-            )
+            ),
+            backToPreviousPage: .constant(false)
         )
     }
 }

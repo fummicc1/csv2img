@@ -17,6 +17,15 @@ extension Binding {
                 self.wrappedValue = nil
             }
         }
+    }
 
+    func isNil<V>() -> Binding<Bool> where Value == Optional<V> {
+        Binding<Bool> {
+            self.wrappedValue == nil
+        } set: { v, _ in
+            if v {
+                self.wrappedValue = nil
+            }
+        }
     }
 }

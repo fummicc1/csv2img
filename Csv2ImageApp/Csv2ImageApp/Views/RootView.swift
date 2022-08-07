@@ -9,7 +9,7 @@ import SwiftUI
 
 struct RootView: View {
 
-    @State private var selectedCsv: SelectedCsvInfo?
+    @State private var selectedCsv: SelectedCsvState?
 
     var body: some View {
         if let selectedCsv {
@@ -17,10 +17,12 @@ struct RootView: View {
                 model: GenerateOutputModel(
                     url: selectedCsv.url,
                     urlType: selectedCsv.fileType
-                )
-            ).transition(.opacity)
+                ),
+                backToPreviousPage: $selectedCsv.isNil()
+            ).transition(.opacity.animation(.easeInOut))
         } else {
             SelectCsvView(selectedCsv: $selectedCsv, model: SelectCsvModel())
+                .transition(.move(edge: .leading).animation(.easeInOut))
         }
     }
 }

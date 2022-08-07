@@ -11,7 +11,7 @@ import Csv2Img
 
 struct SelectCsvView: View {
 
-    @Binding var selectedCsv: SelectedCsvInfo?
+    @Binding var selectedCsv: SelectedCsvState?
     @ObservedObject var model: SelectCsvModel
 
     var body: some View {

@@ -20,8 +20,9 @@
 		D3A4EB2A284F11A4002E3499 /* Csv2ImageAppTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3A4EB29284F11A4002E3499 /* Csv2ImageAppTests.swift */; };
 		D3A4EB34284F11A4002E3499 /* Csv2ImageAppUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3A4EB33284F11A4002E3499 /* Csv2ImageAppUITests.swift */; };
 		D3A4EB36284F11A4002E3499 /* Csv2ImageAppUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3A4EB35284F11A4002E3499 /* Csv2ImageAppUITestsLaunchTests.swift */; };
-		D3BDA4BB289FBCA500E15130 /* SelectedCsvInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3BDA4BA289FBCA500E15130 /* SelectedCsvInfo.swift */; };
 		D3BDA4BE289FBF4200E15130 /* Binding+Ex.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3BDA4BD289FBF4200E15130 /* Binding+Ex.swift */; };
+		D3BDA4C0289FC2AF00E15130 /* GenerateOutputState.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3BDA4BF289FC2AF00E15130 /* GenerateOutputState.swift */; };
+		D3BDA4C2289FC2E300E15130 /* SelectedCsvState.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3BDA4C1289FC2E300E15130 /* SelectedCsvState.swift */; };
 		D3C4130A289F881700936C02 /* SelectCsvView+macOS.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3C41309289F881700936C02 /* SelectCsvView+macOS.swift */; };
 		D3C4130C289F886000936C02 /* SelectCsvView+iOS.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3C4130B289F886000936C02 /* SelectCsvView+iOS.swift */; };
 		D3C41311289F8B4B00936C02 /* BrandingFrameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3C41310289F8B4B00936C02 /* BrandingFrameView.swift */; };
@@ -76,8 +77,9 @@
 		D3A4EB2F284F11A4002E3499 /* Csv2ImageAppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Csv2ImageAppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		D3A4EB33284F11A4002E3499 /* Csv2ImageAppUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Csv2ImageAppUITests.swift; sourceTree = "<group>"; };
 		D3A4EB35284F11A4002E3499 /* Csv2ImageAppUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Csv2ImageAppUITestsLaunchTests.swift; sourceTree = "<group>"; };
-		D3BDA4BA289FBCA500E15130 /* SelectedCsvInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectedCsvInfo.swift; sourceTree = "<group>"; };
 		D3BDA4BD289FBF4200E15130 /* Binding+Ex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Binding+Ex.swift"; sourceTree = "<group>"; };
+		D3BDA4BF289FC2AF00E15130 /* GenerateOutputState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenerateOutputState.swift; sourceTree = "<group>"; };
+		D3BDA4C1289FC2E300E15130 /* SelectedCsvState.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SelectedCsvState.swift; sourceTree = "<group>"; };
 		D3C41309289F881700936C02 /* SelectCsvView+macOS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SelectCsvView+macOS.swift"; sourceTree = "<group>"; };
 		D3C4130B289F886000936C02 /* SelectCsvView+iOS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SelectCsvView+iOS.swift"; sourceTree = "<group>"; };
 		D3C41310289F8B4B00936C02 /* BrandingFrameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrandingFrameView.swift; sourceTree = "<group>"; };
@@ -169,17 +171,17 @@
 		D3A4EB16284F11A3002E3499 /* Csv2ImageApp */ = {
 			isa = PBXGroup;
 			children = (
-				D3BDA4BC289FBF3B00E15130 /* Ex */,
-				D3BDA4B9289FBC7500E15130 /* States */,
 				D3A4EB20284F11A4002E3499 /* Csv2ImageApp.entitlements */,
 				D3A4EB17284F11A3002E3499 /* Csv2ImageAppApp.swift */,
 				D359BADB28621BFE006DFDCE /* Type.swift */,
 				D3A4EB1B284F11A4002E3499 /* Assets.xcassets */,
 				D30B17E4285F865700EA92B5 /* Csv2Img.xcdatamodeld */,
+				D3BDA4BC289FBF3B00E15130 /* Ex */,
 				D3C41312289F8D3D00936C02 /* Generated */,
 				D30B17F4285F874000EA92B5 /* Generated */,
 				D3C4130F289F888B00936C02 /* Models */,
 				D3A4EB1D284F11A4002E3499 /* Preview Content */,
+				D3BDA4B9289FBC7500E15130 /* States */,
 				D3C4130D289F887400936C02 /* Views */,
 			);
 			path = Csv2ImageApp;
@@ -213,7 +215,8 @@
 		D3BDA4B9289FBC7500E15130 /* States */ = {
 			isa = PBXGroup;
 			children = (
-				D3BDA4BA289FBCA500E15130 /* SelectedCsvInfo.swift */,
+				D3BDA4C1289FC2E300E15130 /* SelectedCsvState.swift */,
+				D3BDA4BF289FC2AF00E15130 /* GenerateOutputState.swift */,
 			);
 			path = States;
 			sourceTree = "<group>";
@@ -417,6 +420,7 @@
 				D3C4130C289F886000936C02 /* SelectCsvView+iOS.swift in Sources */,
 				D3C41322289FB11F00936C02 /* GenerateOutputModel.swift in Sources */,
 				D35DB0D4285FA754009C252D /* CsvViewer.swift in Sources */,
+				D3BDA4C0289FC2AF00E15130 /* GenerateOutputState.swift in Sources */,
 				D3C41319289F991500936C02 /* CText.swift in Sources */,
 				D359BADA28621B85006DFDCE /* SwiftUI+PdfDocument.swift in Sources */,
 				D3C41328289FB66400936C02 /* CButton.swift in Sources */,
@@ -432,9 +436,9 @@
 				D3C4131D289F9E3A00936C02 /* SelectCsvModel.swift in Sources */,
 				D3BDA4BE289FBF4200E15130 /* Binding+Ex.swift in Sources */,
 				D3C41320289FB11800936C02 /* GenerateOutputView.swift in Sources */,
-				D3BDA4BB289FBCA500E15130 /* SelectedCsvInfo.swift in Sources */,
 				D3C41326289FB13800936C02 /* GenerateOutputView+macOS.swift in Sources */,
 				D3C41314289F8D3D00936C02 /* XCAssets+Generated.swift in Sources */,
+				D3BDA4C2289FC2E300E15130 /* SelectedCsvState.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -12,7 +12,7 @@ import UniformTypeIdentifiers
 struct SelectCsvView_macOS: View {
 
     @State private var isTargeted: Bool = false
-    @Binding var selectedCsv: SelectedCsvInfo?
+    @Binding var selectedCsv: SelectedCsvState?
     @ObservedObject var model: SelectCsvModel
 
     var body: some View {
@@ -28,7 +28,7 @@ struct SelectCsvView_macOS: View {
                                 return
                             }
                             withAnimation {
-                                selectedCsv = SelectedCsvInfo(fileType: .local, url: url)
+                                selectedCsv = SelectedCsvState(fileType: .local, url: url)
                             }
                         } catch {
                             print(error)
@@ -52,7 +52,7 @@ struct SelectCsvView_macOS: View {
                 if url.lastPathComponent.contains(".csv") {
                     DispatchQueue.main.async {
                         withAnimation {
-                            selectedCsv = SelectedCsvInfo(fileType: .local, url: url)
+                            selectedCsv = SelectedCsvState(fileType: .local, url: url)
                         }
                     }
                 }
