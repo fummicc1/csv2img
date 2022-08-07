@@ -16,7 +16,7 @@ Convert Csv into png image.
 
 Convert Csv into png image.
 
-- [documentation](https://fummicc1.github.io/csv2img/documentation/Csv2Img/)
+- [documentation](https://fummicc1.github.io/csv2img/documentation/csv2img/)
 
 ## Usage
 
