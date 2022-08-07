@@ -9,14 +9,22 @@ import SwiftUI
 
 #if os(macOS)
 struct GenerateOutputView_macOS: View {
+
+    @ObservedObject var model: GenerateOutputModel
+
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        Text("Hello, World!")
     }
 }
 
 struct GenerateOutputView_macOS_Previews: PreviewProvider {
     static var previews: some View {
-        GenerateOutputView_macOS()
+        GenerateOutputView_macOS(
+            model: GenerateOutputModel(
+                url: URL(string: "https://via.placeholder.com/150")!,
+                urlType: .network
+            )
+        )
     }
 }
 #endif

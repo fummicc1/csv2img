@@ -21,6 +21,7 @@
 		D3A4EB34284F11A4002E3499 /* Csv2ImageAppUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3A4EB33284F11A4002E3499 /* Csv2ImageAppUITests.swift */; };
 		D3A4EB36284F11A4002E3499 /* Csv2ImageAppUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3A4EB35284F11A4002E3499 /* Csv2ImageAppUITestsLaunchTests.swift */; };
 		D3BDA4BB289FBCA500E15130 /* SelectedCsvInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3BDA4BA289FBCA500E15130 /* SelectedCsvInfo.swift */; };
+		D3BDA4BE289FBF4200E15130 /* Binding+Ex.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3BDA4BD289FBF4200E15130 /* Binding+Ex.swift */; };
 		D3C4130A289F881700936C02 /* SelectCsvView+macOS.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3C41309289F881700936C02 /* SelectCsvView+macOS.swift */; };
 		D3C4130C289F886000936C02 /* SelectCsvView+iOS.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3C4130B289F886000936C02 /* SelectCsvView+iOS.swift */; };
 		D3C41311289F8B4B00936C02 /* BrandingFrameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3C41310289F8B4B00936C02 /* BrandingFrameView.swift */; };
@@ -76,6 +77,7 @@
 		D3A4EB33284F11A4002E3499 /* Csv2ImageAppUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Csv2ImageAppUITests.swift; sourceTree = "<group>"; };
 		D3A4EB35284F11A4002E3499 /* Csv2ImageAppUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Csv2ImageAppUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		D3BDA4BA289FBCA500E15130 /* SelectedCsvInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectedCsvInfo.swift; sourceTree = "<group>"; };
+		D3BDA4BD289FBF4200E15130 /* Binding+Ex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Binding+Ex.swift"; sourceTree = "<group>"; };
 		D3C41309289F881700936C02 /* SelectCsvView+macOS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SelectCsvView+macOS.swift"; sourceTree = "<group>"; };
 		D3C4130B289F886000936C02 /* SelectCsvView+iOS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SelectCsvView+iOS.swift"; sourceTree = "<group>"; };
 		D3C41310289F8B4B00936C02 /* BrandingFrameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrandingFrameView.swift; sourceTree = "<group>"; };
@@ -167,6 +169,7 @@
 		D3A4EB16284F11A3002E3499 /* Csv2ImageApp */ = {
 			isa = PBXGroup;
 			children = (
+				D3BDA4BC289FBF3B00E15130 /* Ex */,
 				D3BDA4B9289FBC7500E15130 /* States */,
 				D3A4EB20284F11A4002E3499 /* Csv2ImageApp.entitlements */,
 				D3A4EB17284F11A3002E3499 /* Csv2ImageAppApp.swift */,
@@ -213,6 +216,14 @@
 				D3BDA4BA289FBCA500E15130 /* SelectedCsvInfo.swift */,
 			);
 			path = States;
+			sourceTree = "<group>";
+		};
+		D3BDA4BC289FBF3B00E15130 /* Ex */ = {
+			isa = PBXGroup;
+			children = (
+				D3BDA4BD289FBF4200E15130 /* Binding+Ex.swift */,
+			);
+			path = Ex;
 			sourceTree = "<group>";
 		};
 		D3C4130D289F887400936C02 /* Views */ = {
@@ -419,6 +430,7 @@
 				D30B17E6285F865700EA92B5 /* Csv2Img.xcdatamodeld in Sources */,
 				D3C41311289F8B4B00936C02 /* BrandingFrameView.swift in Sources */,
 				D3C4131D289F9E3A00936C02 /* SelectCsvModel.swift in Sources */,
+				D3BDA4BE289FBF4200E15130 /* Binding+Ex.swift in Sources */,
 				D3C41320289FB11800936C02 /* GenerateOutputView.swift in Sources */,
 				D3BDA4BB289FBCA500E15130 /* SelectedCsvInfo.swift in Sources */,
 				D3C41326289FB13800936C02 /* GenerateOutputView+macOS.swift in Sources */,

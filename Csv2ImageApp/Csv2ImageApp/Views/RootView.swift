@@ -18,7 +18,7 @@ struct RootView: View {
                     url: selectedCsv.url,
                     urlType: selectedCsv.fileType
                 )
-            )
+            ).transition(.opacity)
         } else {
             SelectCsvView(selectedCsv: $selectedCsv, model: SelectCsvModel())
         }

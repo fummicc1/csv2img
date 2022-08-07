@@ -27,7 +27,9 @@ struct SelectCsvView_macOS: View {
                             guard let url = try await model.selectFileOnDisk() else {
                                 return
                             }
-                            selectedCsv = SelectedCsvInfo(fileType: .local, url: url)
+                            withAnimation {
+                                selectedCsv = SelectedCsvInfo(fileType: .local, url: url)
+                            }
                         } catch {
                             print(error)
                         }
@@ -49,7 +51,9 @@ struct SelectCsvView_macOS: View {
                 }
                 if url.lastPathComponent.contains(".csv") {
                     DispatchQueue.main.async {
-                        selectedCsv = SelectedCsvInfo(fileType: .local, url: url)
+                        withAnimation {
+                            selectedCsv = SelectedCsvInfo(fileType: .local, url: url)
+                        }
                     }
                 }
             }

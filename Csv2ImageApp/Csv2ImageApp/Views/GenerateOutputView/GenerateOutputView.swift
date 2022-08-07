@@ -16,7 +16,7 @@ struct GenerateOutputView: View {
         #if os(iOS)
         GenerateOutputView_iOS()
         #elseif os(macOS)
-        GenerateOutputView_macOS()
+        GenerateOutputView_macOS(model: model)
         #endif
     }
 }
