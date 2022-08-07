@@ -297,9 +297,14 @@ extension Csv {
     /// - Parameters:
     ///     - file: local url, commonly `file://` schema. Relative-path is not enable, please specify by absolute-path rule.
     ///     - separator: Default separator in a row is `","`. You cloud change it by giving separator to `separator` parameter.
-    public static func fromFile(_ file: URL, separator: String = ",") throws -> Csv {
+    ///     - checkAccessSecurityScope: This flag is effective to only macOS. If you want to check local-file is securely accessible from this app, make this flat `true`. Default value if `false` which does not check the file access-security-scope.
+    public static func fromFile(
+        _ file: URL,
+        separator: String = ",",
+        checkAccessSecurityScope: Bool = false
+    ) throws -> Csv {
         // https://www.hackingwithswift.com/forums/swift/accessing-files-from-the-files-app/8203
-        if file.startAccessingSecurityScopedResource() {
+        if !checkAccessSecurityScope || file.startAccessingSecurityScopedResource() {
             let data = try Data(contentsOf: file)
             if let str = String(data: data, encoding: .utf8) {
                 return .fromString(str)
