@@ -84,15 +84,6 @@ extension Csv {
         /// `pdf` output (Work In Progress)
         case pdf
 
-        public var outputType: CsvExportable.Type {
-            switch self {
-            case .png:
-                return CGImage.self
-            case .pdf:
-                return PDFDocument.self
-            }
-        }
-
         public var fileExtension: String {
             self.rawValue
         }
