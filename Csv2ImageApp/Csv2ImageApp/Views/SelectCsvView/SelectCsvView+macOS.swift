@@ -13,7 +13,7 @@ struct SelectCsvView_macOS: View {
 
     @State private var isTargeted: Bool = false
     @Binding var selectedCsv: SelectedCsvState?
-    @ObservedObject var model: SelectCsvModel
+    @StateObject var model: SelectCsvModel
 
     var body: some View {
         BrandingFrameView {

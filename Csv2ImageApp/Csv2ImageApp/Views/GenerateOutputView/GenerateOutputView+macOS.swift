@@ -6,37 +6,62 @@
 //
 
 import SwiftUI
+import Csv2Img
 import PDFKit
 
 #if os(macOS)
 struct GenerateOutputView_macOS: View {
 
-    @ObservedObject var model: GenerateOutputModel
+    @StateObject var model: GenerateOutputModel
     @Binding var backToPreviousPage: Bool
 
     @Environment(\.dismiss) var dismiss
 
     var body: some View {
-        ZStack {
-            Group {
-                switch model.state.exportMode {
-                case .png:
-                    if let imageData = model.state.data?.base as? Data, let image = NSImage(data: imageData) {
-                        Image(nsImage: image)
+        GeometryReader { proxy in
+            VStack {
+                HStack {
+                    CButton.labeled("Back") {
+                        withAnimation {
+                            backToPreviousPage = true
+                        }
                     }
-                case .pdf:
-                    if let document = model.state.data?.base as? PDFDocument {
+                    Spacer()
+                }
+                .padding()
+                Group {
+                    if let cgImage = model.state.cgImage, model.state.exportType == .png {
+                        if let image = NSImage(cgImage: cgImage, size: CGSize(width: cgImage.width, height: cgImage.height)) {
+                            Image(nsImage: image)
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .frame(
+                                    width: proxy.size.width * 0.7,
+                                    height: proxy.size.height * 0.7
+                                )
+                        }
+                    } else if let document = model.state.pdfDocument, model.state.exportType == .pdf {
                         PdfDocumentView(document: document)
-                    } else {
-
                     }
                 }
-            }
+                Spacer()
+                HStack {
+                    Picker(selection: $model.state.exportType) {
+                        CText("png").tag(Csv.ExportType.png)
+                        CText("pdf").tag(Csv.ExportType.pdf)
+                    } label: {
+                        CText("Export Type")
+                    }
+                    .padding()
+                    .pickerStyle(.radioGroup)
+                    .background(Asset.backgroundColor.swiftUIColor)
+                    .padding()
 
-            CButton.labeled("Back") {
-                withAnimation {
-                    backToPreviousPage = true
-                }
+                    Spacer()
+                    CButton.labeled("Save", role: .primary) {
+                        model.save()
+                    }
+                }.padding()
             }
         }
     }

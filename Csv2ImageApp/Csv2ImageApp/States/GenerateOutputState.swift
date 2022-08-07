@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import PDFKit
 import Csv2Img
 
 
@@ -13,16 +14,23 @@ struct GenerateOutputState: Hashable {
     let url: URL
     let fileType: FileURLType
 
-    var data: AnyCsvExportable?
-    var exportMode: Csv.ExportType
+    var cgImage: CGImage?
+    var pdfDocument: PDFDocument?
+    var exportType: Csv.ExportType
 
     func hash(into hasher: inout Hasher) {
         hasher.combine(url)
         hasher.combine(fileType)
-        hasher.combine(exportMode)
+        hasher.combine(exportType)
+        if let cgImage {
+            hasher.combine(cgImage.convertToData())
+        }
+        if let pdfDocument {
+            hasher.combine(pdfDocument.dataRepresentation())
+        }
     }
 
     static func ==(lhs: GenerateOutputState, rhs: GenerateOutputState) -> Bool {
-        lhs.url == rhs.url && lhs.exportMode == rhs.exportMode && lhs.fileType == rhs.fileType
+        lhs.url == rhs.url && lhs.exportType == rhs.exportType && lhs.fileType == rhs.fileType && lhs.cgImage?.convertToData() == rhs.cgImage?.convertToData() && lhs.pdfDocument?.dataRepresentation() == rhs.pdfDocument?.dataRepresentation()
     }
 }

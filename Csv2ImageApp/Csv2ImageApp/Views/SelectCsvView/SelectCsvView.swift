@@ -12,7 +12,7 @@ import Csv2Img
 struct SelectCsvView: View {
 
     @Binding var selectedCsv: SelectedCsvState?
-    @ObservedObject var model: SelectCsvModel
+    @StateObject var model: SelectCsvModel
 
     var body: some View {
         #if os(macOS)
