@@ -11,11 +11,6 @@ import SwiftUI
 enum GenerateOutputModelError: Error {
 }
 
-enum FileURLType {
-    case local
-    case network
-}
-
 class GenerateOutputModel: ObservableObject {
     let url: URL
     let urlType: FileURLType

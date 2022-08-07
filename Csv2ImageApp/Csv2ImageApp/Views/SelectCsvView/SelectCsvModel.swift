@@ -33,7 +33,7 @@ extension SelectCsvModel {
         let panel = NSOpenPanel()
         panel.allowedContentTypes = [.commaSeparatedText]
         let result = panel.runModal()
-        if result == .alertFirstButtonReturn {
+        if result == .OK {
             guard let url = panel.url else {
                 throw SelectCsvModelError.fileNotFound
             }

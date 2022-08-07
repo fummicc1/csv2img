@@ -9,10 +9,19 @@ import SwiftUI
 
 struct RootView: View {
 
-    @State private var selectedImageUrl: URL?
+    @State private var selectedCsv: SelectedCsvInfo?
 
     var body: some View {
-        SelectCsvView(selectedImageUrl: $selectedImageUrl, model: SelectCsvModel())
+        if let selectedCsv {
+            GenerateOutputView(
+                model: GenerateOutputModel(
+                    url: selectedCsv.url,
+                    urlType: selectedCsv.fileType
+                )
+            )
+        } else {
+            SelectCsvView(selectedCsv: $selectedCsv, model: SelectCsvModel())
+        }
     }
 }
 

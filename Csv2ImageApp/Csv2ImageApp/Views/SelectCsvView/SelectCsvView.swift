@@ -11,12 +11,12 @@ import Csv2Img
 
 struct SelectCsvView: View {
 
-    @Binding var selectedImageUrl: URL?
+    @Binding var selectedCsv: SelectedCsvInfo?
     @ObservedObject var model: SelectCsvModel
 
     var body: some View {
         #if os(macOS)
-        SelectCsvView_macOS(selectedImageUrl: _selectedImageUrl, model: model)
+        SelectCsvView_macOS(selectedCsv: _selectedCsv, model: model)
         #elseif os(iOS)
         SelectCsvView_iOS()
         #endif
