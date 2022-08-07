@@ -97,7 +97,7 @@ let data = csv.pngData(fontSize: 12)
 
 A command line tool which generates png-image from csv. (Using `Csv2Img` library)
 
-- [documentation](https://fummicc1.github.io/csv2img/Csv2ImgCmd/documentation/Csv2ImgCmd/)
+- [documentation](https://fummicc1.github.io/Csv2ImgCmd_DocC/documentation/csv2imgcmd/)
 
 ## Usage
 
