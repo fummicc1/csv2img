@@ -9,6 +9,24 @@ import SwiftUI
 import CoreData
 
 
+enum CsvImageAppError: Swift.Error {
+    case invalidNetworkURL(url: String)
+    case outputFileNameIsEmpty
+    case underlying(Error)
+
+    var message: String {
+        switch self {
+        case .invalidNetworkURL(let url):
+            return "Invalid URL: \(url)"
+        case .outputFileNameIsEmpty:
+            return "Empty Output FileName"
+        case .underlying(let error):
+            return "\(error)"
+        }
+    }
+}
+
+
 @main
 struct Csv2ImageAppApp: App {
 
@@ -31,8 +49,7 @@ struct Csv2ImageAppApp: App {
         container.persistentStoreDescriptions = [description]
         container.loadPersistentStores { _, error in
             if let error = error {
-                print(error)
-                assertionFailure(error.localizedDescription)
+                assertionFailure("\(error)")
             }
         }
         container.viewContext.automaticallyMergesChangesFromParent = true
@@ -41,15 +58,15 @@ struct Csv2ImageAppApp: App {
 
     var body: some Scene {
         WindowGroup {
-            ContentView(
-                historyModel: HistoryModel(context: persistentController.viewContext)
-            )
+            RootView()
                 .environment(
                     \.managedObjectContext, persistentController.viewContext
                 )
-        }
-        .commands {
-            SidebarCommands()
+                .onReceive(NotificationCenter.default.publisher(for: NSApplication.willUpdateNotification), perform: { _ in
+                    for window in Application.shared.windows {
+                        window.standardWindowButton(.zoomButton)?.isEnabled = false
+                    }
+                })
         }
     }
 }
