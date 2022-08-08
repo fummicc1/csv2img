@@ -6,6 +6,10 @@
 
 Convert Csv into png image.
 
+Download on [App Store]().
+
+<img src="https://raw.github.com/fummicc1/csv2img/1.3.2/resDownload_on_the_App_Store_Badge_US-UK_RGB_blk_092917.svg?sanitize=true"
+
 ## MacOS App
 
 ### Demo
