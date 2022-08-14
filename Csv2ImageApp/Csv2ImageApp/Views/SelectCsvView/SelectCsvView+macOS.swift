@@ -12,7 +12,6 @@ import UniformTypeIdentifiers
 struct SelectCsvView_macOS: View {
 
     @State private var isTargeted: Bool = false
-    @Binding var selectedCsv: SelectedCsvState?
     @StateObject var model: SelectCsvModel
 
     var body: some View {
@@ -23,16 +22,7 @@ struct SelectCsvView_macOS: View {
                 Spacer().frame(height: 32)
                 CButton.labeled("Alternatively, Choose from Finder") {
                     Task {
-                        do {
-                            guard let url = try await model.selectFileOnDisk() else {
-                                return
-                            }
-                            withAnimation {
-                                selectedCsv = SelectedCsvState(fileType: .local, url: url)
-                            }
-                        } catch {
-                            print(error)
-                        }
+                        await model.selectFileOnDisk()
                     }
                 }
             }
@@ -52,7 +42,7 @@ struct SelectCsvView_macOS: View {
                 if url.lastPathComponent.contains(".csv") {
                     DispatchQueue.main.async {
                         withAnimation {
-                            selectedCsv = SelectedCsvState(fileType: .local, url: url)
+                            model.selectedCsv = SelectedCsvState(fileType: .local, url: url)
                         }
                     }
                 }
@@ -65,7 +55,6 @@ struct SelectCsvView_macOS: View {
 struct SelectCsvView_macOS_Previews: PreviewProvider {
     static var previews: some View {
         SelectCsvView_macOS(
-            selectedCsv: .constant(nil),
             model: SelectCsvModel()
         )
     }

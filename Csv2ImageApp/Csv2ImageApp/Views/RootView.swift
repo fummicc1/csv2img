@@ -21,8 +21,10 @@ struct RootView: View {
                 backToPreviousPage: $selectedCsv.isNil()
             ).transition(.opacity.animation(.easeInOut))
         } else {
-            SelectCsvView(selectedCsv: $selectedCsv, model: SelectCsvModel())
-                .transition(.move(edge: .leading).animation(.easeInOut))
+            SelectCsvView(
+                selectedCsv: $selectedCsv, model: SelectCsvModel()
+            )
+            .transition(.move(edge: .leading).animation(.easeInOut))
         }
     }
 }

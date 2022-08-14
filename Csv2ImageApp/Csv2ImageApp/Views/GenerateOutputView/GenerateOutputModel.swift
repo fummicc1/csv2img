@@ -34,7 +34,7 @@ class GenerateOutputModel: ObservableObject {
         do {
             switch urlType {
             case .local:
-                self.csv = try Csv.fromFile(url)
+                self.csv = try Csv.fromFile(url, checkAccessSecurityScope: true)
             case .network:
                 self.csv = try Csv.fromURL(url)
             }
@@ -85,6 +85,18 @@ class GenerateOutputModel: ObservableObject {
     @MainActor
     @discardableResult
     func save() -> Bool {
+        #if os(macOS)
+        save_macOS()
+        #elseif os(iOS)
+        save_iOS()
+        #endif
+    }
+}
+
+
+#if os(macOS)
+extension GenerateOutputModel {
+    private func save_macOS() -> Bool {
         let panel = NSSavePanel()
         panel.nameFieldStringValue = state.url.lastPathComponent
         panel.allowedContentTypes = [state.exportType.utType]
@@ -107,7 +119,10 @@ class GenerateOutputModel: ObservableObject {
         return false
     }
 }
-
-
-#if os(macOS)
+#elseif os(iOS)
+extension GenerateOutputModel {
+    private func save_iOS() -> Bool {
+        return false
+    }
+}
 #endif
