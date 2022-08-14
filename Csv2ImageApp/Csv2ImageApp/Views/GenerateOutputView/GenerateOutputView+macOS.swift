@@ -29,21 +29,19 @@ struct GenerateOutputView_macOS: View {
                     Spacer()
                 }
                 .padding()
-                Group {
-                    if let cgImage = model.state.cgImage, model.state.exportType == .png {
-                        if let image = NSImage(cgImage: cgImage, size: CGSize(width: cgImage.width, height: cgImage.height)) {
-                            Image(nsImage: image)
-                                .resizable()
-                                .aspectRatio(contentMode: .fit)
-                                .frame(
-                                    width: proxy.size.width * 0.7,
-                                    height: proxy.size.height * 0.7
-                                )
-                        }
-                    } else if let document = model.state.pdfDocument, model.state.exportType == .pdf {
-                        PdfDocumentView(document: document)
-                    }
-                }
+                GeneratePreviewView(
+                    model: model,
+                    size: .constant(
+                        CGSize(
+                            width: proxy.size.width * 0.7,
+                            height: proxy.size.height * 0.7
+                        )
+                    )
+                )
+                .frame(
+                    width: proxy.size.width * 0.7,
+                    height: proxy.size.height * 0.7
+                )
                 Spacer()
                 HStack {
                     Picker(selection: $model.state.exportType) {
@@ -63,6 +61,7 @@ struct GenerateOutputView_macOS: View {
                     }
                 }.padding()
             }
+            .background(Asset.lightAccentColor.swiftUIColor)
         }
     }
 }

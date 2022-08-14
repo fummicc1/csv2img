@@ -16,11 +16,14 @@ struct GenerateOutputView: View {
     var body: some View {
         Group {
 #if os(iOS)
-            GenerateOutputView_iOS()
+            GenerateOutputView_iOS(
+                model: model,
+                backToPreviousPage: _backToPreviousPage
+            )
 #elseif os(macOS)
             GenerateOutputView_macOS(
                 model: model,
-                backToPreviousPage: $backToPreviousPage
+                backToPreviousPage: _backToPreviousPage
             )
 #endif
         }

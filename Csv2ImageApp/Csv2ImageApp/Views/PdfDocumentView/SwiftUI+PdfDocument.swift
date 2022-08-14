@@ -12,6 +12,7 @@ import PDFKit
 struct PdfDocumentView: ViewRepresentable {
 
     let document: PDFDocument
+    @Binding var size: CGSize
 
     private let view: PDFView = .init()
 
@@ -19,7 +20,7 @@ struct PdfDocumentView: ViewRepresentable {
     typealias NSViewType = PDFView
     func makeNSView(context: Context) -> PDFView {
         view.document = document
-        view.setFrameSize(view.fittingSize)
+        view.setFrameSize(size)
         return view
     }
 
@@ -30,7 +31,7 @@ struct PdfDocumentView: ViewRepresentable {
 
     func makeUIView(context: Context) -> PDFView {
         view.document = document
-        view.sizeToFit()
+        view.frame.size = size
         return view
     }
     func updateUIView(_ uiView: PDFView, context: Context) {
@@ -40,6 +41,6 @@ struct PdfDocumentView: ViewRepresentable {
 
 struct PdfDocumentView_Previews: PreviewProvider {
     static var previews: some View {
-        PdfDocumentView(document: .init())
+        PdfDocumentView(document: .init(), size: .constant(CGSize(width: 100, height: 100)))
     }
 }

@@ -26,7 +26,6 @@
 		D3C4130A289F881700936C02 /* SelectCsvView+macOS.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3C41309289F881700936C02 /* SelectCsvView+macOS.swift */; };
 		D3C4130C289F886000936C02 /* SelectCsvView+iOS.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3C4130B289F886000936C02 /* SelectCsvView+iOS.swift */; };
 		D3C41311289F8B4B00936C02 /* BrandingFrameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3C41310289F8B4B00936C02 /* BrandingFrameView.swift */; };
-		D3C41314289F8D3D00936C02 /* XCAssets+Generated.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3C41313289F8D3D00936C02 /* XCAssets+Generated.swift */; };
 		D3C41319289F991500936C02 /* CText.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3C41318289F991500936C02 /* CText.swift */; };
 		D3C4131B289F9B7B00936C02 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3C4131A289F9B7B00936C02 /* RootView.swift */; };
 		D3C4131D289F9E3A00936C02 /* SelectCsvModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3C4131C289F9E3A00936C02 /* SelectCsvModel.swift */; };
@@ -36,6 +35,12 @@
 		D3C41326289FB13800936C02 /* GenerateOutputView+macOS.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3C41325289FB13800936C02 /* GenerateOutputView+macOS.swift */; };
 		D3C41328289FB66400936C02 /* CButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3C41327289FB66400936C02 /* CButton.swift */; };
 		D3E3789828A92C5600154577 /* UIApplication+Ex.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3E3789728A92C5600154577 /* UIApplication+Ex.swift */; };
+		D3E378B528A9391600154577 /* CsvConfig+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3E378B028A9391600154577 /* CsvConfig+CoreDataProperties.swift */; };
+		D3E378B628A9391600154577 /* CsvOutput+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3E378B128A9391600154577 /* CsvOutput+CoreDataClass.swift */; };
+		D3E378B728A9391600154577 /* CsvOutput+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3E378B228A9391600154577 /* CsvOutput+CoreDataProperties.swift */; };
+		D3E378B828A9391600154577 /* XCAssets+Generated.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3E378B328A9391600154577 /* XCAssets+Generated.swift */; };
+		D3E378B928A9391600154577 /* CsvConfig+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3E378B428A9391600154577 /* CsvConfig+CoreDataClass.swift */; };
+		D3E378BB28A93A5A00154577 /* GeneratePreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3E378BA28A93A5A00154577 /* GeneratePreviewView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -57,10 +62,6 @@
 
 /* Begin PBXFileReference section */
 		D30B17E5285F865700EA92B5 /* Csv2Img.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Csv2Img.xcdatamodel; sourceTree = "<group>"; };
-		D330D5DF285F978D00F49491 /* CsvConfig+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CsvConfig+CoreDataClass.swift"; sourceTree = "<group>"; };
-		D330D5E0285F978D00F49491 /* CsvConfig+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CsvConfig+CoreDataProperties.swift"; sourceTree = "<group>"; };
-		D330D5E1285F978D00F49491 /* CsvOutput+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CsvOutput+CoreDataClass.swift"; sourceTree = "<group>"; };
-		D330D5E2285F978D00F49491 /* CsvOutput+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CsvOutput+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		D359BAD928621B85006DFDCE /* SwiftUI+PdfDocument.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SwiftUI+PdfDocument.swift"; sourceTree = "<group>"; };
 		D359BADB28621BFE006DFDCE /* Type.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Type.swift; sourceTree = "<group>"; };
 		D35DB0CE285FA334009C252D /* Csv2Img 2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "Csv2Img 2.xcdatamodel"; sourceTree = "<group>"; };
@@ -84,7 +85,6 @@
 		D3C41309289F881700936C02 /* SelectCsvView+macOS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SelectCsvView+macOS.swift"; sourceTree = "<group>"; };
 		D3C4130B289F886000936C02 /* SelectCsvView+iOS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SelectCsvView+iOS.swift"; sourceTree = "<group>"; };
 		D3C41310289F8B4B00936C02 /* BrandingFrameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrandingFrameView.swift; sourceTree = "<group>"; };
-		D3C41313289F8D3D00936C02 /* XCAssets+Generated.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "XCAssets+Generated.swift"; sourceTree = "<group>"; };
 		D3C41318289F991500936C02 /* CText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CText.swift; sourceTree = "<group>"; };
 		D3C4131A289F9B7B00936C02 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
 		D3C4131C289F9E3A00936C02 /* SelectCsvModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectCsvModel.swift; sourceTree = "<group>"; };
@@ -94,6 +94,12 @@
 		D3C41325289FB13800936C02 /* GenerateOutputView+macOS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "GenerateOutputView+macOS.swift"; sourceTree = "<group>"; };
 		D3C41327289FB66400936C02 /* CButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CButton.swift; sourceTree = "<group>"; };
 		D3E3789728A92C5600154577 /* UIApplication+Ex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIApplication+Ex.swift"; sourceTree = "<group>"; };
+		D3E378B028A9391600154577 /* CsvConfig+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "CsvConfig+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		D3E378B128A9391600154577 /* CsvOutput+CoreDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "CsvOutput+CoreDataClass.swift"; sourceTree = "<group>"; };
+		D3E378B228A9391600154577 /* CsvOutput+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "CsvOutput+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		D3E378B328A9391600154577 /* XCAssets+Generated.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "XCAssets+Generated.swift"; sourceTree = "<group>"; };
+		D3E378B428A9391600154577 /* CsvConfig+CoreDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "CsvConfig+CoreDataClass.swift"; sourceTree = "<group>"; };
+		D3E378BA28A93A5A00154577 /* GeneratePreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeneratePreviewView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -122,18 +128,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		D30B17F4285F874000EA92B5 /* Generated */ = {
-			isa = PBXGroup;
-			children = (
-				D330D5DF285F978D00F49491 /* CsvConfig+CoreDataClass.swift */,
-				D330D5E0285F978D00F49491 /* CsvConfig+CoreDataProperties.swift */,
-				D330D5E1285F978D00F49491 /* CsvOutput+CoreDataClass.swift */,
-				D330D5E2285F978D00F49491 /* CsvOutput+CoreDataProperties.swift */,
-				D3C41313289F8D3D00936C02 /* XCAssets+Generated.swift */,
-			);
-			path = Generated;
-			sourceTree = SOURCE_ROOT;
-		};
 		D34306A62855CA170035C6F0 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -180,7 +174,7 @@
 				D3A4EB1B284F11A4002E3499 /* Assets.xcassets */,
 				D30B17E4285F865700EA92B5 /* Csv2Img.xcdatamodeld */,
 				D3BDA4BC289FBF3B00E15130 /* Ex */,
-				D30B17F4285F874000EA92B5 /* Generated */,
+				D3E378AF28A9391600154577 /* Generated */,
 				D3C4130F289F888B00936C02 /* Models */,
 				D3A4EB1D284F11A4002E3499 /* Preview Content */,
 				D3BDA4B9289FBC7500E15130 /* States */,
@@ -273,6 +267,7 @@
 				D3C41321289FB11F00936C02 /* GenerateOutputModel.swift */,
 				D3C41323289FB12F00936C02 /* GenerateOutputView+iOS.swift */,
 				D3C41325289FB13800936C02 /* GenerateOutputView+macOS.swift */,
+				D3E378BA28A93A5A00154577 /* GeneratePreviewView.swift */,
 			);
 			path = GenerateOutputView;
 			sourceTree = "<group>";
@@ -283,6 +278,18 @@
 				D359BAD928621B85006DFDCE /* SwiftUI+PdfDocument.swift */,
 			);
 			path = PdfDocumentView;
+			sourceTree = "<group>";
+		};
+		D3E378AF28A9391600154577 /* Generated */ = {
+			isa = PBXGroup;
+			children = (
+				D3E378B028A9391600154577 /* CsvConfig+CoreDataProperties.swift */,
+				D3E378B128A9391600154577 /* CsvOutput+CoreDataClass.swift */,
+				D3E378B228A9391600154577 /* CsvOutput+CoreDataProperties.swift */,
+				D3E378B328A9391600154577 /* XCAssets+Generated.swift */,
+				D3E378B428A9391600154577 /* CsvConfig+CoreDataClass.swift */,
+			);
+			path = Generated;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -421,9 +428,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				D3C4130C289F886000936C02 /* SelectCsvView+iOS.swift in Sources */,
+				D3E378B628A9391600154577 /* CsvOutput+CoreDataClass.swift in Sources */,
 				D3C41322289FB11F00936C02 /* GenerateOutputModel.swift in Sources */,
 				D35DB0D4285FA754009C252D /* CsvViewer.swift in Sources */,
+				D3E378B528A9391600154577 /* CsvConfig+CoreDataProperties.swift in Sources */,
 				D3BDA4C0289FC2AF00E15130 /* GenerateOutputState.swift in Sources */,
+				D3E378B928A9391600154577 /* CsvConfig+CoreDataClass.swift in Sources */,
 				D3C41319289F991500936C02 /* CText.swift in Sources */,
 				D359BADA28621B85006DFDCE /* SwiftUI+PdfDocument.swift in Sources */,
 				D3C41328289FB66400936C02 /* CButton.swift in Sources */,
@@ -431,17 +441,19 @@
 				D3C41324289FB12F00936C02 /* GenerateOutputView+iOS.swift in Sources */,
 				D30B181A285F8A5300EA92B5 /* SelectCsvView.swift in Sources */,
 				D359BADC28621BFE006DFDCE /* Type.swift in Sources */,
+				D3E378B828A9391600154577 /* XCAssets+Generated.swift in Sources */,
 				D3A4EB18284F11A3002E3499 /* Csv2ImageAppApp.swift in Sources */,
 				D3C4130A289F881700936C02 /* SelectCsvView+macOS.swift in Sources */,
 				D3C4131B289F9B7B00936C02 /* RootView.swift in Sources */,
+				D3E378B728A9391600154577 /* CsvOutput+CoreDataProperties.swift in Sources */,
 				D30B17E6285F865700EA92B5 /* Csv2Img.xcdatamodeld in Sources */,
+				D3E378BB28A93A5A00154577 /* GeneratePreviewView.swift in Sources */,
 				D3C41311289F8B4B00936C02 /* BrandingFrameView.swift in Sources */,
 				D3C4131D289F9E3A00936C02 /* SelectCsvModel.swift in Sources */,
 				D3BDA4BE289FBF4200E15130 /* Binding+Ex.swift in Sources */,
 				D3C41320289FB11800936C02 /* GenerateOutputView.swift in Sources */,
 				D3E3789828A92C5600154577 /* UIApplication+Ex.swift in Sources */,
 				D3C41326289FB13800936C02 /* GenerateOutputView+macOS.swift in Sources */,
-				D3C41314289F8D3D00936C02 /* XCAssets+Generated.swift in Sources */,
 				D3BDA4C2289FC2E300E15130 /* SelectedCsvState.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
