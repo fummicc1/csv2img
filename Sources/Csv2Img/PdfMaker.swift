@@ -232,7 +232,7 @@ extension PdfMaker {
     #if os(macOS)
                 let originY = (rows.count - (i + 1)) * height + topSpaceInBox
     #elseif os(iOS)
-                let originY = totalHeight - i * height + topSpaceInBox
+                let originY = totalHeight - height - ((i + 1) * height + topSpaceInBox)
                 #endif
                 let framesetter = CTFramesetterCreateWithAttributedString(str)
                 context.textMatrix = CGAffineTransform.identity
@@ -300,7 +300,7 @@ extension PdfMaker {
             #if os(macOS)
             let originY = totalHeight - (height + Int(size.height)) / 2
             #elseif os(iOS)
-            let originY = Int(size.height) / 2
+            let originY = totalHeight - Int(size.height)
             #endif
             let framesetter = CTFramesetterCreateWithAttributedString(str)
             context.saveGState()
