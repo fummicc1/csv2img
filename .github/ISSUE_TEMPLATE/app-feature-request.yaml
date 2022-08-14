@@ -1,0 +1,20 @@
+name: Application New feature Requet
+description: Describe a new feature request for app.
+title: "[app]: "
+labels: ["enhancement"]
+assignees:
+  - fummicc1
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking your time to fill out this issue!
+  - type: textarea
+    id: new-feature
+    attributes:
+      label: What is your new feature?
+      description: Please write your expectation / new feature.
+      placeholder: Tell us your expectation!
+      value: "New Feature Requested!"
+    validations:
+      required: true
