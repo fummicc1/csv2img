@@ -20,6 +20,7 @@ struct SelectCsvView_iOS: View {
                 }
             }
         }
+        .ignoresSafeArea()
     }
 }
 
