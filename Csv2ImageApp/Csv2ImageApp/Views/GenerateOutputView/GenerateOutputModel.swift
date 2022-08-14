@@ -18,6 +18,7 @@ enum GenerateOutputModelError: Error {
 class GenerateOutputModel: ObservableObject {
 
     @Published var state: GenerateOutputState
+    @Published var savedURL: URL?
 
     let csv: Csv
 
@@ -107,9 +108,13 @@ extension GenerateOutputModel {
             }
             do {
                 if let pdf = state.pdfDocument {
-                    return pdf.write(to: url)
+                    if pdf.write(to: url) {
+                        savedURL = url
+                        return true
+                    }
                 } else if let imgData = state.cgImage?.convertToData() {
                     try imgData.write(to: url)
+                    savedURL = url
                     return true
                 }
             } catch {
@@ -122,6 +127,28 @@ extension GenerateOutputModel {
 #elseif os(iOS)
 extension GenerateOutputModel {
     private func save_iOS() -> Bool {
+        guard var url = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
+            return false
+        }
+        guard let fileName = state.url.lastPathComponent.split(separator: ".").first else {
+            return false
+        }
+        url.appendPathComponent(String(fileName), conformingTo: state.exportType.utType)
+        if let pdf = state.pdfDocument, state.exportType == .pdf {
+            if pdf.write(to: url) {
+                savedURL = url
+                return true
+            }
+        } else if let image = state.cgImage, state.exportType == .png {
+            do {
+                try image.convertToData()?.write(to: url)
+                savedURL = url
+                return true
+            } catch {
+                print(error)
+            }
+        }
+
         return false
     }
 }
