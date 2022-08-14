@@ -35,7 +35,11 @@ class GenerateOutputModel: ObservableObject {
         do {
             switch urlType {
             case .local:
+                #if os(macOS)
+                self.csv = try Csv.fromFile(url)
+                #elseif os(iOS)
                 self.csv = try Csv.fromFile(url, checkAccessSecurityScope: true)
+                #endif
             case .network:
                 self.csv = try Csv.fromURL(url)
             }
