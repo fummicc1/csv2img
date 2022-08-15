@@ -52,7 +52,7 @@ extension SelectCsvModel {
         let result = panel.runModal()
         if result == .OK {
             guard let url = panel.url else {
-                error = SelectCsvModelError.fileNotFound
+                error = "\(SelectCsvModelError.fileNotFound)"
                 return
             }
             withAnimation {
