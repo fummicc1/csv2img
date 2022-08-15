@@ -65,6 +65,29 @@ struct CButton: View {
             onPressed: onPressed
         )
     }
+
+    static func icon(
+        systemName: String,
+        font: Font = .body,
+        hPadding: CGFloat = 12,
+        vPadding: CGFloat = 8,
+        role: Role = .normal,
+        onPressed: @escaping () -> Void
+    ) -> CButton {
+        CButton(
+            content: {
+                AnyView(
+                    Image(systemName: systemName)
+                        .foregroundColor(Asset.textColor.swiftUIColor)
+                        .font(font)
+                )
+            },
+            hPadding: hPadding,
+            vPadding: vPadding,
+            role: role,
+            onPressed: onPressed
+        )
+    }
 }
 
 struct CButton_Previews: PreviewProvider {

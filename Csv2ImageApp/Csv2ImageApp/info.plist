@@ -6,5 +6,7 @@
 	<array>
 		<string>file</string>
 	</array>
+	<key>UIFileSharingEnabled</key>
+	<true/>
 </dict>
 </plist>

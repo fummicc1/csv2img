@@ -18,6 +18,7 @@ enum GenerateOutputModelError: Error {
 class GenerateOutputModel: ObservableObject {
 
     @Published var state: GenerateOutputState
+    @Published var savedURL: URL?
 
     let csv: Csv
 
@@ -34,7 +35,11 @@ class GenerateOutputModel: ObservableObject {
         do {
             switch urlType {
             case .local:
+                #if os(macOS)
                 self.csv = try Csv.fromFile(url)
+                #elseif os(iOS)
+                self.csv = try Csv.fromFile(url, checkAccessSecurityScope: true)
+                #endif
             case .network:
                 self.csv = try Csv.fromURL(url)
             }
@@ -85,6 +90,18 @@ class GenerateOutputModel: ObservableObject {
     @MainActor
     @discardableResult
     func save() -> Bool {
+        #if os(macOS)
+        save_macOS()
+        #elseif os(iOS)
+        save_iOS()
+        #endif
+    }
+}
+
+
+#if os(macOS)
+extension GenerateOutputModel {
+    private func save_macOS() -> Bool {
         let panel = NSSavePanel()
         panel.nameFieldStringValue = state.url.lastPathComponent
         panel.allowedContentTypes = [state.exportType.utType]
@@ -95,9 +112,13 @@ class GenerateOutputModel: ObservableObject {
             }
             do {
                 if let pdf = state.pdfDocument {
-                    return pdf.write(to: url)
+                    if pdf.write(to: url) {
+                        savedURL = url
+                        return true
+                    }
                 } else if let imgData = state.cgImage?.convertToData() {
                     try imgData.write(to: url)
+                    savedURL = url
                     return true
                 }
             } catch {
@@ -107,7 +128,32 @@ class GenerateOutputModel: ObservableObject {
         return false
     }
 }
+#elseif os(iOS)
+extension GenerateOutputModel {
+    private func save_iOS() -> Bool {
+        guard var url = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
+            return false
+        }
+        guard let fileName = state.url.lastPathComponent.split(separator: ".").first else {
+            return false
+        }
+        url.appendPathComponent(String(fileName), conformingTo: state.exportType.utType)
+        if let pdf = state.pdfDocument, state.exportType == .pdf {
+            if pdf.write(to: url) {
+                savedURL = url
+                return true
+            }
+        } else if let image = state.cgImage, state.exportType == .png {
+            do {
+                try image.convertToData()?.write(to: url)
+                savedURL = url
+                return true
+            } catch {
+                print(error)
+            }
+        }
 
-
-#if os(macOS)
+        return false
+    }
+}
 #endif

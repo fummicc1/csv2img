@@ -15,16 +15,15 @@ struct SelectCsvView: View {
     @StateObject var model: SelectCsvModel
 
     var body: some View {
-        #if os(macOS)
-        SelectCsvView_macOS(selectedCsv: _selectedCsv, model: model)
-        #elseif os(iOS)
-        SelectCsvView_iOS()
-        #endif
-    }
-}
-
-struct ContentView_Previews: PreviewProvider {
-    static var previews: some View {
-        fatalError()
+        Group {
+#if os(macOS)
+            SelectCsvView_macOS(model: model)
+#elseif os(iOS)
+            SelectCsvView_iOS(model: model)
+#endif
+        }
+        .onReceive(model.$selectedCsv) { selectedCsv in
+            self.selectedCsv = selectedCsv
+        }
     }
 }
