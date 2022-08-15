@@ -10,12 +10,14 @@ import SwiftUI
 
 enum SelectCsvModelError: Error {
     case fileNotFound
+    case invalidNetworkUrl(string: String)
 }
 
 class SelectCsvModel: NSObject, ObservableObject {
 
     @Published var selectedCsv: SelectedCsvState?
-    @Published var error: Error?
+    @Published var networkUrlText: String = ""
+    @Published var error: String?
 
     @MainActor
     func selectFileOnDisk() async {
@@ -24,6 +26,18 @@ class SelectCsvModel: NSObject, ObservableObject {
         #elseif os(iOS)
         await selectFileOnDisk_iOS()
         #endif
+    }
+
+    @MainActor
+    func selectFileOnTheInternet() async {
+        guard let url = URL(string: networkUrlText) else {
+            let error = SelectCsvModelError.invalidNetworkUrl(string: networkUrlText)
+            self.error = "\(error)"
+            return
+        }
+        withAnimation {
+            selectedCsv = .init(fileType: .network, url: url)
+        }
     }
 }
 

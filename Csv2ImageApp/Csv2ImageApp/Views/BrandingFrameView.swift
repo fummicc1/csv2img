@@ -19,7 +19,9 @@ struct BrandingFrameView<Content: View>: View {
                         Asset.lightAccentColor.swiftUIColor,
                         Asset.accentColor.swiftUIColor,
                     ],
-                    center: .init(x: 0.5, y: 0.5), startRadius: 8, endRadius: proxy.size.width / 2)
+                    center: .init(x: 0.5, y: 0.5), startRadius: 8, endRadius: proxy.size.width / 2
+                )
+                .ignoresSafeArea()
                 content()
             }
         }
