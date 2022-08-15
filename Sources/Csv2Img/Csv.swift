@@ -299,8 +299,11 @@ extension Csv {
             let data = try Data(contentsOf: file)
             if let str = String(data: data, encoding: .utf8) {
                 return .fromString(str)
-            }
-            if let str = String(data: data, encoding: .ascii) {
+            } else if let str = String(data: data, encoding: .utf16) {
+                return .fromString(str)
+            } else if let str = String(data: data, encoding: .utf32) {
+                return .fromString(str)
+            } else if let str = String(data: data, encoding: .ascii) {
                 return .fromString(str)
             }
             throw Error.invalidLocalResource(url: file.absoluteString, data: data)
