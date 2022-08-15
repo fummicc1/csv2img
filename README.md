@@ -10,6 +10,10 @@ Convert Csv into png image.
 
 ## iOS App
 
+Because this app has been developed with Xcode14 and under multiplatform feature which was annouced at WWDC22, I can't publish this app on the AppStore. Alternatively I prepared TestFlight version as for iOS app.
+
+- [TestFlight for iOS App](https://testflight.apple.com/join/w8jZU9Jq)
+
 ### Demo
 
 <img src="https://user-images.githubusercontent.com/44002126/184648376-0269aa36-210e-41be-b6ee-567e7a10bd88.gif" width=320>
