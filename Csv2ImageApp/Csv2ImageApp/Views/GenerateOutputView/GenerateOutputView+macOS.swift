@@ -19,49 +19,59 @@ struct GenerateOutputView_macOS: View {
 
     var body: some View {
         GeometryReader { proxy in
-            VStack {
-                HStack {
-                    CButton.labeled("Back") {
-                        withAnimation {
-                            backToPreviousPage = true
+            ZStack {
+                VStack {
+                    HStack {
+                        CButton.labeled("Back") {
+                            withAnimation {
+                                backToPreviousPage = true
+                            }
                         }
+                        Spacer()
                     }
-                    Spacer()
-                }
-                .padding()
-                GeneratePreviewView(
-                    model: model,
-                    size: .constant(
-                        CGSize(
-                            width: proxy.size.width * 0.7,
-                            height: proxy.size.height * 0.7
+                    .padding()
+                    GeneratePreviewView(
+                        model: model,
+                        size: .constant(
+                            CGSize(
+                                width: proxy.size.width * 0.7,
+                                height: proxy.size.height * 0.7
+                            )
                         )
                     )
-                )
-                .frame(
-                    width: proxy.size.width * 0.7,
-                    height: proxy.size.height * 0.7
-                )
-                Spacer()
-                HStack {
-                    Picker(selection: $model.state.exportType) {
-                        CText("png").tag(Csv.ExportType.png)
-                        CText("pdf").tag(Csv.ExportType.pdf)
-                    } label: {
-                        CText("Export Type")
-                    }
-                    .padding()
-                    .pickerStyle(.radioGroup)
-                    .background(Asset.backgroundColor.swiftUIColor)
-                    .padding()
-
+                    .frame(
+                        width: proxy.size.width * 0.7,
+                        height: proxy.size.height * 0.7
+                    )
                     Spacer()
-                    CButton.labeled("Save", role: .primary) {
-                        model.save()
+                    HStack {
+                        Picker(selection: $model.state.exportType) {
+                            CText("png").tag(Csv.ExportType.png)
+                            CText("pdf").tag(Csv.ExportType.pdf)
+                        } label: {
+                            CText("Export Type")
+                        }
+                        .padding()
+                        .pickerStyle(.radioGroup)
+                        .background(Asset.backgroundColor.swiftUIColor)
+                        .padding()
+
+                        Spacer()
+                        CButton.labeled("Save", role: .primary) {
+                            model.save()
+                        }
+                    }.padding()
+                }
+                .background(Asset.lightAccentColor.swiftUIColor)
+
+                if model.state.isLoading {
+                    ProgressView {
+                        CText("Loading...", font: .largeTitle)
                     }
-                }.padding()
+                    .padding()
+                    .progressViewStyle(.linear)
+                }
             }
-            .background(Asset.lightAccentColor.swiftUIColor)
         }
     }
 }
