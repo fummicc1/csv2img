@@ -27,8 +27,8 @@ struct GenerateOutputView: View {
             )
 #endif
         }
-        .onAppear {
-            model.onAppear()
+        .task {
+            await model.onAppear()
         }
     }
 }

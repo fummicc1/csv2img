@@ -2,6 +2,7 @@ import Foundation
 import CoreGraphics
 import UniformTypeIdentifiers
 import PDFKit
+import Combine
 
 /** Csv data structure
 
@@ -17,7 +18,7 @@ import PDFKit
  7,8,9
  10,11,12
  """
- let csv = Csv.fromString(rawCsv)
+ let csv = Csv().loadFromString(rawCsv)
  Output:
  | a  | b  | c  |
  | 1  | 2  | 3  |
@@ -25,8 +26,8 @@ import PDFKit
  | 7  | 8  | 9  |
  | 10 | 11 | 12 |
  ```
-*/
-public class Csv {
+ */
+public actor Csv {
 
     /// initialization
     ///
@@ -35,13 +36,14 @@ public class Csv {
     /// `Row` is array of row whose type is ``Row``
     public init(
         separator: String=",",
-        rawString: String,
-        columnNames: [Csv.ColumnName],
-        rows: [Csv.Row],
+        rawString: String = "",
+        columnNames: [Csv.ColumnName] = [],
+        rows: [Csv.Row] = [],
         exportType: ExportType = .png
     ) {
-        self.imageMarker = ImageMaker(fontSize: 12)
+        self.imageMarker = ImageMaker(maximumRowCount: maximumRowCount, fontSize: 12)
         self.pdfMarker = PdfMaker(
+            maximumRowCount: maximumRowCount,
             fontSize: 12,
             metadata: PDFMetadata(
                 author: "Author",
@@ -55,28 +57,57 @@ public class Csv {
         self.exportType = exportType
     }
 
-    /// an separator applied to each row and column.
+    /// A flag whether ``Csv`` is loading contents or not
+    public var isLoading: Bool {
+        isLoadingSubject.value
+    }
+
+    public var isLoadingPublisher: AnyPublisher<Bool, Never> {
+        isLoadingSubject.eraseToAnyPublisher()
+    }
+
+    private let isLoadingSubject: CurrentValueSubject<Bool, Never> = .init(false)
+
+    /// an separator applied to each row and column
     public var separator: String
+
     /// an array of column name with type ``ColumnName``.
     public var columnNames: [ColumnName]
+
     /// an array of row whose type is ``Row`.
     public var rows: [Row]
-    /// ``ImageMarker`` has responsibility to generate png-image from csv.
+
+    /// ``ImageMarker`` has responsibility to generate png-image from csv
     private let imageMarker: ImageMaker
 
-    /// ``PdfMaker`` has responsibility to generate pdf-image from csv.
+    /// ``PdfMaker`` has responsibility to generate pdf-image from csv
     private let pdfMarker: PdfMaker
 
-    /// `rawString` is original String read from Resource (either Local or Network).
+    /// `rawString` is original String read from Resource (either Local or Network)
     public var rawString: String
 
     /// `exportType` determines export type. Please choose ``ExportType.png`` or ``ExportType.pdf``.
     public var exportType: ExportType
+
+    /// ``maximumRowCount`` is the max number of Rows. this is fixed due to performance issue.
+    private let maximumRowCount: Int? = nil
+
+    private let queue = DispatchQueue(label: "dev.fummicc1.csv2img.csv-queue")
+
+    // MARK: Internal update functions
+    /// Internal method to update `Array<Row>`
+    func update(rows: [Row]) {
+        self.rows = rows
+    }
+    /// Internal method to update `Array<ColumnName>`
+    func update(columnNames: [ColumnName]) {
+        self.columnNames = columnNames
+    }
 }
 
 extension Csv {
     /**
-    `ExportType` is a enum that expresses
+     `ExportType` is a enum that expresses
      */
     public enum ExportType: String, Hashable {
         /// `png` output
@@ -166,11 +197,16 @@ extension Csv {
         case cannotAccessFile(url: String)
         /// given `exportType` is invalid.
         case invalidExportType(ExportType)
+        /// Both columns and rows are empty
+        case emptyData
+        /// Csv denied execution because it is generating another contents.
+        case workInProgress
+        case underlying(Swift.Error?)
     }
 
     /// Generate `Csv` from `String` data.
     ///
-    /// You cloud call `Csv.fromString` if you can own raw-CSV data.
+    /// You cloud call `Csv.loadFromString` if you can own raw-CSV data.
     ///
     /// ```swift
     /// let rawCsv = """
@@ -180,7 +216,7 @@ extension Csv {
     /// 7,8,9
     /// 10,11,12
     /// """
-    /// let csv = Csv.fromString(rawCsv)
+    /// let csv = Csv().loadFromString(rawCsv)
     /// Output:
     /// | a  | b  | c  |
     /// | 1  | 2  | 3  |
@@ -198,7 +234,7 @@ extension Csv {
     /// 4.5.6
     /// 7.8.9
     /// """
-    /// let csv = Csv.fromString(dotSeparated, separator: ".")
+    /// let csv = Csv().loadFromString(dotSeparated, separator: ".")
     /// Output:
     /// | a  | b  | c  |
     /// | 1  | 2  | 3  |
@@ -216,7 +252,7 @@ extension Csv {
     /// 4.5.6
     /// 7.8.9
     /// """
-    /// let csv = Csv.fromString(dotSeparated, separator: ".", maxLength: 7)
+    /// let csv = Csv().loadFromString(dotSeparated, separator: ".", maxLength: 7)
     /// Output:
     /// | a  | b  | c        |
     /// | 1  | 2  | 3333333  |
@@ -229,28 +265,28 @@ extension Csv {
     ///     - str: Row String
     ///     - separator: Default separator in a row is `","`. You cloud change it by giving separator to `separator` parameter.
     ///     - maxLength: Default value is nil. if `maxLength` is not nil, every row-item length is limited by `maxLength`.
-    public static func fromString(_ str: String, separator: String = ",", maxLength: Int? = nil) -> Csv {
-        let csv = Csv(
-            separator: separator,
-            rawString: str,
-            columnNames: [],
-            rows: []
-        )
-        var lines = str.components(separatedBy: CharacterSet(charactersIn: "\r\n"))
-        lines = lines.filter({ $0 != "" })
+    @discardableResult
+    public func loadFromString(_ str: String, separator: String = ",", maxLength: Int? = nil) -> Csv {
+        self.separator = separator
+        self.rawString = str
+
+        let lines = str
+            .components(separatedBy: CharacterSet(charactersIn: "\r\n"))
+            .filter({ $0 != "" })
+        var rows: [Row] = []
         for (i, line) in lines.enumerated() {
             var items = line
                 .split(separator: Character(separator), omittingEmptySubsequences: false)
                 .map({ String($0) })
             if i == 0 {
-                csv.columnNames = items.enumerated().compactMap({ (index, name) in
+                let columns = items.enumerated().compactMap({ (index, name) in
                     return ColumnName(value: name)
                 })
+                update(columnNames: columns)
             } else {
                 items = items.enumerated().compactMap { (index, item) in
                     let str: String
                     if let maxLength = maxLength, item.count > maxLength {
-                        print("Too long value: \(item), it is shortened.")
                         str = String(item.prefix(maxLength)) + "..."
                     } else {
                         str = item
@@ -261,10 +297,11 @@ extension Csv {
                     index: i,
                     values: items
                 )
-                csv.rows.append(row)
+                rows.append(row)
             }
         }
-        return csv
+        update(rows: rows)
+        return self
     }
 
     /// Generate `Csv` from network url (like `HTTPS`).
@@ -272,13 +309,17 @@ extension Csv {
     /// - Parameters:
     ///     - url: network url, commonly `HTTPS` schema.
     ///     - separator: Default separator in a row is `","`. You cloud change it by giving separator to `separator` parameter.
-    public static func fromURL(_ url: URL, separator: String = ",") throws -> Csv {
+    @discardableResult
+    public func loadFromNetwork(_ url: URL, separator: String = ",") throws -> Csv {
         let data = try Data(contentsOf: url)
         if let str = String(data: data, encoding: .utf8) {
-            return .fromString(str)
-        }
-        if let str = String(data: data, encoding: .ascii) {
-            return .fromString(str)
+            return self.loadFromString(str)
+        } else if let str = String(data: data, encoding: .utf16) {
+            return self.loadFromString(str)
+        } else if let str = String(data: data, encoding: .utf32) {
+            return self.loadFromString(str)
+        } else if let str = String(data: data, encoding: .ascii) {
+            return self.loadFromString(str)
         }
         throw Error.invalidDownloadResource(url: url.absoluteString, data: data)
     }
@@ -289,7 +330,8 @@ extension Csv {
     ///     - file: local url, commonly `file://` schema. Relative-path is not enable, please specify by absolute-path rule.
     ///     - separator: Default separator in a row is `","`. You cloud change it by giving separator to `separator` parameter.
     ///     - checkAccessSecurityScope: This flag is effective to only macOS. If you want to check local-file is securely accessible from this app, make this flat `true`. Default value if `false` which does not check the file access-security-scope.
-    public static func fromFile(
+    @discardableResult
+    public func loadFromDisk(
         _ file: URL,
         separator: String = ",",
         checkAccessSecurityScope: Bool = false
@@ -298,34 +340,43 @@ extension Csv {
         if !checkAccessSecurityScope || file.startAccessingSecurityScopedResource() {
             let data = try Data(contentsOf: file)
             if let str = String(data: data, encoding: .utf8) {
-                return .fromString(str)
+                return self.loadFromString(str)
             } else if let str = String(data: data, encoding: .utf16) {
-                return .fromString(str)
+                return self.loadFromString(str)
             } else if let str = String(data: data, encoding: .utf32) {
-                return .fromString(str)
+                return self.loadFromString(str)
             } else if let str = String(data: data, encoding: .ascii) {
-                return .fromString(str)
+                return self.loadFromString(str)
             }
             throw Error.invalidLocalResource(url: file.absoluteString, data: data)
-        } else {
-            throw Error.cannotAccessFile(url: file.absoluteString)
         }
+        throw Error.cannotAccessFile(url: file.absoluteString)
     }
 
     /**
      Generate Output (file-type is determined by `exportType` parameter)
      - Parameters:
-        - fontSize: Determine the fontsize of characters in output-table image.
-        - exportType:Determine file-extension. Type is ``ExportType`` and default value is ``ExportType.png``.
+     - fontSize: Determine the fontsize of characters in output-table image.
+     - exportType:Determine file-extension. Type is ``ExportType`` and default value is ``ExportType.png``.
      - Note:
      `fontSize` determines the size of output image and it can be as large as you want. Please consider the case that output image is too large to open image. Although output image becomes large, it is recommended to set fontSize amply enough (maybe larger than `12pt`) to see image clearly.
      - Returns: ``CsvExportable``. (either ``CGImage`` or  ``PdfDocument``).
-     - Throws: Throws ``ImageMakingError``.
+     - Throws: Throws ``Csv.Error``.
      */
     public func generate(
         fontSize: CGFloat? = nil,
         exportType: ExportType = .png
-    ) throws -> AnyCsvExportable {
+    ) async throws -> AnyCsvExportable {
+        if isLoading {
+            throw Csv.Error.workInProgress
+        }
+        isLoadingSubject.value = true
+        defer {
+            isLoadingSubject.value = false
+        }
+        if columnNames.isEmpty && rows.isEmpty {
+            throw Csv.Error.emptyData
+        }
         self.exportType = exportType
         var maker: Any?
         switch exportType {
@@ -338,35 +389,52 @@ extension Csv {
             if let fontSize = fontSize {
                 maker.setFontSize(fontSize)
             }
-            return AnyCsvExportable(try maker.make(csv: self))
+            // TODO: When Swift5.7 is supported officailly, replace `CGImage` with `any CsvExportable`.
+            let exportable: CGImage = try await withCheckedThrowingContinuation { continuation in
+                queue.async { [weak self] in
+                    guard let self = self else {
+                        continuation.resume(throwing: Csv.Error.underlying(nil))
+                        return
+                    }
+                    Task {
+                        do {
+                            let img = try maker.make(columns: await self.columnNames, rows: await self.rows)
+                            continuation.resume(returning: img)
+                        } catch {
+                            continuation.resume(throwing: Csv.Error.underlying(error))
+                        }
+                    }
+                }
+            }
+            return AnyCsvExportable(exportable)
         } else if let maker = maker as? PdfMaker {
             if let fontSize = fontSize {
                 maker.setFontSize(fontSize)
             }
-            return AnyCsvExportable(try maker.make(csv: self))
+            let exportable: PDFDocument = try await withCheckedThrowingContinuation { continuation in
+                queue.async { [weak self] in
+                    guard let self = self else {
+                        continuation.resume(throwing: Csv.Error.underlying(nil))
+                        return
+                    }
+                    Task {
+                        do {
+                            let doc = try maker.make(columns: await self.columnNames, rows: await self.rows)
+                            continuation.resume(returning: doc)
+                        } catch {
+                            continuation.resume(throwing: Csv.Error.underlying(error))
+                        }
+                    }
+                }
+            }
+            return AnyCsvExportable(exportable)
         }
         throw Error.invalidExportType(exportType)
     }
 
     /**
-     Generate Data
-     - Parameters:
-        - fontSize: Determine the fontsize of characters in output-table image.
-     - Note:
-     `fontSize` determines the size of output image and it can be as large as you want. Please consider the case that output image is too large to open image. Although output image becomes large, it is recommended to set fontSize amply enough (maybe larger than `12pt`) to see image clearly.
-     - Returns: `Optional<Data>`
-     */
-    public func pngData(fontSize: CGFloat? = nil) -> Data? {
-        if let fontSize = fontSize {
-            imageMarker.setFontSize(fontSize)
-        }
-        let image = try? imageMarker.make(csv: self)
-        return image?.convertToData()
-    }
-
-    /**
      - parameters:
-        - to url: local file path where [png, pdf] image will be saved.
+     - to url: local file path where [png, pdf] image will be saved.
      - Returns: If saving csv image to file, returns `true`. Otherwise, return `False`.
      */
     public func write(to url: URL) -> Data? {

@@ -14,9 +14,27 @@ struct GenerateOutputState: Hashable {
     let url: URL
     let fileType: FileURLType
 
+    var isLoading: Bool
+
     var cgImage: CGImage?
     var pdfDocument: PDFDocument?
     var exportType: Csv.ExportType
+
+    init(
+        url: URL,
+        fileType: FileURLType,
+        isLoading: Bool = false,
+        cgImage: CGImage? = nil,
+        pdfDocument: PDFDocument? = nil,
+        exportType: Csv.ExportType = .pdf
+    ) {
+        self.url = url
+        self.fileType = fileType
+        self.isLoading = isLoading
+        self.cgImage = cgImage
+        self.pdfDocument = pdfDocument
+        self.exportType = exportType
+    }
 
     func hash(into hasher: inout Hasher) {
         hasher.combine(url)

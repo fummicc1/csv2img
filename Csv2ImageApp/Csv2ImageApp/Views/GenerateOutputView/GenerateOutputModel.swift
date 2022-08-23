@@ -17,70 +17,84 @@ enum GenerateOutputModelError: Error {
 
 class GenerateOutputModel: ObservableObject {
 
-    @Published var state: GenerateOutputState
-    @Published var savedURL: URL?
+    @Published @MainActor var state: GenerateOutputState
+    @Published @MainActor var savedURL: URL?
 
     let csv: Csv
 
     private var cancellables: Set<AnyCancellable> = []
+    private let queue = DispatchQueue(label: "dev.fummicc1.csv2imgapp.generate-output-model")
 
+    @MainActor
     init(url: URL, urlType: FileURLType, exportMode: Csv.ExportType = .pdf) {
+        self.csv = Csv(exportType: exportMode)
+
         self.state = .init(
             url: url,
             fileType: urlType,
-            cgImage: nil,
-            pdfDocument: nil,
             exportType: exportMode
         )
-        do {
+
+        Task {
             switch urlType {
             case .local:
                 #if os(macOS)
-                self.csv = try Csv.fromFile(url)
+                try await csv.loadFromDisk(url)
                 #elseif os(iOS)
-                self.csv = try Csv.fromFile(url, checkAccessSecurityScope: true)
+                try csv.loadFromDisk(url, checkAccessSecurityScope: true)
                 #endif
             case .network:
-                self.csv = try Csv.fromURL(url)
+                try await csv.loadFromNetwork(url)
             }
-        } catch {
-            fatalError("\(error)")
+
+            await csv.isLoadingPublisher
+                .receive(on: DispatchQueue.main)
+                .sink { isLoading in
+                    self.state.isLoading = isLoading
+                }
+                .store(in: &cancellables)
         }
 
         _state.projectedValue.map(\.exportType)
-            .debounce(for: 0.3, scheduler: DispatchQueue.main)
             .removeDuplicates()
-            .map { [weak self] exportType -> AnyCsvExportable? in
-                do {
-                    return try self?.csv.generate(exportType: exportType)
-                } catch {
-                    print(error)
-                    return nil
-                }
-            }
-            .compactMap { $0 }
-            .sink(receiveValue: { exportable in
-                self.state.cgImage = nil
-                self.state.pdfDocument = nil
-                if type(of: exportable.base) == PDFDocument.self {
-                    self.state.pdfDocument = (exportable.base as! PDFDocument)
-                } else {
-                    self.state.cgImage = (exportable.base as! CGImage)
+            .debounce(for: 0.3, scheduler: queue)
+            .sink(receiveValue: { exportType in
+                Task { [weak self] in
+                    guard let self = self else {
+                        return
+                    }
+                    let exportable = try await self.csv.generate(exportType: exportType)
+                    await MainActor.run(body: {
+                        self.state.cgImage = nil
+                        self.state.pdfDocument = nil
+                        if type(of: exportable.base) == PDFDocument.self {
+                            self.state.pdfDocument = (exportable.base as! PDFDocument)
+                        } else {
+                            self.state.cgImage = (exportable.base as! CGImage)
+                        }
+                    })
                 }
             })
             .store(in: &cancellables)
     }
 
-    func onAppear() {
+    func onAppear() async {
         do {
-            state.cgImage = nil
-            state.pdfDocument = nil
-            switch state.exportType {
+            await MainActor.run(body: {
+                state.cgImage = nil
+                state.pdfDocument = nil
+            })
+            switch await state.exportType {
             case .png:
-                let out = try csv.generate(exportType: state.exportType).base
-                state.cgImage = (out as! CGImage)
+                let out = try await csv.generate(exportType: state.exportType).base
+                await MainActor.run(body: {
+                    state.cgImage = (out as! CGImage)
+                })
             case .pdf:
-                state.pdfDocument = try csv.generate(exportType: state.exportType).base as? PDFDocument
+                let out = try await csv.generate(exportType: state.exportType).base as? PDFDocument
+                await MainActor.run(body: {
+                    state.pdfDocument = out
+                })
             }
         } catch {
             print(error)
@@ -101,6 +115,7 @@ class GenerateOutputModel: ObservableObject {
 
 #if os(macOS)
 extension GenerateOutputModel {
+    @MainActor
     private func save_macOS() -> Bool {
         let panel = NSSavePanel()
         panel.nameFieldStringValue = state.url.lastPathComponent
@@ -130,6 +145,7 @@ extension GenerateOutputModel {
 }
 #elseif os(iOS)
 extension GenerateOutputModel {
+    @MainActor
     private func save_iOS() -> Bool {
         guard var url = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
             return false
