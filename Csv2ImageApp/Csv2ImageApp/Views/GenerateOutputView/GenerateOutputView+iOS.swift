@@ -63,6 +63,13 @@ struct GenerateOutputView_iOS: View {
                 }
                 .background(Asset.lightAccentColor.swiftUIColor)
             }
+            if model.state.isLoading {
+                ProgressView {
+                    CText("Loading...", font: .largeTitle)
+                }
+                .padding()
+                .progressViewStyle(.linear)
+            }
         }.background(Asset.lightAccentColor.swiftUIColor)
             .alert("Complete Saving!", isPresented: $succeedSavingOutput) {
                 CButton.labeled("Back") {
