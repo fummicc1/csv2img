@@ -65,7 +65,7 @@ struct GenerateOutputView_macOS: View {
                 .background(Asset.lightAccentColor.swiftUIColor)
 
                 if model.state.isLoading {
-                    ProgressView {
+                    ProgressView(value: model.state.progress) {
                         CText("Loading...", font: .largeTitle)
                     }
                     .padding()

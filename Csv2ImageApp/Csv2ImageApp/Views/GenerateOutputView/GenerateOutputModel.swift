@@ -53,6 +53,13 @@ class GenerateOutputModel: ObservableObject {
                     self.state.isLoading = isLoading
                 }
                 .store(in: &cancellables)
+
+            await csv.progressPublisher
+                .receive(on: DispatchQueue.main)
+                .sink(receiveValue: { progress in
+                    self.state.progress = progress
+                })
+                .store(in: &cancellables)
         }
 
         _state.projectedValue.map(\.exportType)
