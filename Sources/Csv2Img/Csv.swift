@@ -92,7 +92,7 @@ public actor Csv {
     /// ``maximumRowCount`` is the max number of Rows. this is fixed due to performance issue.
     private let maximumRowCount: Int? = nil
 
-    private let queue = DispatchQueue(label: "dev.fummicc1.csv2img.csv-queue", attributes: .concurrent)
+    private let queue = DispatchQueue(label: "dev.fummicc1.csv2img.csv-queue")
 
     // MARK: Internal update functions
     /// Internal method to update `Array<Row>`
