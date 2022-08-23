@@ -41,7 +41,7 @@ class GenerateOutputModel: ObservableObject {
                 #if os(macOS)
                 try await csv.loadFromDisk(url)
                 #elseif os(iOS)
-                try csv.loadFromDisk(url, checkAccessSecurityScope: true)
+                try await csv.loadFromDisk(url, checkAccessSecurityScope: true)
                 #endif
             case .network:
                 try await csv.loadFromNetwork(url)
