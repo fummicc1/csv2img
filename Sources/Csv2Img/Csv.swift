@@ -374,7 +374,7 @@ extension Csv {
         defer {
             isLoadingSubject.value = false
         }
-        if columnNames.isEmpty && rows.isEmpty {
+        if columnNames.isEmpty || rows.isEmpty {
             throw Csv.Error.emptyData
         }
         self.exportType = exportType
