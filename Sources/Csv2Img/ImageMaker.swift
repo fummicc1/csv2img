@@ -19,12 +19,13 @@ public enum ImageMakingError: Error {
     /// Failed to get current `CGContext`
     case noContextAvailable
     case failedCreateImage(CGContext)
+    case underlying(Error)
 }
 
 /// No overview available
 protocol ImageMakerType: Maker {
     var latestOutput: CGImage? { get }
-    func make(csv: Csv) throws -> CGImage
+    func make(columns: [Csv.ColumnName], rows: [Csv.Row]) throws -> CGImage
     func setFontSize(_ size: CGFloat)
 }
 
@@ -34,10 +35,14 @@ class ImageMaker: ImageMakerType {
     typealias Exportable = CGImage
 
     init(
+        maximumRowCount: Int?,
         fontSize: CGFloat
     ) {
+        self.maximumRowCount = maximumRowCount
         self.fontSize = fontSize
     }
+
+    var maximumRowCount: Int?
 
     var fontSize: CGFloat
 
@@ -49,23 +54,28 @@ class ImageMaker: ImageMakerType {
 
     /// generate png-image data from ``Csv``.
     func make(
-        csv: Csv
+        columns: [Csv.ColumnName],
+        rows: [Csv.Row]
     ) throws -> CGImage {
+
+        let length = min(maximumRowCount ?? rows.count, rows.count)
+        let rows = rows[..<length].map { $0 }
+
         let horizontalSpace = 8
         let verticalSpace = 12
         let textSizeList =
-        csv.rows
+        rows
             .flatMap({ $0.values })
             .map({ $0.getSize(fontSize: fontSize) })
         +
-        csv.columnNames
+        columns
             .map({ $0.value })
             .map({ $0.getSize(fontSize: fontSize) })
 
         let longestHeight = textSizeList.map({ $0.height }).sorted().reversed()[0]
         let longestWidth = textSizeList.map({ $0.width }).sorted().reversed()[0]
-        let width = (Int(longestWidth) + horizontalSpace) * csv.columnNames.count
-        let height = (csv.rows.count + 1) * (Int(longestHeight) + verticalSpace)
+        let width = (Int(longestWidth) + horizontalSpace) * columns.count
+        let height = (rows.count + 1) * (Int(longestHeight) + verticalSpace)
 
         #if os(macOS)
         let canvas = NSImage(
@@ -103,8 +113,8 @@ class ImageMaker: ImageMakerType {
             alpha: 1
         ))
 
-        let columnCount = csv.columnNames.count
-        let rowCount = csv.rows.count + 1
+        let columnCount = columns.count
+        let rowCount = rows.count + 1
         let rowHeight = Int(height) / rowCount
         let columnWidth = Int(width) / columnCount
 
@@ -138,7 +148,7 @@ class ImageMaker: ImageMakerType {
             )
         }
 
-        for (i, column) in csv.columnNames.enumerated() {
+        for (i, column) in columns.enumerated() {
             let str = NSAttributedString(
                 string: column.value,
                 attributes: [
@@ -162,7 +172,7 @@ class ImageMaker: ImageMakerType {
             context.restoreGState()
         }
 
-        for (var i, row) in csv.rows.enumerated() {
+        for (var i, row) in rows.enumerated() {
             i += 1
             for (j, item) in row.values.enumerated() {
                 let str = NSAttributedString(

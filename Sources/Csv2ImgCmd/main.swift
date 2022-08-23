@@ -1,5 +1,6 @@
 import Foundation
 import ArgumentParser
+import CoreImage
 import Csv2Img
 
 
@@ -51,7 +52,7 @@ public enum InputType: EnumerableFlag {
 /// https://raw.githubusercontent.com/fummicc1/csv2img/main/Sources/Csv2ImgCmd/Resources/sample_1.csv \
 /// output.png
 /// ```
-public struct Csv2Img: ParsableCommand {
+public struct Csv2Img: AsyncParsableCommand {
     public static var configuration: CommandConfiguration {
         CommandConfiguration(
             commandName: "csv2img",
@@ -73,24 +74,25 @@ public struct Csv2Img: ParsableCommand {
 
     public init() { }
 
-    public func run() throws {
+    public func run() async throws {
         let csv: Csv
         switch inputType {
         case .local:
-            csv = try Csv.fromFile(URL(fileURLWithPath: data))
+            csv = try await Csv().loadFromDisk(URL(fileURLWithPath: data))
         case .network:
             guard let url = URL(string: data) else {
                 print("Invalid URL: \(data).")
                 return
             }
-            csv = try Csv.fromURL(url)
+            csv = try await Csv().loadFromNetwork(url)
         }
-        let data = csv.pngData(fontSize: 12)!
+        let image = try await csv.generate(fontSize: 12, exportType: .png).base as! CGImage
+        let data = image.convertToData()
         let outputURL = URL(fileURLWithPath: output)
         if !FileManager.default.fileExists(atPath: output) {
             FileManager.default.createFile(atPath: output, contents: data)
         } else {
-            try data.write(to: outputURL)
+            try data?.write(to: outputURL)
         }
         print("Succeed generating image from csv!")
         print("Output path: ", outputURL.absoluteString)

@@ -6,12 +6,14 @@ public enum PdfMakingError: Error {
     /// Failed to get/create `CGContext`.
     case noContextAvailabe
     case failedToGeneratePdf
+    case emptyRows
+    case underlying(Error)
 }
 
 /// No overview available
 protocol PdfMakerType: Maker {
     var latestOutput: PDFDocument? { get }
-    func make(csv: Csv) throws -> PDFDocument
+    func make(columns: [Csv.ColumnName], rows: [Csv.Row]) throws -> PDFDocument
     func setMetadata(_ metadata: PDFMetadata)
     func setFontSize(_ size: CGFloat)
 }
@@ -22,13 +24,16 @@ class PdfMaker: PdfMakerType {
     typealias Exportable = PDFDocument
 
     init(
+        maximumRowCount: Int?,
         fontSize: CGFloat,
         metadata: PDFMetadata
     ) {
+        self.maximumRowCount = maximumRowCount
         self.fontSize = fontSize
         self.metadata = metadata
     }
 
+    var maximumRowCount: Int?
     var fontSize: CGFloat
     var metadata: PDFMetadata
 
@@ -41,17 +46,26 @@ class PdfMaker: PdfMakerType {
 
     /// generate png-image data from ``Csv``.
     func make(
-        csv: Csv
+        columns: [Csv.ColumnName],
+        rows: [Csv.Row]
     ) throws -> PDFDocument {
         // NOTE: Anchor is bottom-left.
         let horizontalSpace: CGFloat = 8
         let verticalSpace: CGFloat = 12
+
+        let size = min(maximumRowCount ?? rows.count, rows.count)
+        let rows = rows[..<size].map { $0 }
+
+        if rows.isEmpty {
+            throw PdfMakingError.emptyRows
+        }
+
         let textSizeList =
-        csv.rows
+        rows
             .flatMap({ $0.values })
             .map({ $0.getSize(fontSize: fontSize) })
         +
-        csv.columnNames
+        columns
             .map({ $0.value })
             .map({ $0.getSize(fontSize: fontSize) })
 
@@ -62,8 +76,8 @@ class PdfMaker: PdfMakerType {
         let columnWidth = longestWidth + horizontalSpace
         let lineWidth: CGFloat = 1
 
-        let width = (longestWidth + horizontalSpace) * CGFloat(csv.columnNames.count)
-        let allRowsHeight = CGFloat(csv.rows.count) * (longestHeight + verticalSpace)
+        let width = (longestWidth + horizontalSpace) * CGFloat(columns.count)
+        let allRowsHeight = CGFloat(rows.count) * (longestHeight + verticalSpace)
 
         let maxRowsHeight = min(480, allRowsHeight)
 
@@ -140,14 +154,14 @@ class PdfMaker: PdfMakerType {
 
             setColumnText(
                 context: context,
-                columns: csv.columnNames,
+                columns: columns,
                 boxWidth: CGFloat(columnWidth),
                 boxHeight: CGFloat(rowHeight),
                 totalHeight: CGFloat(pageHeight),
                 totalWidth: CGFloat(width)
             )
             // `Csv.Row.index` begins with `1`.
-            let rows = csv.rows.filter({
+            let rows = rows.filter({
                 (startRowIndex..<startRowIndex+maxNumberOfRowsInPage)
                     .contains($0.index-1)
             })
