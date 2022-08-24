@@ -22,7 +22,7 @@ Because this app has been developed with Xcode14 and under multiplatform feature
 
 ### Demo
 
-![demo](https://user-images.githubusercontent.com/44002126/183291911-13b966f0-c0e2-4a02-a57c-9620edd4b0e1.gif)
+![demo2](https://user-images.githubusercontent.com/44002126/186102558-5176d16a-a0fa-4e27-bf73-0871f282f1d2.gif)
 
 # Csv2Img (Library)
 
