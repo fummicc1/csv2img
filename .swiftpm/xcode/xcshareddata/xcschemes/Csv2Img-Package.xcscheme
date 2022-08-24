@@ -48,6 +48,20 @@
                ReferencedContainer = "container:">
             </BuildableReference>
          </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "YES"
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "CsvBuilder"
+               BuildableName = "CsvBuilder"
+               BlueprintName = "CsvBuilder"
+               ReferencedContainer = "container:">
+            </BuildableReference>
+         </BuildActionEntry>
       </BuildActionEntries>
    </BuildAction>
    <TestAction
@@ -63,6 +77,16 @@
                BlueprintIdentifier = "Csv2ImgTests"
                BuildableName = "Csv2ImgTests"
                BlueprintName = "Csv2ImgTests"
+               ReferencedContainer = "container:">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "CsvBuilderTests"
+               BuildableName = "CsvBuilderTests"
+               BlueprintName = "CsvBuilderTests"
                ReferencedContainer = "container:">
             </BuildableReference>
          </TestableReference>

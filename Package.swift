@@ -10,6 +10,10 @@ let argumentParser: PackageDescription.Package.Dependency = .package(
 let docc: PackageDescription.Package.Dependency = .package(
     url: "https://github.com/apple/swift-docc-plugin", from: "1.0.0"
 )
+let swiftSyntax: PackageDescription.Package.Dependency = .package(
+    url: "https://github.com/apple/swift-syntax",
+    branch: "main"
+)
 
 let package = Package(
     name: "Csv2Img",
@@ -19,6 +23,10 @@ let package = Package(
         .library(
             name: "Csv2Img",
             targets: ["Csv2Img"]
+        ),
+        .library(
+            name: "CsvBuilder",
+            targets: ["CsvBuilder"]
         ),
         .executable(
             name: "Csv2ImgCmd",
@@ -30,6 +38,7 @@ let package = Package(
         // .package(url: /* package url */, from: "1.0.0"),
         argumentParser,
         docc,
+        swiftSyntax,
     ],
     targets: [
         // Targets are the basic building blocks of a package. A target can define a module or a test suite.
@@ -39,7 +48,22 @@ let package = Package(
             dependencies: []),
         .testTarget(
             name: "Csv2ImgTests",
-            dependencies: ["Csv2Img"]),
+            dependencies: ["Csv2Img"]
+        ),
+        .target(
+            name: "CsvBuilder",
+            dependencies: [
+                "Csv2Img",
+                .product(
+                    name: "SwiftSyntaxParser",
+                    package: "swift-syntax"
+                )
+            ]
+        ),
+        .testTarget(
+            name: "CsvBuilderTests",
+            dependencies: ["CsvBuilder"]
+        ),
         .executableTarget(
             name: "Csv2ImgCmd",
             dependencies: [
@@ -49,6 +73,6 @@ let package = Package(
                     package: "swift-argument-parser"
                 )
             ]
-        )
+        ),
     ]
 )
