@@ -10,7 +10,6 @@ import Csv2Img
 import SwiftSyntaxParser
 
 public enum CsvBuilderError: Error {
-    case invalidURL(URL)
 }
 
 public protocol CsvBuilder {
