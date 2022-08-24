@@ -22,7 +22,7 @@ Because this app has been developed with Xcode14 and under multiplatform feature
 
 ### Demo
 
-![demo](https://user-images.githubusercontent.com/44002126/183291911-13b966f0-c0e2-4a02-a57c-9620edd4b0e1.gif)
+![demo2](https://user-images.githubusercontent.com/44002126/186102558-5176d16a-a0fa-4e27-bf73-0871f282f1d2.gif)
 
 # Csv2Img (Library)
 
@@ -103,6 +103,12 @@ let data = try await csv.generate(fontSize: 12, exportType: .png)
  | 10 | 11 | 12 |
 ```
 
+
+#### Output Image
+
+![sample](https://user-images.githubusercontent.com/44002126/186432783-cd5eecdc-bcf6-4c0c-849e-9b4d3da246e1.png)
+
+
 # Csv2ImgCmd (CLI)
 
 A command line tool which generates png-image from csv. (Using `Csv2Img` library)
@@ -126,6 +132,7 @@ If you would like to convert csv file on the internet, you cloud use this flag w
 https://raw.githubusercontent.com/fummicc1/csv2img/main/Sources/Csv2ImgCmd/Resources/sample_1.csv \
 output.png
 ```
+
 
 # Contributing
 
