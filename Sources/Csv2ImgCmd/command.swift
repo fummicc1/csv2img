@@ -52,22 +52,23 @@ public enum InputType: EnumerableFlag {
 /// https://raw.githubusercontent.com/fummicc1/csv2img/main/Sources/Csv2ImgCmd/Resources/sample_1.csv \
 /// output.png
 /// ```
+@main
 public struct Csv2Img: AsyncParsableCommand {
     public static var configuration: CommandConfiguration {
         CommandConfiguration(
             commandName: "csv2img",
-            abstract: "Generate table from csv with png-format",
-            version: "0.0.1",
+            abstract: "Generate image from csv with png-format",
+            version: "1.4.0",
             shouldDisplay: true,
             helpNames: [.long, .short]
         )
     }
 
-    @Flag(help: "Input type. Choose either `local` or `network`")
+    @Flag(help: "Csv file type. Choose either `local` or `network`")
     public var inputType: InputType
 
     @Argument(help: "Input. csv absolute-path.")
-    public var data: String
+    public var input: String
 
     @Argument(help: "Output. Specify path.")
     public var output: String
@@ -78,10 +79,10 @@ public struct Csv2Img: AsyncParsableCommand {
         let csv: Csv
         switch inputType {
         case .local:
-            csv = try await Csv().loadFromDisk(URL(fileURLWithPath: data))
+            csv = try await Csv().loadFromDisk(URL(fileURLWithPath: input))
         case .network:
-            guard let url = URL(string: data) else {
-                print("Invalid URL: \(data).")
+            guard let url = URL(string: input) else {
+                print("Invalid URL: \(input).")
                 return
             }
             csv = try await Csv().loadFromNetwork(url)
@@ -98,5 +99,3 @@ public struct Csv2Img: AsyncParsableCommand {
         print("Output path: ", outputURL.absoluteString)
     }
 }
-
-Csv2Img.main()
