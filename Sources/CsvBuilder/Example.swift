@@ -22,3 +22,18 @@ public struct Example: CsvComposition {
     @CsvRow(column: "name")
     var names: [String]
 }
+
+
+public struct ExampleBuilder: CsvBuilder {
+
+    var raw: String = """
+name,age
+tanaka, 100
+sato, 99
+yamada, 98
+"""
+
+    public func build() async throws -> Csv {
+        return await Csv().loadFromString(raw)
+    }
+}
