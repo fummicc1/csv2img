@@ -1,0 +1,18 @@
+{
+    "title": "Csv2Img",
+    "icon": "icon.icns",
+    "contents": [
+        {
+            "x": 448,
+            "y": 344,
+            "type": "link",
+            "path": "/Applications"
+        },
+        {
+            "x": 192,
+            "y": 344,
+            "type": "file",
+            "path": "/Users/fumiyatanaka/Library/Developer/Xcode/Archives/2022-08-24/Csv2ImageApp 2022-08-24 22.46.xcarchive/Products/Applications/Csv2ImageApp.app"
+        }
+    ]
+}
