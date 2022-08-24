@@ -63,7 +63,7 @@ public actor Csv {
     }
 
     /// A `Publisher` to send ``isLoading``.
-    public var isLoadingPublisher: AnyPublisher<Bool, Never> {
+    nonisolated public var isLoadingPublisher: AnyPublisher<Bool, Never> {
         isLoadingSubject.eraseToAnyPublisher()
     }
 
@@ -78,7 +78,7 @@ public actor Csv {
     }
 
     /// A `Publisher` to send ``progress``.
-    public var progressPublisher: AnyPublisher<Double, Never> {
+    nonisolated public var progressPublisher: AnyPublisher<Double, Never> {
         progressSubject.eraseToAnyPublisher()
     }
 
