@@ -103,6 +103,12 @@ let data = try await csv.generate(fontSize: 12, exportType: .png)
  | 10 | 11 | 12 |
 ```
 
+
+#### Output Image
+
+![sample](https://user-images.githubusercontent.com/44002126/186432783-cd5eecdc-bcf6-4c0c-849e-9b4d3da246e1.png)
+
+
 # Csv2ImgCmd (CLI)
 
 A command line tool which generates png-image from csv. (Using `Csv2Img` library)
@@ -126,6 +132,7 @@ If you would like to convert csv file on the internet, you cloud use this flag w
 https://raw.githubusercontent.com/fummicc1/csv2img/main/Sources/Csv2ImgCmd/Resources/sample_1.csv \
 output.png
 ```
+
 
 # Contributing
 
