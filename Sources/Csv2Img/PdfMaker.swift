@@ -13,7 +13,7 @@ public enum PdfMakingError: Error {
 /// No overview available
 protocol PdfMakerType: Maker {
     var latestOutput: PDFDocument? { get }
-    func make(columns: [Csv.ColumnName], rows: [Csv.Row]) throws -> PDFDocument
+    func make(columns: [Csv.ColumnName], rows: [Csv.Row], progress: @escaping (Double) -> Void) throws -> PDFDocument
     func setMetadata(_ metadata: PDFMetadata)
     func setFontSize(_ size: CGFloat)
 }
@@ -47,7 +47,8 @@ class PdfMaker: PdfMakerType {
     /// generate png-image data from ``Csv``.
     func make(
         columns: [Csv.ColumnName],
-        rows: [Csv.Row]
+        rows: [Csv.Row],
+        progress: @escaping (Double) -> Void
     ) throws -> PDFDocument {
         // NOTE: Anchor is bottom-left.
         let horizontalSpace: CGFloat = 8
@@ -108,6 +109,9 @@ class PdfMaker: PdfMakerType {
 
         // `-1` is due to column space.
         let maxNumberOfRowsInPage: Int = Int(ceil(pageHeight / rowHeight - 1))
+
+        let completeCount: Double = Double(totalPageNumber)
+        var completeFraction: Double = 0
 
         var currentPageNumber: Int = 1
         var startRowIndex: Int = 0
@@ -178,6 +182,9 @@ class PdfMaker: PdfMakerType {
             )
 
             context.drawPath(using: .stroke)
+
+            completeFraction += 1
+            progress(completeFraction / completeCount)
 
             currentPageNumber += 1
             startRowIndex += maxNumberOfRowsInPage

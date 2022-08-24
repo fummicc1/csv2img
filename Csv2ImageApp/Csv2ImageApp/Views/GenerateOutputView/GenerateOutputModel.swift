@@ -47,11 +47,18 @@ class GenerateOutputModel: ObservableObject {
                 try await csv.loadFromNetwork(url)
             }
 
-            await csv.isLoadingPublisher
+            csv.isLoadingPublisher
                 .receive(on: DispatchQueue.main)
                 .sink { isLoading in
                     self.state.isLoading = isLoading
                 }
+                .store(in: &cancellables)
+
+            csv.progressPublisher
+                .receive(on: DispatchQueue.main)
+                .sink(receiveValue: { progress in
+                    self.state.progress = progress
+                })
                 .store(in: &cancellables)
         }
 

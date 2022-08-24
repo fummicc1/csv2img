@@ -62,11 +62,28 @@ public actor Csv {
         isLoadingSubject.value
     }
 
-    public var isLoadingPublisher: AnyPublisher<Bool, Never> {
+    /// A `Publisher` to send ``isLoading``.
+    nonisolated public var isLoadingPublisher: AnyPublisher<Bool, Never> {
         isLoadingSubject.eraseToAnyPublisher()
     }
 
+    /// `CurrentValueSubject` to store ``isLoading``.
     private let isLoadingSubject: CurrentValueSubject<Bool, Never> = .init(false)
+
+
+    /// progress stores current completeFraction of convert
+    /// Value is in `0...1` with `Double` type
+    public var progress: Double {
+        progressSubject.value
+    }
+
+    /// A `Publisher` to send ``progress``.
+    nonisolated public var progressPublisher: AnyPublisher<Double, Never> {
+        progressSubject.eraseToAnyPublisher()
+    }
+
+    /// `CurrentValueSubject` to store ``progress``.
+    private let progressSubject: CurrentValueSubject<Double, Never> = .init(0)
 
     /// an separator applied to each row and column
     public var separator: String
@@ -371,6 +388,7 @@ extension Csv {
             throw Csv.Error.workInProgress
         }
         isLoadingSubject.value = true
+        progressSubject.value = 0
         defer {
             isLoadingSubject.value = false
         }
@@ -398,7 +416,9 @@ extension Csv {
                     }
                     Task {
                         do {
-                            let img = try maker.make(columns: await self.columnNames, rows: await self.rows)
+                            let img = try maker.make(columns: await self.columnNames, rows: await self.rows) { progress in
+                                self.progressSubject.value = progress
+                            }
                             continuation.resume(returning: img)
                         } catch {
                             continuation.resume(throwing: Csv.Error.underlying(error))
@@ -419,7 +439,9 @@ extension Csv {
                     }
                     Task {
                         do {
-                            let doc = try maker.make(columns: await self.columnNames, rows: await self.rows)
+                            let doc = try maker.make(columns: await self.columnNames, rows: await self.rows) { progress in
+                                self.progressSubject.value = progress
+                            }
                             continuation.resume(returning: doc)
                         } catch {
                             continuation.resume(throwing: Csv.Error.underlying(error))

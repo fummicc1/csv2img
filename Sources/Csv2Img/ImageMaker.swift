@@ -25,7 +25,7 @@ public enum ImageMakingError: Error {
 /// No overview available
 protocol ImageMakerType: Maker {
     var latestOutput: CGImage? { get }
-    func make(columns: [Csv.ColumnName], rows: [Csv.Row]) throws -> CGImage
+    func make(columns: [Csv.ColumnName], rows: [Csv.Row], progress: @escaping (Double) -> Void) throws -> CGImage
     func setFontSize(_ size: CGFloat)
 }
 
@@ -55,7 +55,8 @@ class ImageMaker: ImageMakerType {
     /// generate png-image data from ``Csv``.
     func make(
         columns: [Csv.ColumnName],
-        rows: [Csv.Row]
+        rows: [Csv.Row],
+        progress: @escaping (Double) -> Void
     ) throws -> CGImage {
 
         let length = min(maximumRowCount ?? rows.count, rows.count)
@@ -118,6 +119,8 @@ class ImageMaker: ImageMakerType {
         let rowHeight = Int(height) / rowCount
         let columnWidth = Int(width) / columnCount
 
+        let completeCount: Double = Double(rowCount + columnCount)
+        var completeFraction: Double = 0
 
         for i in 0..<columnCount {
             context.move(
@@ -170,6 +173,8 @@ class ImageMaker: ImageMakerType {
                 )
             )
             context.restoreGState()
+            completeFraction += 1
+            progress(completeFraction / completeCount)
         }
 
         for (var i, row) in rows.enumerated() {
@@ -197,6 +202,8 @@ class ImageMaker: ImageMakerType {
                 )
                 context.restoreGState()
             }
+            completeFraction += 1
+            progress(completeFraction / completeCount)
         }
         context.drawPath(using: .stroke)
         guard let image = context.makeImage() else {
