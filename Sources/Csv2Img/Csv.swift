@@ -33,7 +33,7 @@ public actor Csv {
     ///
     /// `separator` is applied to each row and generate items per row.
     /// `columnNames` is array of column whose type is `String`.
-    /// `Row` is array of row whose type is ``Row``
+    /// `Row` is array of row whose type is ``Row``    
     public init(
         separator: String=",",
         rawString: String = "",
@@ -282,6 +282,7 @@ extension Csv {
     ///     - str: Row String
     ///     - separator: Default separator in a row is `","`. You cloud change it by giving separator to `separator` parameter.
     ///     - maxLength: Default value is nil. if `maxLength` is not nil, every row-item length is limited by `maxLength`.
+    ///     - exportType: Default `exportType` is `.png`. If you use too big image size, I strongly recommend use `.pdf` instead.
     public static func loadFromString(
         _ str: String,
         separator: String = ",",
@@ -331,8 +332,9 @@ extension Csv {
     /// Generate `Csv` from network url (like `HTTPS`).
     ///
     /// - Parameters:
-    ///     - url: network url, commonly `HTTPS` schema.
-    ///     - separator: Default separator in a row is `","`. You cloud change it by giving separator to `separator` parameter.
+    ///     - url: Network url, commonly `HTTPS` schema.
+    ///     - separator: Default `separator` in a row is `","`. You cloud change it by giving separator to `separator` parameter.
+    ///     - exportType: Default `exportType` is `.png`. If you use too big image size, I strongly recommend use `.pdf` instead.
     public static func loadFromNetwork(
         _ url: URL,
         separator: String = ",",
@@ -354,12 +356,13 @@ extension Csv {
         return Csv.loadFromString(str, separator: separator)
     }
 
-    /// Generate `Csv` from local url (like `file://Users/...`).
+    /// Generate `Csv` from local disk url (like `file://Users/...`).
     ///
     /// - Parameters:
-    ///     - file: local url, commonly `file://` schema. Relative-path is not enable, please specify by absolute-path rule.
-    ///     - separator: Default separator in a row is `","`. You cloud change it by giving separator to `separator` parameter.
+    ///     - file: Local disk url, commonly starts from `file://` schema. Relative-path method is not allowed, please specify by absolute-path method.
+    ///     - separator: Default `separator` in a row is `","`. You cloud change it by giving separator to `separator` parameter.
     ///     - checkAccessSecurityScope: This flag is effective to only macOS. If you want to check local-file is securely accessible from this app, make this flat `true`. Default value if `false` which does not check the file access-security-scope.
+    ///     - exportType: Default `exportType` is `.png`. If you use too big image size, I strongly recommend use `.pdf` instead.
     public static func loadFromDisk(
         _ file: URL,
         separator: String = ",",
@@ -390,7 +393,7 @@ extension Csv {
      Generate Output (file-type is determined by `exportType` parameter)
      - Parameters:
      - fontSize: Determine the fontsize of characters in output-table image.
-     - exportType:Determine file-extension. Type is ``ExportType`` and default value is ``ExportType.png``.
+     - exportType:Determine file-extension. Type is ``ExportType`` and default value is ``ExportType.png``. If you use too big image size, I strongly recommend use `.pdf` instead.
      - Note:
      `fontSize` determines the size of output image and it can be as large as you want. Please consider the case that output image is too large to open image. Although output image becomes large, it is recommended to set fontSize amply enough (maybe larger than `12pt`) to see image clearly.
      - Returns: ``CsvExportable``. (either ``CGImage`` or  ``PdfDocument``).
