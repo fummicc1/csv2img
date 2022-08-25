@@ -115,8 +115,6 @@ A helper library to generate `Csv` in Csv2Img library.
 
 1. Define custom type which conform to `CsvComposition`.
 
-- Note that `@CsvRows` is a propertyWrapper in Csv2Img library so you need to import Csv2Img.
-
 ```swift
 import Foundation
 import Csv2Img
@@ -137,6 +135,8 @@ public struct ExampleComposition: CsvComposition {
 
 ```swift
 let composition: ExampleComposition = .init()
+composition.ages.append("99")
+composition.names.append("Yamada")
 let csv = try! composition.build()
 ```
 
