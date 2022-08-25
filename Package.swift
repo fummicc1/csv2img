@@ -10,10 +10,6 @@ let argumentParser: PackageDescription.Package.Dependency = .package(
 let docc: PackageDescription.Package.Dependency = .package(
     url: "https://github.com/apple/swift-docc-plugin", from: "1.0.0"
 )
-let swiftSyntax: PackageDescription.Package.Dependency = .package(
-    url: "https://github.com/apple/swift-syntax",
-    branch: "main"
-)
 
 let package = Package(
     name: "Csv2Img",
@@ -37,8 +33,7 @@ let package = Package(
         // Dependencies declare other packages that this package depends on.
         // .package(url: /* package url */, from: "1.0.0"),
         argumentParser,
-        docc,
-        swiftSyntax,
+        docc
     ],
     targets: [
         // Targets are the basic building blocks of a package. A target can define a module or a test suite.
