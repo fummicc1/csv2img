@@ -122,7 +122,7 @@ Coomand line interface using `Csv2Img` library.
 If you have a csv file on your computer, you cloud use this flag with `--local`, `-l`.
 
 ```shell
-./Csv2ImgCmd --local ~/Downloads/sample.csv ./output.csv
+./Csv2ImgCmd --local ~/Downloads/sample.csv ./output.png
 ```
 
 If you would like to convert csv file on the internet, you cloud use this flag with `--network`, `-n`.
