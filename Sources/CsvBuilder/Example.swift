@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import Csv2Img
 
 
 public struct ExampleComposition: CsvComposition {
