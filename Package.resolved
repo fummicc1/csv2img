@@ -18,15 +18,6 @@
           "revision": "3303b164430d9a7055ba484c8ead67a52f7b74f6",
           "version": "1.0.0"
         }
-      },
-      {
-        "package": "SwiftSyntax",
-        "repositoryURL": "https://github.com/apple/swift-syntax",
-        "state": {
-          "branch": "main",
-          "revision": "17b81be00bb918fa8d136eb80fab3d4e642202ad",
-          "version": null
-        }
       }
     ]
   },
