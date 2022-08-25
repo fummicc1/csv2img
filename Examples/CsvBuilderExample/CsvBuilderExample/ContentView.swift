@@ -29,7 +29,7 @@ struct ContentView: View {
         .task {
             composition.ages.append("99")
             composition.names.append("Yamada")
-            let csv = try! CsvBuilder.build(composition: composition)
+            let csv = try! composition.build()
             let data = try! await csv.generate(fontSize: 20, exportType: .png)
             self.image = data.base as! CGImage
         }

@@ -15,7 +15,7 @@ public enum CsvBuilder {
 
     static let rowRegex: String = #"^CsvRows\(wrappedValue: (\[.*\]), column: \"(.+)\"\)$"#
 
-    public static func build<Composition: CsvComposition>(composition: Composition) throws -> Csv {
+    public static func build(composition: CsvComposition) throws -> Csv {
         let mirror = Mirror(reflecting: composition)
         let children = mirror.children
 
@@ -81,7 +81,4 @@ public enum CsvBuilder {
         let rows = str.split(separator: "\n").enumerated().map { CsvCompositionElement.Row(index: $0.offset, value: String($0.element)) }
         return rows
     }
-}
-
-public protocol CsvComposition {
 }
