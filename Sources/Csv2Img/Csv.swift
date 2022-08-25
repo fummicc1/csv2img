@@ -282,7 +282,12 @@ extension Csv {
     ///     - str: Row String
     ///     - separator: Default separator in a row is `","`. You cloud change it by giving separator to `separator` parameter.
     ///     - maxLength: Default value is nil. if `maxLength` is not nil, every row-item length is limited by `maxLength`.
-    public static func loadFromString(_ str: String, separator: String = ",", maxLength: Int? = nil) -> Csv {
+    public static func loadFromString(
+        _ str: String,
+        separator: String = ",",
+        maxLength: Int? = nil,
+        exportType: ExportType = .png
+    ) -> Csv {
         let lines = str
             .components(separatedBy: CharacterSet(charactersIn: "\r\n"))
             .filter({ $0 != "" })
@@ -328,7 +333,11 @@ extension Csv {
     /// - Parameters:
     ///     - url: network url, commonly `HTTPS` schema.
     ///     - separator: Default separator in a row is `","`. You cloud change it by giving separator to `separator` parameter.
-    public static func loadFromNetwork(_ url: URL, separator: String = ",") throws -> Csv {
+    public static func loadFromNetwork(
+        _ url: URL,
+        separator: String = ",",
+        exportType: ExportType = .png
+    ) throws -> Csv {
         let data = try Data(contentsOf: url)
         let str: String
         if let _str = String(data: data, encoding: .utf8) {
@@ -354,7 +363,8 @@ extension Csv {
     public static func loadFromDisk(
         _ file: URL,
         separator: String = ",",
-        checkAccessSecurityScope: Bool = false
+        checkAccessSecurityScope: Bool = false,
+        exportType: ExportType = .png
     ) throws -> Csv {
         // https://www.hackingwithswift.com/forums/swift/accessing-files-from-the-files-app/8203
         if !checkAccessSecurityScope || file.startAccessingSecurityScopedResource() {
