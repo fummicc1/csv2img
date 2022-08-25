@@ -103,11 +103,46 @@ let data = try await csv.generate(fontSize: 12, exportType: .png)
  | 10 | 11 | 12 |
 ```
 
-
 #### Output Image
 
 ![sample](https://user-images.githubusercontent.com/44002126/186432783-cd5eecdc-bcf6-4c0c-849e-9b4d3da246e1.png)
 
+# CsvBuilder (Helper Library for Csv2Img)
+
+A helper library to generate `Csv` in Csv2Img library.
+
+## How to use
+
+1. Define custom type which conform to `CsvComposition`.
+
+- Note that `@CsvRows` is a propertyWrapper in Csv2Img library so you need to import Csv2Img.
+
+```swift
+import Foundation
+import Csv2Img
+
+
+public struct ExampleComposition: CsvComposition {
+    @CsvRows(column: "age")
+    public var ages: [String]
+
+    @CsvRows(column: "name")
+    public var names: [String]
+
+    public init() { }
+}
+```
+
+2. Build `Csv`
+
+```swift
+let composition: ExampleComposition = .init()
+let csv = try! composition.build()
+```
+
+| Result                                                                                                                                                                     |
+| -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| <img width="392" alt="スクリーンショット 2022-08-25 17 14 45" src="https://user-images.githubusercontent.com/44002126/186613323-b8b0f66e-73d0-40da-b4e3-df4333a7730e.png"> |
 
 # Csv2ImgCmd (CLI)
 
@@ -132,7 +167,6 @@ If you would like to convert csv file on the internet, you cloud use this flag w
 https://raw.githubusercontent.com/fummicc1/csv2img/main/Sources/Csv2ImgCmd/Resources/sample_1.csv \
 output.png
 ```
-
 
 # Contributing
 
