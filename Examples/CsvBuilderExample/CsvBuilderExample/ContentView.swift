@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import CsvBuilder
 
 struct ContentView: View {
     var body: some View {
@@ -16,6 +17,10 @@ struct ContentView: View {
             Text("Hello, world!")
         }
         .padding()
+        .onAppear {
+            let example = ExampleComposition()
+            try! CsvBuilder.inject(composition: example)
+        }
     }
 }
 

@@ -53,11 +53,7 @@ let package = Package(
         .target(
             name: "CsvBuilder",
             dependencies: [
-                "Csv2Img",
-                .product(
-                    name: "SwiftSyntaxParser",
-                    package: "swift-syntax"
-                )
+                "Csv2Img"
             ]
         ),
         .testTarget(

@@ -23,4 +23,7 @@ public struct ExampleComposition: CsvComposition {
     var names: [String]
 
 
+    public init() {
+        print(Mirror(reflecting: self))
+    }
 }

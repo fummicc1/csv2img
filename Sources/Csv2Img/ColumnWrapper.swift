@@ -18,6 +18,5 @@ public struct CsvColumn {
         } else {
             self.wrappedValue = ""
         }
-        print(Mirror(reflecting: self).description)
     }
 }
