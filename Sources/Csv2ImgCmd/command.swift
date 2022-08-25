@@ -42,7 +42,7 @@ public enum InputType: EnumerableFlag {
 /// If you have a csv file on your computer, you cloud use this flag with `--local`, `-l`.
 ///
 /// ```shell
-/// ./Csv2ImgCmd --local ~/Downloads/sample.csv ./output.csv
+/// ./Csv2ImgCmd --local ~/Downloads/sample.csv ./output.png
 /// ```
 ///
 /// If you would like to convert csv file on the internet, you cloud use this flag with `--network`, `-n`.
@@ -67,10 +67,10 @@ public struct Csv2Img: AsyncParsableCommand {
     @Flag(help: "Csv file type. Choose either `local` or `network`")
     public var inputType: InputType
 
-    @Argument(help: "Input. csv absolute-path.")
+    @Argument(help: "Input. csv absolute-path or url on the internet")
     public var input: String
 
-    @Argument(help: "Output. Specify path.")
+    @Argument(help: "Output. Specify local path.")
     public var output: String
 
     public init() { }
