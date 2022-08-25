@@ -10,20 +10,11 @@ import Csv2Img
 
 
 public struct ExampleComposition: CsvComposition {
-    @CsvColumn
-    var name: String
+    @CsvRows(column: "age")
+    public var ages: [String]
 
-    @CsvColumn
-    var age: String
+    @CsvRows(column: "name")
+    public var names: [String]
 
-    @CsvRow(column: "age")
-    var ages: [String]
-
-    @CsvRow(column: "name")
-    var names: [String]
-
-
-    public init() {
-        print(Mirror(reflecting: self))
-    }
+    public init() { }
 }

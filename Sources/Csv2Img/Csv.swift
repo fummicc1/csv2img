@@ -36,7 +36,7 @@ public actor Csv {
     /// `Row` is array of row whose type is ``Row``    
     public init(
         separator: String=",",
-        rawString: String = "",
+        rawString: String? = nil,
         columnNames: [Csv.ColumnName] = [],
         rows: [Csv.Row] = [],
         exportType: ExportType = .png
@@ -101,7 +101,7 @@ public actor Csv {
     private let pdfMarker: PdfMaker
 
     /// `rawString` is original String read from Resource (either Local or Network)
-    public var rawString: String
+    public var rawString: String?
 
     /// `exportType` determines export type. Please choose ``ExportType.png`` or ``ExportType.pdf``.
     public var exportType: ExportType
