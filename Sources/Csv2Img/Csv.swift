@@ -18,7 +18,7 @@ import Combine
  7,8,9
  10,11,12
  """
- let csv = Csv().loadFromString(rawCsv)
+ let csv = Csv.loadFromString(rawCsv)
  Output:
  | a  | b  | c  |
  | 1  | 2  | 3  |
@@ -33,7 +33,7 @@ public actor Csv {
     ///
     /// `separator` is applied to each row and generate items per row.
     /// `columnNames` is array of column whose type is `String`.
-    /// `Row` is array of row whose type is ``Row``
+    /// `Row` is array of row whose type is ``Row``    
     public init(
         separator: String=",",
         rawString: String = "",
@@ -233,7 +233,7 @@ extension Csv {
     /// 7,8,9
     /// 10,11,12
     /// """
-    /// let csv = Csv().loadFromString(rawCsv)
+    /// let csv = Csv.loadFromString(rawCsv)
     /// Output:
     /// | a  | b  | c  |
     /// | 1  | 2  | 3  |
@@ -251,7 +251,7 @@ extension Csv {
     /// 4.5.6
     /// 7.8.9
     /// """
-    /// let csv = Csv().loadFromString(dotSeparated, separator: ".")
+    /// let csv = Csv.loadFromString(dotSeparated, separator: ".")
     /// Output:
     /// | a  | b  | c  |
     /// | 1  | 2  | 3  |
@@ -269,7 +269,7 @@ extension Csv {
     /// 4.5.6
     /// 7.8.9
     /// """
-    /// let csv = Csv().loadFromString(dotSeparated, separator: ".", maxLength: 7)
+    /// let csv = Csv.loadFromString(dotSeparated, separator: ".", maxLength: 7)
     /// Output:
     /// | a  | b  | c        |
     /// | 1  | 2  | 3333333  |
@@ -282,24 +282,27 @@ extension Csv {
     ///     - str: Row String
     ///     - separator: Default separator in a row is `","`. You cloud change it by giving separator to `separator` parameter.
     ///     - maxLength: Default value is nil. if `maxLength` is not nil, every row-item length is limited by `maxLength`.
-    @discardableResult
-    public func loadFromString(_ str: String, separator: String = ",", maxLength: Int? = nil) -> Csv {
-        self.separator = separator
-        self.rawString = str
-
+    ///     - exportType: Default `exportType` is `.png`. If you use too big image size, I strongly recommend use `.pdf` instead.
+    public static func loadFromString(
+        _ str: String,
+        separator: String = ",",
+        maxLength: Int? = nil,
+        exportType: ExportType = .png
+    ) -> Csv {
         let lines = str
             .components(separatedBy: CharacterSet(charactersIn: "\r\n"))
             .filter({ $0 != "" })
+        var columns: [ColumnName] = []
         var rows: [Row] = []
+
         for (i, line) in lines.enumerated() {
             var items = line
                 .split(separator: Character(separator), omittingEmptySubsequences: false)
                 .map({ String($0) })
             if i == 0 {
-                let columns = items.enumerated().compactMap({ (index, name) in
+                columns = items.enumerated().compactMap({ (index, name) in
                     return ColumnName(value: name)
                 })
-                update(columnNames: columns)
             } else {
                 items = items.enumerated().compactMap { (index, item) in
                     let str: String
@@ -317,55 +320,71 @@ extension Csv {
                 rows.append(row)
             }
         }
-        update(rows: rows)
-        return self
+        return Csv(
+            separator: separator,
+            rawString: str,
+            columnNames: columns,
+            rows: rows,
+            exportType: .pdf
+        )
     }
 
     /// Generate `Csv` from network url (like `HTTPS`).
     ///
     /// - Parameters:
-    ///     - url: network url, commonly `HTTPS` schema.
-    ///     - separator: Default separator in a row is `","`. You cloud change it by giving separator to `separator` parameter.
-    @discardableResult
-    public func loadFromNetwork(_ url: URL, separator: String = ",") throws -> Csv {
+    ///     - url: Network url, commonly `HTTPS` schema.
+    ///     - separator: Default `separator` in a row is `","`. You cloud change it by giving separator to `separator` parameter.
+    ///     - exportType: Default `exportType` is `.png`. If you use too big image size, I strongly recommend use `.pdf` instead.
+    public static func loadFromNetwork(
+        _ url: URL,
+        separator: String = ",",
+        exportType: ExportType = .png
+    ) throws -> Csv {
         let data = try Data(contentsOf: url)
-        if let str = String(data: data, encoding: .utf8) {
-            return self.loadFromString(str)
-        } else if let str = String(data: data, encoding: .utf16) {
-            return self.loadFromString(str)
-        } else if let str = String(data: data, encoding: .utf32) {
-            return self.loadFromString(str)
-        } else if let str = String(data: data, encoding: .ascii) {
-            return self.loadFromString(str)
+        let str: String
+        if let _str = String(data: data, encoding: .utf8) {
+            str = _str
+        } else if let _str = String(data: data, encoding: .utf16) {
+            str = _str
+        } else if let _str = String(data: data, encoding: .utf32) {
+            str = _str
+        } else if let _str = String(data: data, encoding: .ascii) {
+            str = _str
+        } else {
+            throw Error.invalidDownloadResource(url: url.absoluteString, data: data)
         }
-        throw Error.invalidDownloadResource(url: url.absoluteString, data: data)
+        return Csv.loadFromString(str, separator: separator)
     }
 
-    /// Generate `Csv` from local url (like `file://Users/...`).
+    /// Generate `Csv` from local disk url (like `file://Users/...`).
     ///
     /// - Parameters:
-    ///     - file: local url, commonly `file://` schema. Relative-path is not enable, please specify by absolute-path rule.
-    ///     - separator: Default separator in a row is `","`. You cloud change it by giving separator to `separator` parameter.
+    ///     - file: Local disk url, commonly starts from `file://` schema. Relative-path method is not allowed, please specify by absolute-path method.
+    ///     - separator: Default `separator` in a row is `","`. You cloud change it by giving separator to `separator` parameter.
     ///     - checkAccessSecurityScope: This flag is effective to only macOS. If you want to check local-file is securely accessible from this app, make this flat `true`. Default value if `false` which does not check the file access-security-scope.
-    @discardableResult
-    public func loadFromDisk(
+    ///     - exportType: Default `exportType` is `.png`. If you use too big image size, I strongly recommend use `.pdf` instead.
+    public static func loadFromDisk(
         _ file: URL,
         separator: String = ",",
-        checkAccessSecurityScope: Bool = false
+        checkAccessSecurityScope: Bool = false,
+        exportType: ExportType = .png
     ) throws -> Csv {
         // https://www.hackingwithswift.com/forums/swift/accessing-files-from-the-files-app/8203
         if !checkAccessSecurityScope || file.startAccessingSecurityScopedResource() {
             let data = try Data(contentsOf: file)
-            if let str = String(data: data, encoding: .utf8) {
-                return self.loadFromString(str)
-            } else if let str = String(data: data, encoding: .utf16) {
-                return self.loadFromString(str)
-            } else if let str = String(data: data, encoding: .utf32) {
-                return self.loadFromString(str)
-            } else if let str = String(data: data, encoding: .ascii) {
-                return self.loadFromString(str)
+            let str: String
+            if let _str = String(data: data, encoding: .utf8) {
+                str = _str
+            } else if let _str = String(data: data, encoding: .utf16) {
+                str = _str
+            } else if let _str = String(data: data, encoding: .utf32) {
+                str = _str
+            } else if let _str = String(data: data, encoding: .ascii) {
+                str = _str
+            } else {
+                throw Error.invalidLocalResource(url: file.absoluteString, data: data)
             }
-            throw Error.invalidLocalResource(url: file.absoluteString, data: data)
+            return Csv.loadFromString(str, separator: separator)
         }
         throw Error.cannotAccessFile(url: file.absoluteString)
     }
@@ -374,7 +393,7 @@ extension Csv {
      Generate Output (file-type is determined by `exportType` parameter)
      - Parameters:
      - fontSize: Determine the fontsize of characters in output-table image.
-     - exportType:Determine file-extension. Type is ``ExportType`` and default value is ``ExportType.png``.
+     - exportType:Determine file-extension. Type is ``ExportType`` and default value is ``ExportType.png``. If you use too big image size, I strongly recommend use `.pdf` instead.
      - Note:
      `fontSize` determines the size of output image and it can be as large as you want. Please consider the case that output image is too large to open image. Although output image becomes large, it is recommended to set fontSize amply enough (maybe larger than `12pt`) to see image clearly.
      - Returns: ``CsvExportable``. (either ``CGImage`` or  ``PdfDocument``).

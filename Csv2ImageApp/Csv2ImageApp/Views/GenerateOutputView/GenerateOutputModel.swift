@@ -27,7 +27,6 @@ class GenerateOutputModel: ObservableObject {
 
     @MainActor
     init(url: URL, urlType: FileURLType, exportMode: Csv.ExportType = .pdf) {
-        self.csv = Csv(exportType: exportMode)
 
         self.state = .init(
             url: url,
@@ -35,32 +34,35 @@ class GenerateOutputModel: ObservableObject {
             exportType: exportMode
         )
 
-        Task {
+        do {
             switch urlType {
             case .local:
                 #if os(macOS)
-                try await csv.loadFromDisk(url)
+                self.csv = try Csv.loadFromDisk(url, exportType: exportMode)
                 #elseif os(iOS)
-                try await csv.loadFromDisk(url, checkAccessSecurityScope: true)
+                self.csv = try Csv.loadFromDisk(url, checkAccessSecurityScope: true, exportType: exportMode)
                 #endif
             case .network:
-                try await csv.loadFromNetwork(url)
+                self.csv = try Csv.loadFromNetwork(url, exportType: exportMode)
             }
-
-            csv.isLoadingPublisher
-                .receive(on: DispatchQueue.main)
-                .sink { isLoading in
-                    self.state.isLoading = isLoading
-                }
-                .store(in: &cancellables)
-
-            csv.progressPublisher
-                .receive(on: DispatchQueue.main)
-                .sink(receiveValue: { progress in
-                    self.state.progress = progress
-                })
-                .store(in: &cancellables)
+        } catch {
+            assertionFailure("\(error)")
+            self.csv = Csv(exportType: exportMode)
         }
+
+        csv.isLoadingPublisher
+            .receive(on: DispatchQueue.main)
+            .sink { isLoading in
+                self.state.isLoading = isLoading
+            }
+            .store(in: &cancellables)
+
+        csv.progressPublisher
+            .receive(on: DispatchQueue.main)
+            .sink(receiveValue: { progress in
+                self.state.progress = progress
+            })
+            .store(in: &cancellables)
 
         _state.projectedValue.map(\.exportType)
             .removeDuplicates()
