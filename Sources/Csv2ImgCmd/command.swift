@@ -79,13 +79,13 @@ public struct Csv2Img: AsyncParsableCommand {
         let csv: Csv
         switch inputType {
         case .local:
-            csv = try await Csv().loadFromDisk(URL(fileURLWithPath: input))
+            csv = try Csv.loadFromDisk(URL(fileURLWithPath: input))
         case .network:
             guard let url = URL(string: input) else {
                 print("Invalid URL: \(input).")
                 return
             }
-            csv = try await Csv().loadFromNetwork(url)
+            csv = try Csv.loadFromNetwork(url)
         }
         let image = try await csv.generate(fontSize: 12, exportType: .png).base as! CGImage
         let data = image.convertToData()
