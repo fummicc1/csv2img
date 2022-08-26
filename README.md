@@ -1,10 +1,6 @@
 ![Csv2mg_bg](https://user-images.githubusercontent.com/44002126/173288309-81e336d2-5239-441a-bc6e-2b58bb9da349.png)
 
-[![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Ffummicc1%2Fcsv2img%2Fbadge%3Ftype%3Dswift-versions)](https://swiftpackageindex.com/fummicc1/csv2img) [![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Ffummicc1%2Fcsv2img%2Fbadge%3Ftype%3Dplatforms)](https://swiftpackageindex.com/fummicc1/csv2img)
-
-<img src="https://github.com/fummicc1/csv2img/actions/workflows/lib.yml/badge.svg">
-<img src="https://github.com/fummicc1/csv2img/actions/workflows/builder.yml/badge.svg">
-<img src="https://github.com/fummicc1/csv2img/actions/workflows/command.yml/badge.svg">
+[![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Ffummicc1%2Fcsv2img%2Fbadge%3Ftype%3Dswift-versions)](https://swiftpackageindex.com/fummicc1/csv2img) [![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Ffummicc1%2Fcsv2img%2Fbadge%3Ftype%3Dplatforms)](https://swiftpackageindex.com/fummicc1/csv2img) <img src="https://github.com/fummicc1/csv2img/actions/workflows/lib.yml/badge.svg"> <img src="https://github.com/fummicc1/csv2img/actions/workflows/builder.yml/badge.svg"> <img src="https://github.com/fummicc1/csv2img/actions/workflows/command.yml/badge.svg">
 
 # Csv2ImageApp
 
