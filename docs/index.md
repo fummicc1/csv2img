@@ -105,7 +105,7 @@ let data = try await csv.generate(fontSize: 12, exportType: .png)
 
 #### Output Image
 
-![sample](https://user-images.githubusercontent.com/44002126/186432783-cd5eecdc-bcf6-4c0c-849e-9b4d3da246e1.png)
+![sample](https://user-images.githubusercontent.com/44002126/186811765-ecc16ca5-9121-47ee-a5a6-a51ac181abd5.png)
 
 # CsvBuilder (Helper Library for Csv2Img)
 

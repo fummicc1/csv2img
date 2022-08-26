@@ -1,4 +1,4 @@
-name: "[Csv2Img] Build and Test Sources"
+name: "[Csv2ImgCmd] Build and Test Sources"
 
 on:
   push:
@@ -11,7 +11,7 @@ on:
 
 jobs:
   test:
-    name: "Build Csv2Img"
+    name: "Build Csv2ImgCmd"
     runs-on: macos-12
     steps:
       - uses: actions/checkout@v3
@@ -23,8 +23,7 @@ jobs:
       - name: Build and Test
         run: |
           set -o pipefail && \
-          xcodebuild -scheme Csv2Img \
+          xcodebuild -scheme Csv2ImgCmd \
           clean build test \
           -destination 'platform=OS X,arch=x86_64' \
-          -destination 'platform=iOS Simulator,name=iPhone 13' \
           | bundle exec xcpretty
