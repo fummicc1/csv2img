@@ -135,14 +135,15 @@ public struct ExampleComposition: CsvComposition {
 
 ```swift
 let composition: ExampleComposition = .init()
-composition.ages.append("99")
-composition.names.append("Yamada")
+composition.ages.append(contentsOf: ["98", "99", "100"])
+composition.names.append(contentsOf: ["Yamada", "Tanaka", "Sato"])
 let csv = try! composition.build()
 ```
 
 | Result                                                                                                                                                                     |
 | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| <img width="392" alt="スクリーンショット 2022-08-25 17 14 45" src="https://user-images.githubusercontent.com/44002126/186613323-b8b0f66e-73d0-40da-b4e3-df4333a7730e.png"> |
+| 
+<img width="392" alt="スクリーンショット 2022-08-26 12 54 22" src="https://user-images.githubusercontent.com/44002126/186814170-0c33013e-c138-4ed5-a34c-5d45dc8ac0c0.png"> |
 
 # Csv2ImgCmd (CLI)
 
