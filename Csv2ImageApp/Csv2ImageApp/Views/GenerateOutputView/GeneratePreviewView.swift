@@ -27,12 +27,9 @@ struct GeneratePreviewView: View {
                             Image(uiImage: image)
                                 .resizable()
                                 .aspectRatio(contentMode: .fit)
-                                .frame(
-                                    width: calcSizeForImage(cgImage).width,
-                                    height: calcSizeForImage(cgImage).height
-                                )
                         })
                     }
+                    .frame(width: size.width, height: size.height)
                 }
             } else if let document = model.state.pdfDocument, model.state.exportType == .pdf {
                 PdfDocumentView(document: document, size: _size)
@@ -52,10 +49,6 @@ struct GeneratePreviewView: View {
                             Image(nsImage: image)
                                 .resizable()
                                 .aspectRatio(contentMode: .fit)
-                                .frame(
-                                    width: calcSizeForImage(cgImage).width,
-                                    height: calcSizeForImage(cgImage).height
-                                )
                         })
                     })
                 }
@@ -65,10 +58,4 @@ struct GeneratePreviewView: View {
         }
     }
     #endif
-
-    private func calcSizeForImage(_ cgImage: CGImage) -> CGSize {
-        let height = min(Int(size.height) * 2, cgImage.height)
-        let width = min(Int(size.width) * 2, cgImage.width)
-        return CGSize(width: width, height: height)
-    }
 }
