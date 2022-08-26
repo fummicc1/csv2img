@@ -27,8 +27,8 @@ struct ContentView: View {
         }
         .padding()
         .task {
-            composition.ages.append("99")
-            composition.names.append("Yamada")
+            composition.ages.append(contentsOf: ["98", "99", "100"])
+            composition.names.append(contentsOf: ["Yamada", "Tanaka", "Sato"])
             let csv = try! composition.build()
             let data = try! await csv.generate(fontSize: 20, exportType: .png)
             self.image = data.base as! CGImage
