@@ -8,4 +8,6 @@
 import XCTest
 
 final class CsvBuilderTests: XCTestCase {
+    func testExample() throws {
+    }
 }
