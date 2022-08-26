@@ -51,7 +51,11 @@ public enum CsvBuilder {
         if elements.isEmpty {
             throw Csv.Error.emptyData
         }
-        let columnNames: [Csv.ColumnName] = elements.map(\.columnName).map { Csv.ColumnName(value: $0) }
+        let styles = Csv.Column.Style.random(count: elements.count)
+        let columns: [Csv.Column] = elements
+            .map(\.columnName)
+            .enumerated()
+            .map { Csv.Column(name: $0.element, style: styles[$0.offset]) }
 
         var rows: [Csv.Row] = []
         let flattedRows = elements.map(\.rows).flatMap { $0 }
@@ -63,7 +67,7 @@ public enum CsvBuilder {
 
         return Csv(
             separator: ",",
-            columnNames: columnNames,
+            columns: columns,
             rows: rows,
             exportType: .pdf
         )
