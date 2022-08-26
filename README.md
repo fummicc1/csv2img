@@ -16,13 +16,16 @@ Because this app has been developed with Xcode14 and under multiplatform feature
 
 ### Demo
 
-<img src="https://user-images.githubusercontent.com/44002126/184648376-0269aa36-210e-41be-b6ee-567e7a10bd88.gif" width=320>
+<img src="https://user-images.githubusercontent.com/44002126/186823950-c1967970-20ac-4d88-8f5d-d8d1f71a4f3c.gif" width=240>
+
+
 
 ## MacOS App
 
 ### Demo
 
-![demo2](https://user-images.githubusercontent.com/44002126/186102558-5176d16a-a0fa-4e27-bf73-0871f282f1d2.gif)
+<img src="https://user-images.githubusercontent.com/44002126/186823895-c1e74b48-0ea9-4323-9cbd-4cb270b83190.gif" width=640>
+
 
 # Csv2Img (Library)
 
