@@ -13,7 +13,7 @@ public enum PdfMakingError: Error {
 /// No overview available
 protocol PdfMakerType: Maker {
     var latestOutput: PDFDocument? { get }
-    func make(columns: [Csv.ColumnName], rows: [Csv.Row], progress: @escaping (Double) -> Void) throws -> PDFDocument
+    func make(columns: [Csv.Column], rows: [Csv.Row], progress: @escaping (Double) -> Void) throws -> PDFDocument
     func setMetadata(_ metadata: PDFMetadata)
     func setFontSize(_ size: CGFloat)
 }
@@ -46,7 +46,7 @@ class PdfMaker: PdfMakerType {
 
     /// generate png-image data from ``Csv``.
     func make(
-        columns: [Csv.ColumnName],
+        columns: [Csv.Column],
         rows: [Csv.Row],
         progress: @escaping (Double) -> Void
     ) throws -> PDFDocument {
@@ -67,8 +67,10 @@ class PdfMaker: PdfMakerType {
             .map({ $0.getSize(fontSize: fontSize) })
         +
         columns
-            .map({ $0.value })
+            .map({ $0.name })
             .map({ $0.getSize(fontSize: fontSize) })
+
+        let styles: [Csv.Column.Style] = columns.map(\.style)
 
         let longestHeight = textSizeList.map({ $0.height }).sorted().reversed()[0]
         let longestWidth = textSizeList.map({ $0.width }).sorted().reversed()[0]
@@ -171,6 +173,7 @@ class PdfMaker: PdfMakerType {
             })
             setRowText(
                 context: context,
+                styles: styles,
                 rows: rows,
                 from: 0,
                 rowCountPerPage: maxNumberOfRowsInPage,
@@ -211,6 +214,7 @@ class PdfMaker: PdfMakerType {
 extension PdfMaker {
     private func setRowText(
         context: CGContext,
+        styles: [Csv.Column.Style],
         rows: [Csv.Row],
         from start: Int,
         rowCountPerPage rowCount: Int,
@@ -237,21 +241,16 @@ extension PdfMaker {
                     y: totalHeight - CGFloat(i + 1) * height - columnHeight
                 )
             )
-
-#if os(macOS)
-            let color = NSColor.labelColor.cgColor
-#elseif os(iOS)
-            let color = UIColor.label.cgColor
-#endif
             for (j, text) in row.values.enumerated() {
-                if text.isEmpty {
+                if text.isEmpty || j >= styles.count {
                     continue
                 }
+                let style = styles[j]
                 let str = NSAttributedString(
                     string: text,
                     attributes: [
-                        .font: Font.systemFont(ofSize: fontSize, weight: .bold),
-                        .foregroundColor: color
+                        .font: Font.systemFont(ofSize: fontSize),
+                        .foregroundColor: style.displayableColor()
                     ]
                 )
                 let size = str.string.getSize(fontSize: fontSize)
@@ -283,7 +282,7 @@ extension PdfMaker {
 
     private func setColumnText(
         context: CGContext,
-        columns: [Csv.ColumnName],
+        columns: [Csv.Column],
         boxWidth width: CGFloat,
         boxHeight height: CGFloat,
         totalHeight: CGFloat,
@@ -305,16 +304,11 @@ extension PdfMaker {
                     y: totalHeight
                 )
             )
-#if os(macOS)
-            let color = NSColor.labelColor.cgColor
-#elseif os(iOS)
-            let color = UIColor.label.cgColor
-#endif
             let str = NSAttributedString(
-                string: column.value,
+                string: column.name,
                 attributes: [
                     .font: Font.systemFont(ofSize: fontSize, weight: .bold),
-                    .foregroundColor: color
+                    .foregroundColor: column.style.displayableColor()
                 ]
             )
             let size = str.string.getSize(fontSize: fontSize)
