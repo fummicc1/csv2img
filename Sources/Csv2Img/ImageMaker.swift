@@ -26,7 +26,7 @@ public enum ImageMakingError: Error {
 protocol ImageMakerType: Maker {
     var latestOutput: CGImage? { get }
     func make(columns: [Csv.Column], rows: [Csv.Row], progress: @escaping (Double) -> Void) throws -> CGImage
-    func setFontSize(_ size: CGFloat)
+    func setFontSize(_ size: Double)
 }
 
 /// `ImageMarker` generate png-image from ``Csv``.
@@ -36,7 +36,7 @@ class ImageMaker: ImageMakerType {
 
     init(
         maximumRowCount: Int?,
-        fontSize: CGFloat
+        fontSize: Double
     ) {
         self.maximumRowCount = maximumRowCount
         self.fontSize = fontSize
@@ -44,11 +44,11 @@ class ImageMaker: ImageMakerType {
 
     var maximumRowCount: Int?
 
-    var fontSize: CGFloat
+    var fontSize: Double
 
     var latestOutput: CGImage?
 
-    func setFontSize(_ size: CGFloat) {
+    func setFontSize(_ size: Double) {
         self.fontSize = size
     }
 

@@ -6,5 +6,5 @@ public protocol Maker {
     var maximumRowCount: Int? { get }
 
     func make(columns: [Csv.Column], rows: [Csv.Row], progress: @escaping (Double) -> Void) throws -> Exportable
-    func setFontSize(_ size: CGFloat)
+    func setFontSize(_ size: Double)
 }

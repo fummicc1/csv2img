@@ -8,7 +8,7 @@ typealias Font = UIFont
 import Foundation
 
 extension String {
-    func getSize(fontSize: CGFloat) -> CGSize {
+    func getSize(fontSize: Double) -> CGSize {
         (self as NSString)
             .size(
                 withAttributes: [

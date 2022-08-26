@@ -340,7 +340,7 @@ extension Csv {
      - Throws: Throws ``Csv.Error``.
      */
     public func generate(
-        fontSize: CGFloat? = nil,
+        fontSize: Double? = nil,
         exportType: ExportType = .png
     ) async throws -> AnyCsvExportable {
         if isLoading {
