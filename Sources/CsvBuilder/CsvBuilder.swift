@@ -76,13 +76,20 @@ public enum CsvBuilder {
     static func trim(str: String) -> [CsvCompositionElement.Row] {
         var str = str
         let head = "\""
-        let tail = ",\""
+        let tail = ","
         str = str
             .replacingOccurrences(of: "[", with: "")
             .replacingOccurrences(of: "]", with: "")
         str = str.replacingOccurrences(of: head, with: "")
         str = str.replacingOccurrences(of: tail, with: "\n")
-        let rows = str.split(separator: "\n").enumerated().map { CsvCompositionElement.Row(index: $0.offset, value: String($0.element)) }
+        let rows = str.split(separator: "\n")
+            .enumerated()
+            .map {
+                CsvCompositionElement.Row(
+                    index: $0.offset,
+                    value: String($0.element.trimmingCharacters(in: .whitespaces))
+                )
+            }
         return rows
     }
 }
