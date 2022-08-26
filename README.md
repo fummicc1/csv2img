@@ -2,6 +2,10 @@
 
 [![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Ffummicc1%2Fcsv2img%2Fbadge%3Ftype%3Dswift-versions)](https://swiftpackageindex.com/fummicc1/csv2img) [![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Ffummicc1%2Fcsv2img%2Fbadge%3Ftype%3Dplatforms)](https://swiftpackageindex.com/fummicc1/csv2img)
 
+<img src="https://github.com/fummicc1/csv2img/actions/workflows/lib.yml/badge.svg">
+<img src="https://github.com/fummicc1/csv2img/actions/workflows/builder.yml/badge.svg">
+<img src="https://github.com/fummicc1/csv2img/actions/workflows/command.yml/badge.svg">
+
 # Csv2ImageApp
 
 Convert Csv into png image.
@@ -140,9 +144,10 @@ composition.names.append(contentsOf: ["Yamada", "Tanaka", "Sato"])
 let csv = try! composition.build()
 ```
 
-| Result                                                                                                                                                                     |
-| -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 
+| Result |
+| ------ |
+
+|
 <img width="392" alt="スクリーンショット 2022-08-26 12 54 22" src="https://user-images.githubusercontent.com/44002126/186814170-0c33013e-c138-4ed5-a34c-5d45dc8ac0c0.png"> |
 
 # Csv2ImgCmd (CLI)
