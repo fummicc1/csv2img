@@ -145,9 +145,7 @@ let csv = try! composition.build()
 
 | Result |
 | ------ |
-
-|
-<img width="392" alt="スクリーンショット 2022-08-26 12 54 22" src="https://user-images.githubusercontent.com/44002126/186814170-0c33013e-c138-4ed5-a34c-5d45dc8ac0c0.png"> |
+|<img width="392" alt="スクリーンショット 2022-08-26 12 54 22" src="https://user-images.githubusercontent.com/44002126/186814170-0c33013e-c138-4ed5-a34c-5d45dc8ac0c0.png">|
 
 # Csv2ImgCmd (CLI)
 
