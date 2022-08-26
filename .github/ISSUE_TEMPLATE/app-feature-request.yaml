@@ -15,6 +15,6 @@ body:
       label: What is your new feature?
       description: Please write your expectation / new feature.
       placeholder: Tell us your expectation!
-      value: "New Feature Requested!"
+      value: "-"
     validations:
       required: true

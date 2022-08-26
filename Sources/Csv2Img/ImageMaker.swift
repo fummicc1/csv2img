@@ -25,8 +25,8 @@ public enum ImageMakingError: Error {
 /// No overview available
 protocol ImageMakerType: Maker {
     var latestOutput: CGImage? { get }
-    func make(columns: [Csv.ColumnName], rows: [Csv.Row], progress: @escaping (Double) -> Void) throws -> CGImage
-    func setFontSize(_ size: CGFloat)
+    func make(columns: [Csv.Column], rows: [Csv.Row], progress: @escaping (Double) -> Void) throws -> CGImage
+    func setFontSize(_ size: Double)
 }
 
 /// `ImageMarker` generate png-image from ``Csv``.
@@ -36,7 +36,7 @@ class ImageMaker: ImageMakerType {
 
     init(
         maximumRowCount: Int?,
-        fontSize: CGFloat
+        fontSize: Double
     ) {
         self.maximumRowCount = maximumRowCount
         self.fontSize = fontSize
@@ -44,17 +44,17 @@ class ImageMaker: ImageMakerType {
 
     var maximumRowCount: Int?
 
-    var fontSize: CGFloat
+    var fontSize: Double
 
     var latestOutput: CGImage?
 
-    func setFontSize(_ size: CGFloat) {
+    func setFontSize(_ size: Double) {
         self.fontSize = size
     }
 
     /// generate png-image data from ``Csv``.
     func make(
-        columns: [Csv.ColumnName],
+        columns: [Csv.Column],
         rows: [Csv.Row],
         progress: @escaping (Double) -> Void
     ) throws -> CGImage {
@@ -70,7 +70,7 @@ class ImageMaker: ImageMakerType {
             .map({ $0.getSize(fontSize: fontSize) })
         +
         columns
-            .map({ $0.value })
+            .map({ $0.name })
             .map({ $0.getSize(fontSize: fontSize) })
 
         let longestHeight = textSizeList.map({ $0.height }).sorted().reversed()[0]
@@ -161,9 +161,10 @@ class ImageMaker: ImageMakerType {
 
         for (i, column) in columns.enumerated() {
             let str = NSAttributedString(
-                string: column.value,
+                string: column.name,
                 attributes: [
-                    .font: Font.systemFont(ofSize: fontSize, weight: .bold)
+                    .font: Font.systemFont(ofSize: fontSize, weight: .bold),
+                    .foregroundColor: column.style.displayableColor()
                 ]
             )
             let size = str.string.getSize(fontSize: fontSize)
@@ -188,10 +189,15 @@ class ImageMaker: ImageMakerType {
         for (var i, row) in rows.enumerated() {
             i += 1
             for (j, item) in row.values.enumerated() {
+                if columns.count <= j {
+                    continue
+                }
+                let style = columns[j].style
                 let str = NSAttributedString(
                     string: item,
                     attributes: [
-                        .font: Font.systemFont(ofSize: fontSize)
+                        .font: Font.systemFont(ofSize: fontSize),
+                        .foregroundColor: style.displayableColor()
                     ]
                 )
                 let size = str.string.getSize(fontSize: fontSize)

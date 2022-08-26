@@ -32,12 +32,12 @@ public actor Csv {
     /// initialization
     ///
     /// `separator` is applied to each row and generate items per row.
-    /// `columnNames` is array of column whose type is `String`.
+    /// `columns` is array of column whose type is ``Column``.
     /// `Row` is array of row whose type is ``Row``    
     public init(
         separator: String=",",
         rawString: String? = nil,
-        columnNames: [Csv.ColumnName] = [],
+        columns: [Csv.Column] = [],
         rows: [Csv.Row] = [],
         exportType: ExportType = .png
     ) {
@@ -52,7 +52,7 @@ public actor Csv {
         )
         self.separator = separator
         self.rawString = rawString
-        self.columnNames = columnNames
+        self.columns = columns
         self.rows = rows
         self.exportType = exportType
     }
@@ -88,8 +88,8 @@ public actor Csv {
     /// an separator applied to each row and column
     public var separator: String
 
-    /// an array of column name with type ``ColumnName``.
-    public var columnNames: [ColumnName]
+    /// an array of ``Column``
+    public var columns: [Column]
 
     /// an array of row whose type is ``Row`.
     public var rows: [Row]
@@ -116,9 +116,9 @@ public actor Csv {
     func update(rows: [Row]) {
         self.rows = rows
     }
-    /// Internal method to update `Array<ColumnName>`
-    func update(columnNames: [ColumnName]) {
-        self.columnNames = columnNames
+    /// Internal method to update `Array<Column>`
+    func update(columns: [Column]) {
+        self.columns = columns
     }
 }
 
@@ -148,78 +148,6 @@ extension Csv {
 }
 
 extension Csv {
-    /// Row (a line)
-    ///
-    /// Row is hrizontally separated group except first line.
-    ///
-    /// First line is treated as ``ColumnName``.
-    ///
-    /// eg.
-    ///
-    /// 1 2 3 4
-    ///
-    /// 5 6 7 8
-    ///
-    /// →Row is [5, 6, 7, 8].
-    ///
-    ///
-    /// Because this class is usually initialized via ``Csv``, you do not have to take care about ``Row`` in detail.
-    ///
-    public struct Row {
-
-        public init(index: Int, values: [String]) {
-            self.index = index
-            self.values = values
-        }
-
-        public var index: Int
-        public var values: [String]
-
-    }
-
-    /// ColumnName (a head line)
-    ///
-    /// Column is at the first group of hrizontally separated groups.
-    ///
-    /// following lines are treated as ``Row``.
-    ///
-    /// eg.
-    ///
-    /// 1 2 3 4
-    ///
-    /// 5 6 7 8
-    /// →ColumnName is [1, 2, 3, 4] and Row is [5, 6, 7, 8].
-    ///
-    /// Because this class is usually initialized via ``Csv``, you do not have to take care about ``ColumnName`` in detail.
-    ///
-    public struct ColumnName {
-
-        public init(value: String) {
-            self.value = value
-        }
-
-        public var value: String
-    }
-}
-
-extension Csv {
-
-    /// `Error` related with Csv implmentation.
-    public enum Error: Swift.Error {
-        /// Specified network url is invalid or failed to download csv data.
-        case invalidDownloadResource(url: String, data: Data)
-        /// Specified local url is invalid (file may not exist).
-        case invalidLocalResource(url: String, data: Data)
-        /// If file is not accessible due to security issue.
-        case cannotAccessFile(url: String)
-        /// given `exportType` is invalid.
-        case invalidExportType(ExportType)
-        /// Both columns and rows are empty
-        case emptyData
-        /// Csv denied execution because it is generating another contents.
-        case workInProgress
-        case underlying(Swift.Error?)
-    }
 
     /// Generate `Csv` from `String` data.
     ///
@@ -292,7 +220,7 @@ extension Csv {
         var lines = str
             .components(separatedBy: CharacterSet(charactersIn: "\r\n"))
             .filter({ !$0.isEmpty })
-        var columns: [ColumnName] = []
+        var columns: [Csv.Column] = []
         var rows: [Row] = []
 
         if lines.count == 1 {
@@ -308,9 +236,13 @@ extension Csv {
                 .split(separator: Character(separator), omittingEmptySubsequences: false)
                 .map({ String($0) })
             if i == 0 {
-                columns = items.compactMap({ name in
-                    return ColumnName(value: name)
-                })
+                let columnCount = items.count
+                let styles = Column.Style.random(count: columnCount)
+                columns = items.enumerated().map { (i, name) in
+                    return Column(
+                        name: name,
+                        style: styles[i])
+                }
             } else {
                 items = items.enumerated().compactMap { (index, item) in
                     let str: String
@@ -331,7 +263,7 @@ extension Csv {
         return Csv(
             separator: separator,
             rawString: str,
-            columnNames: columns,
+            columns: columns,
             rows: rows,
             exportType: .pdf
         )
@@ -408,7 +340,7 @@ extension Csv {
      - Throws: Throws ``Csv.Error``.
      */
     public func generate(
-        fontSize: CGFloat? = nil,
+        fontSize: Double? = nil,
         exportType: ExportType = .png
     ) async throws -> AnyCsvExportable {
         if isLoading {
@@ -419,7 +351,7 @@ extension Csv {
         defer {
             isLoadingSubject.value = false
         }
-        if columnNames.isEmpty || rows.isEmpty {
+        if columns.isEmpty || rows.isEmpty {
             throw Csv.Error.emptyData
         }
         self.exportType = exportType
@@ -443,7 +375,7 @@ extension Csv {
                     }
                     Task {
                         do {
-                            let img = try maker.make(columns: await self.columnNames, rows: await self.rows) { progress in
+                            let img = try maker.make(columns: await self.columns, rows: await self.rows) { progress in
                                 self.progressSubject.value = progress
                             }
                             continuation.resume(returning: img)
@@ -466,7 +398,7 @@ extension Csv {
                     }
                     Task {
                         do {
-                            let doc = try maker.make(columns: await self.columnNames, rows: await self.rows) { progress in
+                            let doc = try maker.make(columns: await self.columns, rows: await self.rows) { progress in
                                 self.progressSubject.value = progress
                             }
                             continuation.resume(returning: doc)

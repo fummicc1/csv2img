@@ -51,7 +51,11 @@ public enum CsvBuilder {
         if elements.isEmpty {
             throw Csv.Error.emptyData
         }
-        let columnNames: [Csv.ColumnName] = elements.map(\.columnName).map { Csv.ColumnName(value: $0) }
+        let styles = Csv.Column.Style.random(count: elements.count)
+        let columns: [Csv.Column] = elements
+            .map(\.columnName)
+            .enumerated()
+            .map { Csv.Column(name: $0.element, style: styles[$0.offset]) }
 
         var rows: [Csv.Row] = []
         let flattedRows = elements.map(\.rows).flatMap { $0 }
@@ -63,7 +67,7 @@ public enum CsvBuilder {
 
         return Csv(
             separator: ",",
-            columnNames: columnNames,
+            columns: columns,
             rows: rows,
             exportType: .pdf
         )
@@ -72,13 +76,20 @@ public enum CsvBuilder {
     static func trim(str: String) -> [CsvCompositionElement.Row] {
         var str = str
         let head = "\""
-        let tail = ",\""
+        let tail = ","
         str = str
             .replacingOccurrences(of: "[", with: "")
             .replacingOccurrences(of: "]", with: "")
         str = str.replacingOccurrences(of: head, with: "")
         str = str.replacingOccurrences(of: tail, with: "\n")
-        let rows = str.split(separator: "\n").enumerated().map { CsvCompositionElement.Row(index: $0.offset, value: String($0.element)) }
+        let rows = str.split(separator: "\n")
+            .enumerated()
+            .map {
+                CsvCompositionElement.Row(
+                    index: $0.offset,
+                    value: String($0.element.trimmingCharacters(in: .whitespaces))
+                )
+            }
         return rows
     }
 }
