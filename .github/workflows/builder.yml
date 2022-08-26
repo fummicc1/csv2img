@@ -20,11 +20,17 @@ jobs:
           xcode-version: latest-stable
       - name: Install xcpretty
         run: bundle install
-      - name: Build and Test
+      - name: Build and Test (osX)
         run: |
           set -o pipefail && \
           xcodebuild -scheme CsvBuilder \
           clean build test \
-          -destination 'platform=OS X,arch=arm64' \
+          -destination 'platform=OS X,arch=x86_64' \
+          | bundle exec xcpretty
+      - name: Build and Test (iOS)
+        run: |
+          set -o pipefail && \
+          xcodebuild -scheme CsvBuilder \
+          clean build test \
           -destination 'platform=iOS Simulator,name=iPhone 13' \
           | bundle exec xcpretty
