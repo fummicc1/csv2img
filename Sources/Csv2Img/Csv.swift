@@ -289,18 +289,26 @@ extension Csv {
         maxLength: Int? = nil,
         exportType: ExportType = .png
     ) -> Csv {
-        let lines = str
+        var lines = str
             .components(separatedBy: CharacterSet(charactersIn: "\r\n"))
-            .filter({ $0 != "" })
+            .filter({ !$0.isEmpty })
         var columns: [ColumnName] = []
         var rows: [Row] = []
+
+        if lines.count == 1 {
+            let count = lines[0]
+                .split(separator: Character(separator), omittingEmptySubsequences: false)
+                .count
+            let columns = (0..<count).map { String($0) }
+            lines.insert(columns.joined(separator: separator), at: 0)
+        }
 
         for (i, line) in lines.enumerated() {
             var items = line
                 .split(separator: Character(separator), omittingEmptySubsequences: false)
                 .map({ String($0) })
             if i == 0 {
-                columns = items.enumerated().compactMap({ (index, name) in
+                columns = items.compactMap({ name in
                     return ColumnName(value: name)
                 })
             } else {

@@ -93,6 +93,14 @@ class ImageMaker: ImageMakerType {
         }
         #endif
 
+        defer {
+            #if os(macOS)
+            canvas.unlockFocus()
+            #elseif os(iOS)
+            UIGraphicsEndImageContext()
+            #endif
+        }
+
         context.setFillColor(CGColor(
             red: 250/255,
             green: 250/255,
@@ -209,11 +217,6 @@ class ImageMaker: ImageMakerType {
         guard let image = context.makeImage() else {
             throw ImageMakingError.failedCreateImage(context)
         }
-        #if os(macOS)
-        canvas.unlockFocus()
-        #elseif os(iOS)
-        UIGraphicsEndImageContext()
-        #endif
 
         self.latestOutput = image
 
