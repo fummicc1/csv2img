@@ -68,7 +68,7 @@
 		D35DB0D3285FA754009C252D /* CsvViewer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CsvViewer.swift; sourceTree = "<group>"; };
 		D35DB0D5285FADA5009C252D /* HistoryModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryModel.swift; sourceTree = "<group>"; };
 		D3736B27286393D8004C20C8 /* Csv2Img */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = Csv2Img; path = ..; sourceTree = "<group>"; };
-		D3A4EB14284F11A3002E3499 /* Csv2ImageApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Csv2ImageApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		D3A4EB14284F11A3002E3499 /* D_Csv2Img.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = D_Csv2Img.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D3A4EB17284F11A3002E3499 /* Csv2ImageAppApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Csv2ImageAppApp.swift; sourceTree = "<group>"; };
 		D3A4EB19284F11A3002E3499 /* SelectCsvView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectCsvView.swift; sourceTree = "<group>"; };
 		D3A4EB1B284F11A4002E3499 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -158,7 +158,7 @@
 		D3A4EB15284F11A3002E3499 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				D3A4EB14284F11A3002E3499 /* Csv2ImageApp.app */,
+				D3A4EB14284F11A3002E3499 /* D_Csv2Img.app */,
 				D3A4EB25284F11A4002E3499 /* Csv2ImageAppTests.xctest */,
 				D3A4EB2F284F11A4002E3499 /* Csv2ImageAppUITests.xctest */,
 			);
@@ -312,7 +312,7 @@
 				D3095CC5286394720086EEEE /* Csv2Img */,
 			);
 			productName = Csv2ImageApp;
-			productReference = D3A4EB14284F11A3002E3499 /* Csv2ImageApp.app */;
+			productReference = D3A4EB14284F11A3002E3499 /* D_Csv2Img.app */;
 			productType = "com.apple.product-type.application";
 		};
 		D3A4EB24284F11A4002E3499 /* Csv2ImageAppTests */ = {
@@ -640,7 +640,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 12.0;
 				MARKETING_VERSION = 1.4;
 				PRODUCT_BUNDLE_IDENTIFIER = dev.fummicc1.Csv2ImageApp_debug;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = D_Csv2Img;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
 				SUPPORTS_MACCATALYST = NO;
@@ -685,7 +685,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 12.0;
 				MARKETING_VERSION = 1.4;
 				PRODUCT_BUNDLE_IDENTIFIER = dev.fummicc1.Csv2ImageApp;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = Csv2Img;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
 				SUPPORTS_MACCATALYST = NO;

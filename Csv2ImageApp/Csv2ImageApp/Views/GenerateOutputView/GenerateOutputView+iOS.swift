@@ -21,7 +21,7 @@ struct GenerateOutputView_iOS: View {
             Rectangle()
                 .background(Asset.lightAccentColor.swiftUIColor)
                 .ignoresSafeArea()
-            GeometryReader { proxy in
+            Group {
                 VStack {
                     HStack {
                         CButton.labeled("Back") {
@@ -42,24 +42,28 @@ struct GenerateOutputView_iOS: View {
                     }
                     .pickerStyle(.segmented)
                     .padding()
-                    GeneratePreviewView(
-                        model: model,
-                        size: .constant(
-                            CGSize(
-                                width: proxy.size.width * 0.85,
-                                height: proxy.size.height * 0.8
+                    GeometryReader { proxy in
+                        VStack {
+                            GeneratePreviewView(
+                                model: model,
+                                size: .constant(
+                                    CGSize(
+                                        width: proxy.size.width * 0.85,
+                                        height: proxy.size.height * 0.8
+                                    )
+                                )
                             )
-                        )
-                    )
-                    .padding()
-                    Spacer()
-                    HStack {
-                        Spacer()
-                        CButton.labeled("Save") {
-                            succeedSavingOutput = model.save()
+                            .padding()
+                            Spacer()
+                            HStack {
+                                Spacer()
+                                CButton.labeled("Save") {
+                                    succeedSavingOutput = model.save()
+                                }
+                            }
+                            .padding()
                         }
                     }
-                    .padding()
                 }
                 .background(Asset.lightAccentColor.swiftUIColor)
             }
@@ -70,19 +74,20 @@ struct GenerateOutputView_iOS: View {
                 .padding()
                 .progressViewStyle(.linear)
             }
-        }.background(Asset.lightAccentColor.swiftUIColor)
-            .alert("Complete Saving!", isPresented: $succeedSavingOutput) {
-                CButton.labeled("Back") {
-                    withAnimation {
-                        backToPreviousPage = true
-                    }
-                }
-                if let savedURL = model.savedURL, Application.shared.canOpenURL(savedURL) {
-                    CButton.labeled("Open") {
-                        Application.shared.open(savedURL)
-                    }
+        }
+        .background(Asset.lightAccentColor.swiftUIColor)
+        .alert("Complete Saving!", isPresented: $succeedSavingOutput) {
+            CButton.labeled("Back") {
+                withAnimation {
+                    backToPreviousPage = true
                 }
             }
+            if let savedURL = model.savedURL, Application.shared.canOpenURL(savedURL) {
+                CButton.labeled("Open") {
+                    Application.shared.open(savedURL)
+                }
+            }
+        }
     }
 }
 #endif
