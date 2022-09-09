@@ -23,15 +23,6 @@ extension Csv.Column.Style {
         if applyOnlyColumn {
             return normalColor()
         }
-        #if os(macOS)
-        // On macOS, foregroundColor in NSAttributedString should be `NSColor` type.
-        if let _color = Color(cgColor: color) {
-            return _color
-        } else {
-            return color
-        }
-        #elseif os(iOS)
-        return color
-        #endif
+        return Color(cgColor: color)
     }
 }
