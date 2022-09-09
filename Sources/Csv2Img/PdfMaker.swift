@@ -98,8 +98,7 @@ class PdfMaker: PdfMakerType {
             )
         )
 
-        // Max size on iOS is `2**32 (32bit)`
-        let data = CFDataCreateMutable(nil, Int(1 << 32))!
+        let data = CFDataCreateMutable(nil, 0)!
         let consumer = CGDataConsumer(data: data)!
         guard let context = CGContext(
             consumer: consumer,
