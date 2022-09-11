@@ -15,6 +15,7 @@ struct SelectCsvView_iOS: View {
     var body: some View {
         BrandingFrameView {
             VStack {
+                Spacer()
                 CButton.labeled("Select Csv File") {
                     Task {
                         await model.selectFileOnDisk()
@@ -38,6 +39,13 @@ struct SelectCsvView_iOS: View {
                     }
                     Spacer().frame(width: 16)
                 }
+                Spacer()
+                Divider()
+                CText("Saved data is stored in Folder App.", isBold: true)
+                CButton.labeled("Open Folder App") {
+                    model.openFolderApp()
+                }
+                Spacer().frame(height: 40)
             }
             .padding()
         }

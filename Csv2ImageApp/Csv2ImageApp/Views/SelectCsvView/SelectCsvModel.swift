@@ -10,7 +10,8 @@ import SwiftUI
 
 enum SelectCsvModelError: Error {
     case fileNotFound
-    case invalidNetworkUrl(string: String)
+    case invalidNetworkURL(string: String)
+    case invalidCsvURL(string: String)
 }
 
 class SelectCsvModel: NSObject, ObservableObject {
@@ -30,14 +31,26 @@ class SelectCsvModel: NSObject, ObservableObject {
 
     @MainActor
     func selectFileOnTheInternet() async {
+        guard validateCsvURL(path: networkUrlText) else {
+            let error = SelectCsvModelError.invalidCsvURL(string: networkUrlText)
+            self.error = "\(error)"
+            return
+        }
         guard let url = URL(string: networkUrlText) else {
-            let error = SelectCsvModelError.invalidNetworkUrl(string: networkUrlText)
+            let error = SelectCsvModelError.invalidNetworkURL(string: networkUrlText)
             self.error = "\(error)"
             return
         }
         withAnimation {
             selectedCsv = .init(fileType: .network, url: url)
         }
+    }
+
+    func validateCsvURL(path: String) -> Bool {
+        guard let `extension` = path.split(separator: "/").last, `extension`.contains(".csv") else {
+            return false
+        }
+        return true
     }
 }
 
@@ -86,6 +99,19 @@ extension SelectCsvModel: UIDocumentPickerDelegate {
 
     func documentPickerWasCancelled(_ controller: UIDocumentPickerViewController) {
         selectedCsv = nil
+    }
+
+    @MainActor func openFolderApp() {
+        guard var urlPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).last?.absoluteString else {
+            return
+        }
+        let newPath = urlPath.replacingOccurrences(of: "file://", with: "shareddocuments://")
+        guard let url = URL(string: newPath) else {
+            return
+        }
+        if Application.shared.canOpenURL(url) {
+            Application.shared.open(url)
+        }
     }
 }
 #endif
