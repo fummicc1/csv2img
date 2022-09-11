@@ -87,5 +87,18 @@ extension SelectCsvModel: UIDocumentPickerDelegate {
     func documentPickerWasCancelled(_ controller: UIDocumentPickerViewController) {
         selectedCsv = nil
     }
+
+    @MainActor func openFolderApp() {
+        guard var urlPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).last?.absoluteString else {
+            return
+        }
+        let newPath = urlPath.replacingOccurrences(of: "file://", with: "shareddocuments://")
+        guard let url = URL(string: newPath) else {
+            return
+        }
+        if Application.shared.canOpenURL(url) {
+            Application.shared.open(url)
+        }
+    }
 }
 #endif

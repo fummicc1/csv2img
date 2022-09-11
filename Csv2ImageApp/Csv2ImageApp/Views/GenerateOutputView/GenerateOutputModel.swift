@@ -156,7 +156,7 @@ extension GenerateOutputModel {
 extension GenerateOutputModel {
     @MainActor
     private func save_iOS() -> Bool {
-        guard var url = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
+        guard var url = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).last else {
             return false
         }
         guard let fileName = state.url.lastPathComponent.split(separator: ".").first else {
