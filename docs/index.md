@@ -10,19 +10,20 @@ Convert Csv into png image.
 
 ## iOS App
 
-Because this app has been developed with Xcode14 and under multiplatform feature which was annouced at WWDC22, I can't publish this app on the AppStore. Alternatively I prepared TestFlight version as for iOS app.
-
-- [TestFlight for iOS App](https://testflight.apple.com/join/w8jZU9Jq)
 
 ### Demo
 
-<img src="https://user-images.githubusercontent.com/44002126/184648376-0269aa36-210e-41be-b6ee-567e7a10bd88.gif" width=320>
+<img src="https://user-images.githubusercontent.com/44002126/189683064-88163a24-290e-4201-9306-86ca1f6dc605.gif" width=300>
+
+
+
 
 ## MacOS App
 
 ### Demo
 
-![demo2](https://user-images.githubusercontent.com/44002126/186102558-5176d16a-a0fa-4e27-bf73-0871f282f1d2.gif)
+<img src="https://user-images.githubusercontent.com/44002126/186823895-c1e74b48-0ea9-4323-9cbd-4cb270b83190.gif" width=640>
+
 
 # Csv2Img (Library)
 
@@ -142,9 +143,7 @@ let csv = try! composition.build()
 
 | Result |
 | ------ |
-
-|
-<img width="392" alt="スクリーンショット 2022-08-26 12 54 22" src="https://user-images.githubusercontent.com/44002126/186814170-0c33013e-c138-4ed5-a34c-5d45dc8ac0c0.png"> |
+|<img width="392" alt="スクリーンショット 2022-08-26 12 54 22" src="https://user-images.githubusercontent.com/44002126/186814170-0c33013e-c138-4ed5-a34c-5d45dc8ac0c0.png">|
 
 # Csv2ImgCmd (CLI)
 
