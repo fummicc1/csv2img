@@ -30,7 +30,7 @@
 		D3C4131B289F9B7B00936C02 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3C4131A289F9B7B00936C02 /* RootView.swift */; };
 		D3C4131D289F9E3A00936C02 /* SelectCsvModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3C4131C289F9E3A00936C02 /* SelectCsvModel.swift */; };
 		D3C41320289FB11800936C02 /* GenerateOutputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3C4131F289FB11800936C02 /* GenerateOutputView.swift */; };
-		D3C41322289FB11F00936C02 /* GenerateOutputModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3C41321289FB11F00936C02 /* GenerateOutputModel.swift */; platformFilter = ios; };
+		D3C41322289FB11F00936C02 /* GenerateOutputModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3C41321289FB11F00936C02 /* GenerateOutputModel.swift */; };
 		D3C41324289FB12F00936C02 /* GenerateOutputView+iOS.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3C41323289FB12F00936C02 /* GenerateOutputView+iOS.swift */; platformFilter = ios; };
 		D3C41326289FB13800936C02 /* GenerateOutputView+macOS.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3C41325289FB13800936C02 /* GenerateOutputView+macOS.swift */; platformFilters = (macos, ); };
 		D3C41328289FB66400936C02 /* CButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3C41327289FB66400936C02 /* CButton.swift */; };

@@ -306,11 +306,14 @@ extension Csv {
     public static func loadFromDisk(
         _ file: URL,
         separator: String = ",",
-        checkAccessSecurityScope: Bool = false,
         exportType: ExportType = .png
     ) throws -> Csv {
         // https://www.hackingwithswift.com/forums/swift/accessing-files-from-the-files-app/8203
-        if !checkAccessSecurityScope || file.startAccessingSecurityScopedResource() {
+        let canAccess = file.startAccessingSecurityScopedResource()
+        defer {
+            file.stopAccessingSecurityScopedResource()
+        }
+        if canAccess {
             let data = try Data(contentsOf: file)
             let str: String
             if let _str = String(data: data, encoding: .utf8) {

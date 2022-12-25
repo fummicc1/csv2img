@@ -40,7 +40,7 @@ class GenerateOutputModel: ObservableObject {
                 #if os(macOS)
                 self.csv = try Csv.loadFromDisk(url, exportType: exportMode)
                 #elseif os(iOS)
-                self.csv = try Csv.loadFromDisk(url, checkAccessSecurityScope: true, exportType: exportMode)
+                self.csv = try Csv.loadFromDisk(url, exportType: exportMode)
                 #endif
             case .network:
                 self.csv = try Csv.loadFromNetwork(url, exportType: exportMode)
@@ -120,7 +120,6 @@ class GenerateOutputModel: ObservableObject {
         #endif
     }
 }
-
 
 #if os(macOS)
 extension GenerateOutputModel {
