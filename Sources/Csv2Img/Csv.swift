@@ -300,8 +300,7 @@ extension Csv {
     ///
     /// - Parameters:
     ///     - file: Local disk url, commonly starts from `file://` schema. Relative-path method is not allowed, please specify by absolute-path method.
-    ///     - separator: Default `separator` in a row is `","`. You cloud change it by giving separator to `separator` parameter.
-    ///     - checkAccessSecurityScope: This flag is effective to only macOS. If you want to check local-file is securely accessible from this app, make this flat `true`. Default value if `false` which does not check the file access-security-scope.
+    ///     - separator: Default `separator` in a row is `","`. You cloud change it by giving separator to `separator` parameter.    
     ///     - exportType: Default `exportType` is `.png`. If you use too big image size, I strongly recommend use `.pdf` instead.
     public static func loadFromDisk(
         _ file: URL,
