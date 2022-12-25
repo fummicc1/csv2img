@@ -300,17 +300,19 @@ extension Csv {
     ///
     /// - Parameters:
     ///     - file: Local disk url, commonly starts from `file://` schema. Relative-path method is not allowed, please specify by absolute-path method.
-    ///     - separator: Default `separator` in a row is `","`. You cloud change it by giving separator to `separator` parameter.
-    ///     - checkAccessSecurityScope: This flag is effective to only macOS. If you want to check local-file is securely accessible from this app, make this flat `true`. Default value if `false` which does not check the file access-security-scope.
+    ///     - separator: Default `separator` in a row is `","`. You cloud change it by giving separator to `separator` parameter.    
     ///     - exportType: Default `exportType` is `.png`. If you use too big image size, I strongly recommend use `.pdf` instead.
     public static func loadFromDisk(
         _ file: URL,
         separator: String = ",",
-        checkAccessSecurityScope: Bool = false,
         exportType: ExportType = .png
     ) throws -> Csv {
         // https://www.hackingwithswift.com/forums/swift/accessing-files-from-the-files-app/8203
-        if !checkAccessSecurityScope || file.startAccessingSecurityScopedResource() {
+        let canAccess = file.startAccessingSecurityScopedResource()
+        defer {
+            file.stopAccessingSecurityScopedResource()
+        }
+        if canAccess {
             let data = try Data(contentsOf: file)
             let str: String
             if let _str = String(data: data, encoding: .utf8) {
