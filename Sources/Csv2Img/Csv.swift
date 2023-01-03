@@ -37,6 +37,7 @@ public actor Csv {
     public init(
         separator: String=",",
         rawString: String? = nil,
+        encoding: String.Encoding?,
         columns: [Csv.Column] = [],
         rows: [Csv.Row] = [],
         exportType: ExportType = .png
@@ -50,12 +51,15 @@ public actor Csv {
                 title: "Title"
             )
         )
+        self.encoding = encoding
         self.separator = separator
         self.rawString = rawString
         self.columns = columns
         self.rows = rows
         self.exportType = exportType
     }
+
+    private(set) public var encoding: String.Encoding?
 
     /// A flag whether ``Csv`` is loading contents or not
     public var isLoading: Bool {
@@ -208,11 +212,13 @@ extension Csv {
     ///
     /// - Parameters:
     ///     - str: Row String
+    ///     - encoding: `String.Encoding?`. specify the encoding style used in generating String data.
     ///     - separator: Default separator in a row is `","`. You cloud change it by giving separator to `separator` parameter.
     ///     - maxLength: Default value is nil. if `maxLength` is not nil, every row-item length is limited by `maxLength`.
     ///     - exportType: Default `exportType` is `.png`. If you use too big image size, I strongly recommend use `.pdf` instead.
     public static func loadFromString(
         _ str: String,
+        encoding: String.Encoding? = nil,
         separator: String = ",",
         maxLength: Int? = nil,
         exportType: ExportType = .png
@@ -263,6 +269,7 @@ extension Csv {
         return Csv(
             separator: separator,
             rawString: str,
+            encoding: encoding,
             columns: columns,
             rows: rows,
             exportType: .pdf
@@ -274,37 +281,35 @@ extension Csv {
     /// - Parameters:
     ///     - url: Network url, commonly `HTTPS` schema.
     ///     - separator: Default `separator` in a row is `","`. You cloud change it by giving separator to `separator` parameter.
+    ///     - encoding: Default: `.utf8`. if you get the unexpected result after convert, please try changing this parameter into other encoding style.
     ///     - exportType: Default `exportType` is `.png`. If you use too big image size, I strongly recommend use `.pdf` instead.
     public static func loadFromNetwork(
         _ url: URL,
         separator: String = ",",
+        encoding: String.Encoding = .utf8,
         exportType: ExportType = .png
     ) throws -> Csv {
         let data = try Data(contentsOf: url)
         let str: String
-        if let _str = String(data: data, encoding: .utf8) {
-            str = _str
-        } else if let _str = String(data: data, encoding: .utf16) {
-            str = _str
-        } else if let _str = String(data: data, encoding: .utf32) {
-            str = _str
-        } else if let _str = String(data: data, encoding: .ascii) {
+        if let _str = String(data: data, encoding: encoding) {
             str = _str
         } else {
             throw Error.invalidDownloadResource(url: url.absoluteString, data: data)
         }
-        return Csv.loadFromString(str, separator: separator)
+        return Csv.loadFromString(str, encoding: encoding, separator: separator)
     }
 
     /// Generate `Csv` from local disk url (like `file://Users/...`).
     ///
     /// - Parameters:
     ///     - file: Local disk url, commonly starts from `file://` schema. Relative-path method is not allowed, please specify by absolute-path method.
-    ///     - separator: Default `separator` in a row is `","`. You cloud change it by giving separator to `separator` parameter.    
+    ///     - separator: Default `separator` in a row is `","`. You cloud change it by giving separator to `separator` parameter.
+    ///     - encoding: Default: `.utf8`. if you get the unexpected result after convert, please try changing this parameter into other encoding style.
     ///     - exportType: Default `exportType` is `.png`. If you use too big image size, I strongly recommend use `.pdf` instead.
     public static func loadFromDisk(
         _ file: URL,
         separator: String = ",",
+        encoding: String.Encoding = .utf8,
         exportType: ExportType = .png
     ) throws -> Csv {
         // https://www.hackingwithswift.com/forums/swift/accessing-files-from-the-files-app/8203
@@ -315,18 +320,12 @@ extension Csv {
         if canAccess {
             let data = try Data(contentsOf: file)
             let str: String
-            if let _str = String(data: data, encoding: .utf8) {
-                str = _str
-            } else if let _str = String(data: data, encoding: .utf16) {
-                str = _str
-            } else if let _str = String(data: data, encoding: .utf32) {
-                str = _str
-            } else if let _str = String(data: data, encoding: .ascii) {
+            if let _str = String(data: data, encoding: encoding) {
                 str = _str
             } else {
-                throw Error.invalidLocalResource(url: file.absoluteString, data: data)
+                throw Error.invalidLocalResource(url: file.absoluteString, data: data, encoding: encoding)
             }
-            return Csv.loadFromString(str, separator: separator)
+            return Csv.loadFromString(str, encoding: encoding, separator: separator)
         }
         throw Error.cannotAccessFile(url: file.absoluteString)
     }

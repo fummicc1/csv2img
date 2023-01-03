@@ -59,3 +59,14 @@ struct GeneratePreviewView: View {
     }
     #endif
 }
+
+
+extension String.Encoding: Identifiable, Equatable {
+    public var id: String {
+        self.description
+    }
+
+    static func ==(lhs: Self, rhs: Self) -> Bool {
+        lhs.id == rhs.id
+    }
+}

@@ -15,6 +15,14 @@ struct GenerateOutputView_macOS: View {
     @StateObject var model: GenerateOutputModel
     @Binding var backToPreviousPage: Bool
 
+    private let availableEncodingType: [String.Encoding] = [
+        .utf8,
+        .utf16,
+        .utf32,
+        .shiftJIS,
+        .ascii,
+    ]
+
     @Environment(\.dismiss) var dismiss
 
     var body: some View {
@@ -45,7 +53,11 @@ struct GenerateOutputView_macOS: View {
                     )
                     Spacer()
                     HStack {
-                        Picker(selection: $model.state.exportType) {
+                        Picker(selection: Binding(get: {
+                            model.state.exportType
+                        }, set: { exportType, _ in
+                            model.update(keyPath: \.exportType, value: exportType)
+                        })) {
                             CText("png").tag(Csv.ExportType.png)
                             CText("pdf").tag(Csv.ExportType.pdf)
                         } label: {
@@ -55,6 +67,18 @@ struct GenerateOutputView_macOS: View {
                         .pickerStyle(.radioGroup)
                         .background(Asset.backgroundColor.swiftUIColor)
                         .padding()
+
+                        let encodingInfo = model.encoding.description
+                        Menu("Encode Type: \(encodingInfo)") {
+                            ForEach(availableEncodingType) { encoding in
+                                Button {
+                                    model.update(encoding: encoding)
+                                } label: {
+                                    Text(encoding.description)
+                                }
+
+                            }
+                        }
 
                         Spacer()
                         CButton.labeled("Save", role: .primary) {
@@ -71,6 +95,28 @@ struct GenerateOutputView_macOS: View {
                     .padding()
                     .progressViewStyle(.linear)
                 }
+                VStack {
+                    Spacer()
+                    VStack {
+                        CText(model.state.errorMessage ?? "", foregroundColor: .red)
+                            .padding()
+                    }
+                    .fixedSize(horizontal: false, vertical: true)
+                    .background(Asset.secondaryBackgroundColor.swiftUIColor)
+                    .cornerRadius(12)
+                    .padding()
+                }
+                .opacity(model.state.errorMessage != nil ? 1 : 0)
+                .animation(.easeInOut, value: model.state.errorMessage)
+                .onChange(of: model.state.errorMessage, perform: { errorMessage in
+                    if errorMessage != nil {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+                            withAnimation {
+                                model.clearError()
+                            }
+                        }
+                    }
+                })
             }
         }
     }

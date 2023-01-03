@@ -16,6 +16,7 @@ struct GenerateOutputState: Hashable {
 
     var isLoading: Bool
     var progress: Double
+    var errorMessage: String?
 
     var cgImage: CGImage?
     var pdfDocument: PDFDocument?
@@ -26,6 +27,7 @@ struct GenerateOutputState: Hashable {
         fileType: FileURLType,
         isLoading: Bool = false,
         progress: Double = 0,
+        errorMessage: String? = nil,
         cgImage: CGImage? = nil,
         pdfDocument: PDFDocument? = nil,
         exportType: Csv.ExportType = .pdf
@@ -34,6 +36,7 @@ struct GenerateOutputState: Hashable {
         self.fileType = fileType
         self.isLoading = isLoading
         self.progress = progress
+        self.errorMessage = errorMessage
         self.cgImage = cgImage
         self.pdfDocument = pdfDocument
         self.exportType = exportType

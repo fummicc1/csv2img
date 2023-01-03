@@ -12,11 +12,13 @@ struct CText: View {
     let text: String
     let isBold: Bool
     let font: Font
+    let foregroundColor: Color
 
-    init(_ text: String, isBold: Bool = true, font: Font = .body) {
+    init(_ text: String, isBold: Bool = true, font: Font = .body, foregroundColor: Color = Asset.textColor.swiftUIColor) {
         self.text = text
         self.isBold = isBold
         self.font = font
+        self.foregroundColor = foregroundColor
     }
 
     var body: some View {
@@ -24,12 +26,12 @@ struct CText: View {
             Text(text)
                 .bold()
                 .font(font)
-                .foregroundColor(Asset.textColor.swiftUIColor)
+                .foregroundColor(foregroundColor)
         } else {
             Text(text)
                 .bold()
                 .font(font)
-                .foregroundColor(Asset.textColor.swiftUIColor)
+                .foregroundColor(foregroundColor)
         }
     }
 }

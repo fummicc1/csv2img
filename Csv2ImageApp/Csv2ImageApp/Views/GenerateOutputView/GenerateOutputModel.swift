@@ -17,17 +17,52 @@ enum GenerateOutputModelError: Error {
 
 class GenerateOutputModel: ObservableObject {
 
-    @Published @MainActor var state: GenerateOutputState
-    @Published @MainActor var savedURL: URL?
+    @Published @MainActor private(set) var state: GenerateOutputState
+    @Published @MainActor private(set) var encoding: String.Encoding
+    @Published @MainActor private(set) var savedURL: URL?
 
-    let csv: Csv
+    private var csvTask: Task<Void, Never>?
+
+    @Published @MainActor private(set) var csv: Csv {
+        didSet {
+            csvTask?.cancel()
+            csvTask = Task { [weak self] in
+                Task {
+                    let exportType = await csv.exportType
+                    let encoding = await csv.encoding
+                    guard let encoding, let exportable = try? await csv.generate(exportType: exportType) else {
+                        return
+                    }
+                    self?.encoding = encoding
+                    self?.state.cgImage = nil
+                    self?.state.pdfDocument = nil
+                    if type(of: exportable.base) == PDFDocument.self {
+                        self?.state.pdfDocument = (exportable.base as! PDFDocument)
+                    } else {
+                        self?.state.cgImage = (exportable.base as! CGImage)
+                    }
+                }
+
+                Task {
+                    for await isLoading in csv.isLoadingPublisher.values {
+                        self?.state.isLoading = isLoading
+                    }
+                }
+                Task {
+                    for await progress in csv.progressPublisher.values {
+                        self?.state.progress = progress
+                    }
+                }
+            }
+        }
+    }
 
     private var cancellables: Set<AnyCancellable> = []
     private let queue = DispatchQueue(label: "dev.fummicc1.csv2imgapp.generate-output-model")
 
     @MainActor
-    init(url: URL, urlType: FileURLType, exportMode: Csv.ExportType = .pdf) {
-
+    init(url: URL, urlType: FileURLType, encoding: String.Encoding = .utf8, exportMode: Csv.ExportType = .pdf) {
+        self.encoding = encoding
         self.state = .init(
             url: url,
             fileType: urlType,
@@ -37,32 +72,32 @@ class GenerateOutputModel: ObservableObject {
         do {
             switch urlType {
             case .local:
-                #if os(macOS)
-                self.csv = try Csv.loadFromDisk(url, exportType: exportMode)
-                #elseif os(iOS)
-                self.csv = try Csv.loadFromDisk(url, exportType: exportMode)
-                #endif
+                self.csv = try Csv.loadFromDisk(url, encoding: encoding, exportType: exportMode)
             case .network:
-                self.csv = try Csv.loadFromNetwork(url, exportType: exportMode)
+                self.csv = try Csv.loadFromNetwork(url, encoding: encoding, exportType: exportMode)
             }
         } catch {
-            assertionFailure("\(error)")
-            self.csv = Csv(exportType: exportMode)
+            self.csv = Csv(encoding: encoding, exportType: exportMode)
         }
+    }
 
-        csv.isLoadingPublisher
-            .receive(on: DispatchQueue.main)
-            .sink { isLoading in
-                self.state.isLoading = isLoading
+    @MainActor
+    func onAppear() async {
+        let urlType = state.fileType
+        let exportMode = state.exportType
+        let url = state.url
+        do {
+            switch urlType {
+            case .local:
+                self.csv = try Csv.loadFromDisk(url, encoding: encoding, exportType: exportMode)
+            case .network:
+                self.csv = try Csv.loadFromNetwork(url, encoding: encoding, exportType: exportMode)
             }
-            .store(in: &cancellables)
-
-        csv.progressPublisher
-            .receive(on: DispatchQueue.main)
-            .sink(receiveValue: { progress in
-                self.state.progress = progress
-            })
-            .store(in: &cancellables)
+            self.encoding = encoding
+        } catch {
+            self.csv = Csv(encoding: encoding, exportType: exportMode)
+            self.state.errorMessage = "Error happened:\n\(error)"
+        }
 
         _state.projectedValue.map(\.exportType)
             .removeDuplicates()
@@ -85,15 +120,13 @@ class GenerateOutputModel: ObservableObject {
                 }
             })
             .store(in: &cancellables)
-    }
 
-    func onAppear() async {
         do {
             await MainActor.run(body: {
                 state.cgImage = nil
                 state.pdfDocument = nil
             })
-            switch await state.exportType {
+            switch state.exportType {
             case .png:
                 let out = try await csv.generate(exportType: state.exportType).base
                 await MainActor.run(body: {
@@ -108,6 +141,36 @@ class GenerateOutputModel: ObservableObject {
         } catch {
             print(error)
         }
+    }
+
+    @MainActor
+    func update<V>(keyPath: WritableKeyPath<GenerateOutputState, V>, value: V) {
+        self.state[keyPath: keyPath] = value
+    }
+
+    @MainActor
+    func update(encoding: String.Encoding) {
+        let exportMode = state.exportType
+        let url = state.url
+        let fileType = state.fileType
+        let csv: Csv
+        do {
+            switch fileType {
+            case .local:
+                csv = try Csv.loadFromDisk(url, encoding: encoding, exportType: exportMode)
+            case .network:
+                csv = try Csv.loadFromNetwork(url, encoding: encoding, exportType: exportMode)
+            }
+        } catch {
+            self.state.errorMessage = "Error happened:\n\(error)"
+            csv = self.csv
+        }
+        self.csv = csv
+    }
+
+    @MainActor
+    func clearError() {
+        state.errorMessage = nil
     }
 
     @MainActor
