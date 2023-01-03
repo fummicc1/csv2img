@@ -335,7 +335,7 @@ extension Csv {
      Generate Output (file-type is determined by `exportType` parameter)
      - Parameters:
      - fontSize: Determine the fontsize of characters in output-table image.
-     - exportType:Determine file-extension. Type is ``ExportType`` and default value is ``ExportType.png``. If you use too big image size, I strongly recommend use `.pdf` instead.
+     - exportType:Determine file-extension. type: ``ExportType``. default value: ``ExportType.png``. If you use too big image size, I recommend use `.pdf` instead of `.png`.
      - Note:
      `fontSize` determines the size of output image and it can be as large as you want. Please consider the case that output image is too large to open image. Although output image becomes large, it is recommended to set fontSize amply enough (maybe larger than `12pt`) to see image clearly.
      - Returns: ``CsvExportable``. (either ``CGImage`` or  ``PdfDocument``).
