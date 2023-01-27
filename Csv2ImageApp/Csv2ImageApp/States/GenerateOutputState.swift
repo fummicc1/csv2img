@@ -10,7 +10,7 @@ import PDFKit
 import Csv2Img
 
 
-struct GenerateOutputState: Hashable {
+struct GenerateOutputState: Hashable, Equatable {
     let url: URL
     let fileType: FileURLType
 
@@ -18,9 +18,11 @@ struct GenerateOutputState: Hashable {
     var progress: Double
     var errorMessage: String?
 
+    var encoding: String.Encoding
+    var exportType: Csv.ExportType
+
     var cgImage: CGImage?
     var pdfDocument: PDFDocument?
-    var exportType: Csv.ExportType
 
     init(
         url: URL,
@@ -28,6 +30,7 @@ struct GenerateOutputState: Hashable {
         isLoading: Bool = false,
         progress: Double = 0,
         errorMessage: String? = nil,
+        encoding: String.Encoding = .utf8,
         cgImage: CGImage? = nil,
         pdfDocument: PDFDocument? = nil,
         exportType: Csv.ExportType = .pdf
@@ -37,6 +40,7 @@ struct GenerateOutputState: Hashable {
         self.isLoading = isLoading
         self.progress = progress
         self.errorMessage = errorMessage
+        self.encoding = encoding
         self.cgImage = cgImage
         self.pdfDocument = pdfDocument
         self.exportType = exportType
@@ -45,6 +49,7 @@ struct GenerateOutputState: Hashable {
     func hash(into hasher: inout Hasher) {
         hasher.combine(url)
         hasher.combine(fileType)
+        hasher.combine(encoding.id)
         hasher.combine(exportType)
         if let cgImage = cgImage {
             hasher.combine(cgImage.convertToData())
@@ -55,6 +60,17 @@ struct GenerateOutputState: Hashable {
     }
 
     static func ==(lhs: GenerateOutputState, rhs: GenerateOutputState) -> Bool {
-        lhs.url == rhs.url && lhs.exportType == rhs.exportType && lhs.fileType == rhs.fileType && lhs.cgImage?.convertToData() == rhs.cgImage?.convertToData() && lhs.pdfDocument?.dataRepresentation() == rhs.pdfDocument?.dataRepresentation()
+        lhs.url == rhs.url &&
+        lhs.exportType == rhs.exportType &&
+        lhs.fileType == rhs.fileType &&
+        lhs.encoding == rhs.encoding &&
+        lhs.cgImage?.convertToData() == rhs.cgImage?.convertToData() &&
+        lhs.pdfDocument?.dataRepresentation() == rhs.pdfDocument?.dataRepresentation()
     }
+}
+
+extension String.Encoding {
+//    static func ==(lhs: String.Encoding, rhs: String.Encoding) -> Bool {
+//        lhs.id == rhs.id
+//    }
 }

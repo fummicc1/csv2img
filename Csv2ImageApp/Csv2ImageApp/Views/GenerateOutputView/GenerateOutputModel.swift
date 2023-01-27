@@ -17,143 +17,76 @@ enum GenerateOutputModelError: Error {
 
 class GenerateOutputModel: ObservableObject {
 
-    @Published @MainActor private(set) var state: GenerateOutputState
-    @Published @MainActor private(set) var encoding: String.Encoding
+    @Published @MainActor private(set) var state: GenerateOutputState    
     @Published @MainActor private(set) var savedURL: URL?
 
-    private var csvTask: Task<Void, Never>?
-
-    @Published @MainActor private(set) var csv: Csv {
+    @Published private var cachedCsv: Csv? {
         didSet {
-            csvTask?.cancel()
-            csvTask = Task { [weak self] in
-                Task {
-                    let exportType = await csv.exportType
-                    let encoding = await csv.encoding
-                    guard let encoding, let exportable = try? await csv.generate(exportType: exportType) else {
-                        return
-                    }
-                    self?.encoding = encoding
-                    self?.state.cgImage = nil
-                    self?.state.pdfDocument = nil
-                    if type(of: exportable.base) == PDFDocument.self {
-                        self?.state.pdfDocument = (exportable.base as! PDFDocument)
-                    } else {
-                        self?.state.cgImage = (exportable.base as! CGImage)
-                    }
+            guard let cachedCsv else {
+                return
+            }
+            Task { @MainActor in
+                if let encoding = await cachedCsv.encoding {
+                    state.encoding = encoding
                 }
-
-                Task {
-                    for await isLoading in csv.isLoadingPublisher.values {
-                        self?.state.isLoading = isLoading
-                    }
-                }
-                Task {
-                    for await progress in csv.progressPublisher.values {
-                        self?.state.progress = progress
-                    }
-                }
+                let exportType = await cachedCsv.exportType
+                state.exportType = exportType
             }
         }
     }
 
     private var cancellables: Set<AnyCancellable> = []
-    private let queue = DispatchQueue(label: "dev.fummicc1.csv2imgapp.generate-output-model")
+    private let queue = DispatchQueue(label: "dev.fummicc1.csv2imgapp.generate-output-model", attributes: .concurrent)
+    private var csvTask: Task<Void, Never>?
 
-    @MainActor
-    init(url: URL, urlType: FileURLType, encoding: String.Encoding = .utf8, exportMode: Csv.ExportType = .pdf) {
-        self.encoding = encoding
-        self.state = .init(
-            url: url,
-            fileType: urlType,
-            exportType: exportMode
-        )
-
-        do {
-            switch urlType {
-            case .local:
-                self.csv = try Csv.loadFromDisk(url, encoding: encoding, exportType: exportMode)
-            case .network:
-                self.csv = try Csv.loadFromNetwork(url, encoding: encoding, exportType: exportMode)
-            }
-        } catch {
-            self.csv = Csv(encoding: encoding, exportType: exportMode)
-        }
+    deinit {
+        csvTask?.cancel()
     }
 
     @MainActor
-    func onAppear() async {
-        let urlType = state.fileType
-        let exportMode = state.exportType
-        let url = state.url
-        do {
-            switch urlType {
-            case .local:
-                self.csv = try Csv.loadFromDisk(url, encoding: encoding, exportType: exportMode)
-            case .network:
-                self.csv = try Csv.loadFromNetwork(url, encoding: encoding, exportType: exportMode)
-            }
-            self.encoding = encoding
-        } catch {
-            self.csv = Csv(encoding: encoding, exportType: exportMode)
-            self.state.errorMessage = "Error happened:\n\(error)"
-        }
-
-        _state.projectedValue.map(\.exportType)
-            .removeDuplicates()
-            .debounce(for: 0.3, scheduler: queue)
-            .sink(receiveValue: { exportType in
-                Task { [weak self] in
-                    guard let self = self else {
-                        return
-                    }
-                    let exportable = try await self.csv.generate(exportType: exportType)
-                    await MainActor.run(body: {
-                        self.state.cgImage = nil
-                        self.state.pdfDocument = nil
-                        if type(of: exportable.base) == PDFDocument.self {
-                            self.state.pdfDocument = (exportable.base as! PDFDocument)
-                        } else {
-                            self.state.cgImage = (exportable.base as! CGImage)
-                        }
-                    })
-                }
-            })
-            .store(in: &cancellables)
-
-        do {
-            await MainActor.run(body: {
-                state.cgImage = nil
-                state.pdfDocument = nil
-            })
-            switch state.exportType {
-            case .png:
-                let out = try await csv.generate(exportType: state.exportType).base
-                await MainActor.run(body: {
-                    state.cgImage = (out as! CGImage)
-                })
-            case .pdf:
-                let out = try await csv.generate(exportType: state.exportType).base as? PDFDocument
-                await MainActor.run(body: {
-                    state.pdfDocument = out
-                })
-            }
-        } catch {
-            print(error)
+    init(url: URL, urlType: FileURLType, encoding: String.Encoding = .utf8, exportMode: Csv.ExportType = .pdf) {
+        self.state = .init(
+            url: url,
+            fileType: urlType,
+            encoding: encoding,
+            exportType: exportMode
+        )
+        Task {
+            await updateCachedCsv()
         }
     }
 
     @MainActor
     func update<V>(keyPath: WritableKeyPath<GenerateOutputState, V>, value: V) {
-        self.state[keyPath: keyPath] = value
+        state[keyPath: keyPath] = value
     }
 
     @MainActor
-    func update(encoding: String.Encoding) {
-        let exportMode = state.exportType
-        let url = state.url
-        let fileType = state.fileType
-        let csv: Csv
+    func onAppear() async {
+        _state.projectedValue
+            .map(\.exportType)
+            .removeDuplicates()
+            .combineLatest(
+                _state.projectedValue
+                    .map(\.encoding)
+                    .removeDuplicates()
+            )
+            .receive(on: queue)
+            .share()
+            .sink { (_, _) in
+                Task {
+                    await self.updateCachedCsv()
+                }
+            }
+            .store(in: &cancellables)
+    }
+
+    func updateCachedCsv() async {
+        let exportMode = await state.exportType
+        let encoding = await state.encoding
+        let url = await state.url
+        let fileType = await state.fileType
+        let csv: Csv?
         do {
             switch fileType {
             case .local:
@@ -162,10 +95,47 @@ class GenerateOutputModel: ObservableObject {
                 csv = try Csv.loadFromNetwork(url, encoding: encoding, exportType: exportMode)
             }
         } catch {
-            self.state.errorMessage = "Error happened:\n\(error)"
-            csv = self.csv
+            csv = await MainActor.run(body: {
+                self.state.errorMessage = "Error happened:\n\(error)"
+                return self.cachedCsv
+            })
         }
-        self.csv = csv
+        guard let csv else {
+            return
+        }
+
+        await MainActor.run(body: {
+            cachedCsv = csv
+        })
+        csvTask?.cancel()
+        csvTask = Task {
+            Task {
+                do {
+                    let exportable = try await csv.generate(exportType: exportMode)
+                    if type(of: exportable.base) == PDFDocument.self {
+                        await self.update(keyPath: \.pdfDocument, value: (exportable.base as! PDFDocument))
+                    } else {
+                        await self.update(keyPath: \.cgImage, value: (exportable.base as! CGImage))
+                    }
+                } catch {
+
+                }
+            }
+            Task {
+                for await isLoading in csv.isLoadingPublisher.values {
+                    await MainActor.run(body: {
+                        state.isLoading = isLoading
+                    })
+                }
+            }
+            Task {
+                for await progress in csv.progressPublisher.values {
+                    await MainActor.run(body: {
+                        state.progress = progress
+                    })
+                }
+            }
+        }
     }
 
     @MainActor
