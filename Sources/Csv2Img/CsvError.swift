@@ -14,8 +14,8 @@ extension Csv {
     public enum Error: Swift.Error {
         /// Specified network url is invalid or failed to download csv data.
         case invalidDownloadResource(url: String, data: Data)
-        /// Specified local url is invalid (file may not exist).
-        case invalidLocalResource(url: String, data: Data)
+        /// Specified local url is invalid (file may not exist. using incorrect `String.Encoding` Type).
+        case invalidLocalResource(url: String, data: Data, encoding: String.Encoding)
         /// If file is not accessible due to security issue.
         case cannotAccessFile(url: String)
         /// given `exportType` is invalid.
