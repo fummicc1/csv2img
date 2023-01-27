@@ -32,7 +32,11 @@ struct GenerateOutputView_iOS: View {
                         Spacer()
                     }
                     .padding()
-                    Picker(selection: $model.state.exportType) {
+                    Picker(selection: Binding(get: {
+                        model.state.exportType
+                    }, set: { exportType in
+                        model.update(keyPath: \.exportType, value: exportType)
+                    })) {
                         CText("PDF")
                             .tag(Csv.ExportType.pdf)
                         CText("PNG")

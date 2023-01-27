@@ -26,9 +26,8 @@ class GenerateOutputModel: ObservableObject {
                 return
             }
             Task { @MainActor in
-                if let encoding = await cachedCsv.encoding {
-                    state.encoding = encoding
-                }
+                let encoding = await cachedCsv.encoding
+                state.encoding = encoding
                 let exportType = await cachedCsv.exportType
                 state.exportType = exportType
             }

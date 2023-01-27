@@ -37,7 +37,7 @@ public actor Csv {
     public init(
         separator: String=",",
         rawString: String? = nil,
-        encoding: String.Encoding?,
+        encoding: String.Encoding = .utf8,
         columns: [Csv.Column] = [],
         rows: [Csv.Row] = [],
         exportType: ExportType = .png
@@ -59,7 +59,7 @@ public actor Csv {
         self.exportType = exportType
     }
 
-    private(set) public var encoding: String.Encoding?
+    private(set) public var encoding: String.Encoding
 
     /// A flag whether ``Csv`` is loading contents or not
     public var isLoading: Bool {
@@ -218,7 +218,7 @@ extension Csv {
     ///     - exportType: Default `exportType` is `.png`. If you use too big image size, I strongly recommend use `.pdf` instead.
     public static func loadFromString(
         _ str: String,
-        encoding: String.Encoding? = nil,
+        encoding: String.Encoding = .utf8,
         separator: String = ",",
         maxLength: Int? = nil,
         exportType: ExportType = .png
