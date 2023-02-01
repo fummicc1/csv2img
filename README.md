@@ -114,14 +114,14 @@ A helper library to generate `Csv` in Csv2Img library.
 
 ## How to use
 
-1. Define custom type which conform to `CsvComposition`.
+1. Define custom type that conforms to `CsvComposition`.
 
 ```swift
 import Foundation
 import Csv2Img
 
 
-public struct ExampleComposition: CsvComposition {
+public struct CsvCompositionExample: CsvComposition {
     @CsvRows(column: "age")
     public var ages: [String]
 
@@ -135,10 +135,19 @@ public struct ExampleComposition: CsvComposition {
 2. Build `Csv`
 
 ```swift
-let composition: ExampleComposition = .init()
+let composition: CsvCompositionExample = .init()
 composition.ages.append(contentsOf: ["98", "99", "100"])
 composition.names.append(contentsOf: ["Yamada", "Tanaka", "Sato"])
 let csv = try! composition.build()
+```
+
+or you can write different way like the below.
+
+```swift
+let yamada = Csv.Row(index: 0, values: ["98", "Yamada"])
+let tanaka = Csv.Row(index: 1, values: ["99", "Tanaka"])
+let sato = Csv.Row(index: 2, values: ["100", "Sato"])
+let csv = try! CsvCompositionParser.parse(type: CsvCompositionExample.self, rows: [yamada, tanaka, sato,])
 ```
 
 | Result |
