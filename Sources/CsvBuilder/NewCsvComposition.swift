@@ -7,6 +7,7 @@
 
 import Foundation
 
+/// Under development
 public struct NewCsvComposition<Row, Column: StringProtocol> {
     var columns: [Column]
     var rows: Rows
