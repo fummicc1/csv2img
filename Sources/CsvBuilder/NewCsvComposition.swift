@@ -17,7 +17,7 @@ public struct NewCsvComposition<Row, Column: StringProtocol> {
         var value: Value = [:]
 
         subscript(dynamicMember keyPath: KeyPath<Rows, [Rows]>) -> Value {
-            
+            fatalError()
         }
     }
 }
