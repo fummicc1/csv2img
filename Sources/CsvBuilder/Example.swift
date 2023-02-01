@@ -1,19 +1,10 @@
-//
-//  Example.swift
-//  
-//
-//  Created by Fumiya Tanaka on 2022/08/24.
-//
-
-import Foundation
-
-
-public struct ExampleComposition: CsvComposition {
+/// Just an example
+struct ExampleComposition: CsvComposition {
     @CsvRows(column: "age")
-    public var ages: [String]
+    var ages: [String]
 
     @CsvRows(column: "name")
-    public var names: [String]
+    var names: [String]
 
-    public init() { }
+    init() { }
 }
