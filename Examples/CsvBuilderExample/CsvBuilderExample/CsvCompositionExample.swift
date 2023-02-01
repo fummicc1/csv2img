@@ -1,5 +1,6 @@
-/// Just an example
-struct ExampleComposition: CsvComposition {
+import CsvBuilder
+
+struct CsvCompositionExample: CsvComposition {
     @CsvRows(column: "age")
     var ages: [String]
 

@@ -69,6 +69,10 @@ extension Csv.Column {
             }
             return styles
         }
+
+        public static func random() -> Style {
+            random(count: 1).first!
+        }
     }
 }
 
