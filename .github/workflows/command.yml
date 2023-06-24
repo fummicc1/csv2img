@@ -19,11 +19,11 @@ jobs:
         with:
           xcode-version: latest-stable
       - name: Install xcbeautify
-        run: bundle install
+        run: brew install xcbeautify
       - name: Build and Test
         run: |
           set -o pipefail && \
           xcodebuild -scheme Csv2ImgCmd \
           clean build test \
           -destination 'platform=OS X,arch=x86_64' \
-          | bundle exec xcbeautify
+          | xcbeautify
