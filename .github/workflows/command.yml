@@ -18,7 +18,7 @@ jobs:
       - uses: maxim-lobanov/setup-xcode@v1
         with:
           xcode-version: latest-stable
-      - name: Install xcpretty
+      - name: Install xcbeautify
         run: bundle install
       - name: Build and Test
         run: |
@@ -26,4 +26,4 @@ jobs:
           xcodebuild -scheme Csv2ImgCmd \
           clean build test \
           -destination 'platform=OS X,arch=x86_64' \
-          | bundle exec xcpretty
+          | bundle exec xcbeautify
