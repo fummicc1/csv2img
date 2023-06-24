@@ -11,7 +11,16 @@ import SwiftUI
 struct CsvBuilderExampleApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            TabView {
+                ContentView()
+                    .tabItem {
+                        Text("Example 1")
+                    }
+                SecondContentView()
+                    .tabItem {
+                        Text("Example 2")
+                    }
+            }
         }
     }
 }

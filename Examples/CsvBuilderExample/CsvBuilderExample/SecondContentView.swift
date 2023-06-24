@@ -1,8 +1,9 @@
 import SwiftUI
+import Csv2Img
 import CsvBuilder
 
-struct ContentView: View {
 
+struct SecondContentView: View {
     @State private var composition: CsvCompositionExample = .init()
     @State private var image: CGImage?
 
@@ -20,18 +21,18 @@ struct ContentView: View {
         }
         .padding()
         .task {
-            composition = .init()
-            composition.ages.append(contentsOf: ["98", "99", "100"])
-            composition.names.append(contentsOf: ["Yamada", "Tanaka", "Sato"])
-            let csv = try! composition.build()
+            let yamada = Csv.Row(index: 0, values: ["98", "Yamada"])
+            let tanaka = Csv.Row(index: 0, values: ["99", "Tanaka"])
+            let sato = Csv.Row(index: 0, values: ["100", "Sato"])
+            let csv = try! CsvCompositionParser.parse(type: CsvCompositionExample.self, rows: [yamada, tanaka, sato,])
             let data = try! await csv.generate(fontSize: 20, exportType: .png)
             self.image = data.base as! CGImage
         }
     }
 }
 
-struct ContentView_Previews: PreviewProvider {
+struct SecondContentView_Previews: PreviewProvider {
     static var previews: some View {
-        ContentView()
+        SecondContentView()
     }
 }

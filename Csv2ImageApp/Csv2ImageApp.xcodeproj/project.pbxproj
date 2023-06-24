@@ -14,6 +14,7 @@
 		D359BADC28621BFE006DFDCE /* Type.swift in Sources */ = {isa = PBXBuildFile; fileRef = D359BADB28621BFE006DFDCE /* Type.swift */; };
 		D35DB0D4285FA754009C252D /* CsvViewer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D35DB0D3285FA754009C252D /* CsvViewer.swift */; };
 		D35DB0D6285FADA5009C252D /* HistoryModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D35DB0D5285FADA5009C252D /* HistoryModel.swift */; };
+		D3776F22298A589200A09A90 /* CsvBuilder in Frameworks */ = {isa = PBXBuildFile; productRef = D3776F21298A589200A09A90 /* CsvBuilder */; };
 		D3A4EB18284F11A3002E3499 /* Csv2ImageAppApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3A4EB17284F11A3002E3499 /* Csv2ImageAppApp.swift */; };
 		D3A4EB1C284F11A4002E3499 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D3A4EB1B284F11A4002E3499 /* Assets.xcassets */; };
 		D3A4EB1F284F11A4002E3499 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D3A4EB1E284F11A4002E3499 /* Preview Assets.xcassets */; };
@@ -108,6 +109,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				D3095CC6286394720086EEEE /* Csv2Img in Frameworks */,
+				D3776F22298A589200A09A90 /* CsvBuilder in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -310,6 +312,7 @@
 			name = Csv2ImageApp;
 			packageProductDependencies = (
 				D3095CC5286394720086EEEE /* Csv2Img */,
+				D3776F21298A589200A09A90 /* CsvBuilder */,
 			);
 			productName = Csv2ImageApp;
 			productReference = D3A4EB14284F11A3002E3499 /* Csv2ImageApp.app */;
@@ -817,6 +820,10 @@
 		D3095CC5286394720086EEEE /* Csv2Img */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = Csv2Img;
+		};
+		D3776F21298A589200A09A90 /* CsvBuilder */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = CsvBuilder;
 		};
 /* End XCSwiftPackageProductDependency section */
 

@@ -11,8 +11,12 @@
 		D308AB9228B67E1900ECA831 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D308AB9128B67E1900ECA831 /* ContentView.swift */; };
 		D308AB9428B67E1A00ECA831 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D308AB9328B67E1A00ECA831 /* Assets.xcassets */; };
 		D308AB9828B67E1A00ECA831 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D308AB9728B67E1A00ECA831 /* Preview Assets.xcassets */; };
-		D34D4D3928B67F3200A018FB /* Csv2Img in Frameworks */ = {isa = PBXBuildFile; productRef = D34D4D3828B67F3200A018FB /* Csv2Img */; };
-		D34D4D3B28B67F3200A018FB /* CsvBuilder in Frameworks */ = {isa = PBXBuildFile; productRef = D34D4D3A28B67F3200A018FB /* CsvBuilder */; };
+		D3776F25298A58D500A09A90 /* Csv2Img in Frameworks */ = {isa = PBXBuildFile; productRef = D3776F24298A58D500A09A90 /* Csv2Img */; };
+		D3776F27298A58D500A09A90 /* CsvBuilder in Frameworks */ = {isa = PBXBuildFile; productRef = D3776F26298A58D500A09A90 /* CsvBuilder */; };
+		D3776F28298A5A1900A09A90 /* CsvCompositionExample.swift in Resources */ = {isa = PBXBuildFile; fileRef = D3C6FFB7298A543A00CAF771 /* CsvCompositionExample.swift */; };
+		D3776F2B298A5A5E00A09A90 /* CsvCompositionExample.txt in Resources */ = {isa = PBXBuildFile; fileRef = D3776F29298A5A3E00A09A90 /* CsvCompositionExample.txt */; };
+		D3776F2D298A7A7400A09A90 /* SecondContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3776F2C298A7A7400A09A90 /* SecondContentView.swift */; };
+		D3C6FFB8298A543A00CAF771 /* CsvCompositionExample.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3C6FFB7298A543A00CAF771 /* CsvCompositionExample.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -22,7 +26,10 @@
 		D308AB9328B67E1A00ECA831 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		D308AB9528B67E1A00ECA831 /* CsvBuilderExample.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = CsvBuilderExample.entitlements; sourceTree = "<group>"; };
 		D308AB9728B67E1A00ECA831 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
-		D308AB9F28B67E3700ECA831 /* Csv2Img */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = Csv2Img; path = ../..; sourceTree = "<group>"; };
+		D3776F23298A58C800A09A90 /* Csv2Img */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = Csv2Img; path = ../..; sourceTree = "<group>"; };
+		D3776F29298A5A3E00A09A90 /* CsvCompositionExample.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CsvCompositionExample.txt; sourceTree = "<group>"; };
+		D3776F2C298A7A7400A09A90 /* SecondContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecondContentView.swift; sourceTree = "<group>"; };
+		D3C6FFB7298A543A00CAF771 /* CsvCompositionExample.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CsvCompositionExample.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -30,8 +37,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D34D4D3928B67F3200A018FB /* Csv2Img in Frameworks */,
-				D34D4D3B28B67F3200A018FB /* CsvBuilder in Frameworks */,
+				D3776F25298A58D500A09A90 /* Csv2Img in Frameworks */,
+				D3776F27298A58D500A09A90 /* CsvBuilder in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -41,7 +48,7 @@
 		D308AB8328B67E1900ECA831 = {
 			isa = PBXGroup;
 			children = (
-				D308AB9E28B67E3700ECA831 /* Packages */,
+				D3C6FFBC298A580E00CAF771 /* Packages */,
 				D308AB8E28B67E1900ECA831 /* CsvBuilderExample */,
 				D308AB8D28B67E1900ECA831 /* Products */,
 				D34D4D3728B67F3200A018FB /* Frameworks */,
@@ -59,10 +66,13 @@
 		D308AB8E28B67E1900ECA831 /* CsvBuilderExample */ = {
 			isa = PBXGroup;
 			children = (
-				D308AB8F28B67E1900ECA831 /* CsvBuilderExampleApp.swift */,
-				D308AB9128B67E1900ECA831 /* ContentView.swift */,
-				D308AB9328B67E1A00ECA831 /* Assets.xcassets */,
 				D308AB9528B67E1A00ECA831 /* CsvBuilderExample.entitlements */,
+				D308AB9128B67E1900ECA831 /* ContentView.swift */,
+				D308AB8F28B67E1900ECA831 /* CsvBuilderExampleApp.swift */,
+				D3C6FFB7298A543A00CAF771 /* CsvCompositionExample.swift */,
+				D3776F2C298A7A7400A09A90 /* SecondContentView.swift */,
+				D3776F29298A5A3E00A09A90 /* CsvCompositionExample.txt */,
+				D308AB9328B67E1A00ECA831 /* Assets.xcassets */,
 				D308AB9628B67E1A00ECA831 /* Preview Content */,
 			);
 			path = CsvBuilderExample;
@@ -76,19 +86,19 @@
 			path = "Preview Content";
 			sourceTree = "<group>";
 		};
-		D308AB9E28B67E3700ECA831 /* Packages */ = {
-			isa = PBXGroup;
-			children = (
-				D308AB9F28B67E3700ECA831 /* Csv2Img */,
-			);
-			name = Packages;
-			sourceTree = "<group>";
-		};
 		D34D4D3728B67F3200A018FB /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		D3C6FFBC298A580E00CAF771 /* Packages */ = {
+			isa = PBXGroup;
+			children = (
+				D3776F23298A58C800A09A90 /* Csv2Img */,
+			);
+			name = Packages;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -108,8 +118,8 @@
 			);
 			name = CsvBuilderExample;
 			packageProductDependencies = (
-				D34D4D3828B67F3200A018FB /* Csv2Img */,
-				D34D4D3A28B67F3200A018FB /* CsvBuilder */,
+				D3776F24298A58D500A09A90 /* Csv2Img */,
+				D3776F26298A58D500A09A90 /* CsvBuilder */,
 			);
 			productName = CsvBuilderExample;
 			productReference = D308AB8C28B67E1900ECA831 /* CsvBuilderExample.app */;
@@ -139,6 +149,8 @@
 				Base,
 			);
 			mainGroup = D308AB8328B67E1900ECA831;
+			packageReferences = (
+			);
 			productRefGroup = D308AB8D28B67E1900ECA831 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -153,6 +165,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D3776F2B298A5A5E00A09A90 /* CsvCompositionExample.txt in Resources */,
+				D3776F28298A5A1900A09A90 /* CsvCompositionExample.swift in Resources */,
 				D308AB9828B67E1A00ECA831 /* Preview Assets.xcassets in Resources */,
 				D308AB9428B67E1A00ECA831 /* Assets.xcassets in Resources */,
 			);
@@ -165,6 +179,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D3776F2D298A7A7400A09A90 /* SecondContentView.swift in Sources */,
+				D3C6FFB8298A543A00CAF771 /* CsvCompositionExample.swift in Sources */,
 				D308AB9228B67E1900ECA831 /* ContentView.swift in Sources */,
 				D308AB9028B67E1900ECA831 /* CsvBuilderExampleApp.swift in Sources */,
 			);
@@ -382,11 +398,11 @@
 /* End XCConfigurationList section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		D34D4D3828B67F3200A018FB /* Csv2Img */ = {
+		D3776F24298A58D500A09A90 /* Csv2Img */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = Csv2Img;
 		};
-		D34D4D3A28B67F3200A018FB /* CsvBuilder */ = {
+		D3776F26298A58D500A09A90 /* CsvBuilder */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = CsvBuilder;
 		};
