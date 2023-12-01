@@ -12,7 +12,7 @@ let docc: PackageDescription.Package.Dependency = .package(
 )
 let swiftSyntax = PackageDescription.Package.Dependency.package(
     url: "https://github.com/apple/swift-syntax",
-    branch: "main"
+    from: "509.0.2"
 )
 
 let package = Package(
