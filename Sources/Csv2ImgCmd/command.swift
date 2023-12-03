@@ -26,12 +26,24 @@ public enum InputType: EnumerableFlag {
     /// ```
     case network
 
-    public static func name(for value: InputType) -> NameSpecification {
+    public static func name(
+        for value: InputType
+    ) -> NameSpecification {
         switch value {
         case .local:
-            return [.customLong("local"), .short]
+            return [
+                .customLong(
+                    "local"
+                ),
+                .short
+            ]
         case .network:
-            return [.customLong("network"), .short]
+            return [
+                .customLong(
+                    "network"
+                ),
+                .short
+            ]
         }
     }
 }
@@ -61,57 +73,104 @@ public struct Csv2Img: AsyncParsableCommand {
             abstract: "Generate image from csv with png-format",
             version: "1.4.0",
             shouldDisplay: true,
-            helpNames: [.long, .short]
+            helpNames: [
+                .long,
+                .short
+            ]
         )
     }
-
-    @Flag(help: "Csv file type. Choose either `local` or `network`")
+    
+    @Flag(
+        help: "Csv file type. Choose either `local` or `network`"
+    )
     public var inputType: InputType
-
+    
     @Option
     public var exportType: Csv.ExportType = .pdf
-
-    @Argument(help: "Input. csv absolute-path or url on the internet")
+    
+    @Argument(
+        help: "Input. csv absolute-path or url on the internet"
+    )
     public var input: String
-
-    @Argument(help: "Output. Specify local path.")
+    
+    @Argument(
+        help: "Output. Specify local path."
+    )
     public var output: String
 
-    public init() { }
-
+    public init() {
+        
+    }
+    
     public func run() async throws {
         let csv: Csv
         switch inputType {
         case .local:
-            csv = try Csv.loadFromDisk(URL(fileURLWithPath: input))
+            csv = try Csv.loadFromDisk(
+                URL(
+                    fileURLWithPath: input
+                )
+            )
         case .network:
-            guard let url = URL(string: input) else {
-                print("Invalid URL: \(input).")
+            guard let url = URL(
+                string: input
+            ) else {
+                print(
+                    "Invalid URL: \(input)."
+                )
                 return
             }
-            csv = try Csv.loadFromNetwork(url)
+            csv = try Csv.loadFromNetwork(
+                url
+            )
         }
-        let exportable = try await csv.generate(fontSize: 12, exportType: exportType).base
-        let outputURL = URL(fileURLWithPath: output)
-        if !FileManager.default.fileExists(atPath: output) {
-            FileManager.default.createFile(atPath: output, contents: Data())
+        let exportable = try await csv.generate(
+            fontSize: 12,
+            exportType: exportType
+        ).base
+        let outputURL = URL(
+            fileURLWithPath: output
+        )
+        if !FileManager.default.fileExists(
+            atPath: output
+        ) {
+            FileManager.default.createFile(
+                atPath: output,
+                contents: Data()
+            )
         }
         switch exportable {
         case let pdf as PDFDocument:
-            let isSuccessful = pdf.write(to: outputURL)
+            let isSuccessful = pdf.write(
+                to: outputURL
+            )
             if !isSuccessful {
-                throw PdfMakingError.failedToSavePdf(at: outputURL.absoluteString)
+                throw PdfMakingError.failedToSavePdf(
+                    at: outputURL.absoluteString
+                )
             }
-            print("Succeed generating pdf from csv!")
+            print(
+                "Succeed generating pdf from csv!"
+            )
         case let image as CGImage:
             let data = image.convertToData()
-            try data?.write(to: outputURL)
-            print("Succeed generating image from csv!")
+            try data?.write(
+                to: outputURL
+            )
+            print(
+                "Succeed generating image from csv!"
+            )
         default:
-            fatalError("unsupported exportable data.")
+            fatalError(
+                "unsupported exportable data."
+            )
         }
-        print("Output path: ", outputURL.absoluteString)
+        print(
+            "Output path: ",
+            outputURL.absoluteString
+        )
     }
 }
 
-extension Csv.ExportType: ExpressibleByArgument {}
+extension Csv.ExportType: ExpressibleByArgument {
+}

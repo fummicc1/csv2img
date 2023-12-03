@@ -13,7 +13,9 @@ public struct CsvRows {
     public var wrappedValue: [String]
     public var column: String
 
-    public init(column: String) {
+    public init(
+        column: String
+    ) {
         self.column = column
         self.wrappedValue = []
     }

@@ -17,7 +17,10 @@ struct CsvCompositionElement {
         let value: String
     }
 
-    init(column: String, rows: [Row]) {
+    init(
+        column: String,
+        rows: [Row]
+    ) {
         self.columnName = column
         self.rows = rows
     }

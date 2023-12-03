@@ -28,7 +28,10 @@ extension Csv {
         public var name: Name
         public var style: Style
 
-        public init(name: Name, style: Style) {
+        public init(
+            name: Name,
+            style: Style
+        ) {
             self.name = name
             self.style = style
         }
@@ -43,35 +46,58 @@ extension Csv.Column {
         /// `applyOnlyColumn` determines whether this style affects both `Column` and `Row` or not.
         /// Default value of `applyOnlyColumn` is false, which means ``Style`` is also applied to ``Row``.
         public var applyOnlyColumn: Bool
-
-        public init(color: CGColor, applyOnlyColumn: Bool = false) {
+        
+        public init(
+            color: CGColor,
+            applyOnlyColumn: Bool = false
+        ) {
             self.color = color
             self.applyOnlyColumn = applyOnlyColumn
         }
-
-        public static func random(count: Int) -> [Style] {
+        
+        public static func random(
+            count: Int
+        ) -> [Style] {
             var styles: [Style] = []
             let saturation = 80.0 / 100.0
             let value = 80.0 / 100.0
             var hue: Double = 0.5
             for _ in 0..<count {
                 let color: Color
-                if let random = (0..<360).randomElement() {
-                    hue = Double(random) / 360
-                    color = Color(hue: hue, saturation: saturation, brightness: value, alpha: 1)
+                if let random = (
+                    0..<360
+                ).randomElement() {
+                    hue = Double(
+                        random
+                    ) / 360
+                    color = Color(
+                        hue: hue,
+                        saturation: saturation,
+                        brightness: value,
+                        alpha: 1
+                    )
                 } else {
-                    color = Color(hue: 1 - hue, saturation: saturation, brightness: value, alpha: 1)
+                    color = Color(
+                        hue: 1 - hue,
+                        saturation: saturation,
+                        brightness: value,
+                        alpha: 1
+                    )
                 }
                 let style = Style(
                     color: color.cgColor
                 )
-                styles.append(style)
+                styles.append(
+                    style
+                )
             }
             return styles
         }
-
+        
         public static func random() -> Style {
-            random(count: 1).first!
+            random(
+                count: 1
+            ).first!
         }
     }
 }

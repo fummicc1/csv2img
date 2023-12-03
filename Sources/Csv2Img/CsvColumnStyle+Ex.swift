@@ -23,6 +23,8 @@ extension Csv.Column.Style {
         if applyOnlyColumn {
             return normalColor()
         }
-        return Color(cgColor: color)
+        return Color(
+            cgColor: color
+        )
     }
 }
