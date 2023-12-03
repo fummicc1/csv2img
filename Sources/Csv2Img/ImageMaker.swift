@@ -25,12 +25,10 @@ public enum ImageMakingError: Error {
 /// No overview available
 protocol ImageMakerType: Maker {
     var latestOutput: CGImage? { get }
-    func make(columns: [Csv.Column], rows: [Csv.Row], progress: @escaping (Double) -> Void) throws -> CGImage
-    func setFontSize(_ size: Double)
 }
 
 /// `ImageMarker` generate png-image from ``Csv``.
-class ImageMaker: ImageMakerType {
+final class ImageMaker: ImageMakerType {
 
     typealias Exportable = CGImage
 
@@ -48,7 +46,7 @@ class ImageMaker: ImageMakerType {
 
     var latestOutput: CGImage?
 
-    func setFontSize(_ size: Double) {
+    func set(fontSize size: Double) {
         self.fontSize = size
     }
 

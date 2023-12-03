@@ -6,6 +6,7 @@ public enum PdfMakingError: Error {
     /// Failed to get/create `CGContext`.
     case noContextAvailabe
     case failedToGeneratePdf
+    case failedToSavePdf(at : String)
     case emptyRows
     case underlying(Error)
 }
@@ -13,13 +14,11 @@ public enum PdfMakingError: Error {
 /// No overview available
 protocol PdfMakerType: Maker {
     var latestOutput: PDFDocument? { get }
-    func make(columns: [Csv.Column], rows: [Csv.Row], progress: @escaping (Double) -> Void) throws -> PDFDocument
     func setMetadata(_ metadata: PDFMetadata)
-    func setFontSize(_ size: Double)
 }
 
 /// ``PdfMaker`` generate pdf from ``Csv`` (Work In Progress).
-class PdfMaker: PdfMakerType {
+final class PdfMaker: PdfMakerType {
 
     typealias Exportable = PDFDocument
 
@@ -33,16 +32,15 @@ class PdfMaker: PdfMakerType {
         self.metadata = metadata
     }
 
-    var maximumRowCount: Int?
-    var fontSize: Double
+    let maximumRowCount: Int?
+    private(set) var fontSize: Double
     var metadata: PDFMetadata
 
     var latestOutput: PDFDocument?
 
-    func setFontSize(_ size: Double) {
+    func set(fontSize size: Double) {
         self.fontSize = size
     }
-
 
     /// generate png-image data from ``Csv``.
     func make(
@@ -53,6 +51,7 @@ class PdfMaker: PdfMakerType {
         // NOTE: Anchor is bottom-left.
         let horizontalSpace: Double = 8
         let verticalSpace: Double = 12
+        let maxRowsHeight: Double = 480
 
         let size = min(maximumRowCount ?? rows.count, rows.count)
         let rows = rows[..<size].map { $0 }
@@ -82,13 +81,13 @@ class PdfMaker: PdfMakerType {
         let width = (longestWidth + horizontalSpace) * Double(columns.count)
         let allRowsHeight = Double(rows.count) * (longestHeight + verticalSpace)
 
-        let maxRowsHeight = min(480, allRowsHeight)
+        let largestRowsHeight = min(maxRowsHeight, allRowsHeight)
 
-        let totalPageNumber = Int(allRowsHeight / maxRowsHeight)
+        let totalPageNumber = Int(allRowsHeight / largestRowsHeight)
 
         let totalHeight = allRowsHeight + Double(totalPageNumber) * rowHeight
 
-        let pageHeight = min(maxRowsHeight + rowHeight, totalHeight)
+        let pageHeight = min(largestRowsHeight + rowHeight, totalHeight)
 
         var mediaBox = CGRect(
             origin: .zero,
