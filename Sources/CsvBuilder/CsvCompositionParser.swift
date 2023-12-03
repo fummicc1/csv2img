@@ -42,7 +42,7 @@ public struct CsvCompositionParser {
                 if !validateInheritedType(decl: decl) {
                     break
                 }
-                let members = decl.members.members
+                let members = decl.memberBlock.members
                 let columns = decl.findColumns(type: C.self, members: members)
                     .map { Csv.Column.init(name: $0, style: .random()) }
                 allColumns.append(contentsOf: columns)
@@ -60,10 +60,10 @@ public struct CsvCompositionParser {
 
     static func validateInheritedType(decl: StructDeclSyntax) -> Bool {
         decl.inheritanceClause?
-            .inheritedTypeCollection
-            .map(\.typeName)
+            .inheritedTypes
+            .map(\.type)
             .compactMap { syntax in
-                syntax.as(SimpleTypeIdentifierSyntax.self)
+                syntax.as(IdentifierTypeSyntax.self)
             }
             .first(where: { syntax in
                 syntax.name.description.contains("CsvComposition")
@@ -71,20 +71,18 @@ public struct CsvCompositionParser {
     }
 
     static func extractColumns<C: CsvComposition>(_ type: C.Type, variableDecl decl: VariableDeclSyntax) -> [String] {
-        guard let attributes = decl.attributes else {
-            return []
-        }
+        let attributes = decl.attributes
         return attributes.compactMap { attribute in
             var columns: [String] = []
             for attr in attributes {
                 guard let attr = attr.as(AttributeSyntax.self) else {
                     continue
                 }
-                let hasCsvRowsAttr = attr.attributeName.as(SimpleTypeIdentifierSyntax.self)?.name.text == "CsvRows"
+                let hasCsvRowsAttr = attr.attributeName.as(IdentifierTypeSyntax.self)?.name.text == "CsvRows"
                 if !hasCsvRowsAttr {
                     continue
                 }
-                guard let tokens = attr.argument?.tokens(viewMode: .all) else {
+                guard let tokens = attr.arguments?.tokens(viewMode: .all) else {
                     continue
                 }
                 let column = tokens
@@ -107,7 +105,7 @@ public struct CsvCompositionParser {
 }
 
 extension StructDeclSyntax {
-    func findColumns(type: (some CsvComposition).Type, members: MemberDeclListSyntax) -> [String] {
+    func findColumns(type: (some CsvComposition).Type, members: MemberBlockItemListSyntax) -> [String] {
         var columns: [String] = []
         for member in members {
             guard let decl = member.decl.as(VariableDeclSyntax.self) else {
