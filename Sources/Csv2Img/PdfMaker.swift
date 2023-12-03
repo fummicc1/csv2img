@@ -20,16 +20,16 @@ protocol PdfMakerType: Maker {
     var latestOutput: PDFDocument? {
         get
     }
-    func setMetadata(
-        _ metadata: PDFMetadata
+    func set(
+        metadata: PDFMetadata
     )
 }
 
 /// ``PdfMaker`` generate pdf from ``Csv`` (Work In Progress).
 final class PdfMaker: PdfMakerType {
-    
+
     typealias Exportable = PDFDocument
-    
+
     init(
         maximumRowCount: Int?,
         fontSize: Double,
@@ -39,23 +39,44 @@ final class PdfMaker: PdfMakerType {
         self.fontSize = fontSize
         self.metadata = metadata
     }
-    
+
     let maximumRowCount: Int?
     private(
         set
     ) var fontSize: Double
     var metadata: PDFMetadata
-    
+
     var latestOutput: PDFDocument?
-    
+
     func set(
         fontSize size: Double
     ) {
         self.fontSize = size
     }
-    
+
     /// generate png-image data from ``Csv``.
     func make(
+        columns: [Csv.Column],
+        rows: [Csv.Row],
+        progress: @escaping (
+            Double
+        ) -> Void
+    ) throws -> PDFDocument {
+        return if let size = metadata.size, let orientation = metadata.orientation {
+            try make(
+                with: size,
+                orientation: orientation,
+                columns: columns,
+                rows: rows,
+                progress: progress
+            )
+        } else {
+            try make(with: fontSize, columns: columns, rows: rows, progress: progress)
+        }
+    }
+    
+    func make(
+        with fontSize: Double,
         columns: [Csv.Column],
         rows: [Csv.Row],
         progress: @escaping (
@@ -313,8 +334,194 @@ final class PdfMaker: PdfMakerType {
         return document
     }
     
-    func setMetadata(
-        _ metadata: PDFMetadata
+    func make(
+        with pdfSize: PdfSize,
+        orientation: PdfSize.Orientation,
+        columns: [Csv.Column],
+        rows: [Csv.Row],
+        progress: @escaping (
+            Double
+        ) -> Void
+    ) throws -> PDFDocument {
+        let pageSize = pdfSize.size(
+            orientation: orientation
+        )
+        
+        let totalRowCount = min(
+            maximumRowCount ?? rows.count,
+            rows.count
+        )
+        let rows = rows[..<totalRowCount].map {
+            $0
+        }
+        
+        if rows.isEmpty {
+            throw PdfMakingError.emptyRows
+        }
+
+        let maxTextCount = rows.flatMap { $0.values }.map(\.count).max() ?? 0
+
+        set(fontSize: pageSize.width / Double(columns.count) / Double(maxTextCount) * 0.8)
+
+        let styles: [Csv.Column.Style] = columns.map(
+            \.style
+        )
+
+        let rowHeight = pageSize.height / Double(rows.count + 1)
+        let columnWidth = pageSize.width / Double(columns.count)
+        let lineWidth: Double = 1
+
+        let totalPageNumber = 1
+
+        var mediaBox = CGRect(
+            origin: .zero,
+            size: pageSize
+        )
+
+        let data = CFDataCreateMutable(
+            nil,
+            0
+        )!
+        let consumer = CGDataConsumer(
+            data: data
+        )!
+        guard let context = CGContext(
+            consumer: consumer,
+            mediaBox: &mediaBox,
+            nil
+        ) else {
+            throw PdfMakingError.noContextAvailabe
+        }
+
+        let completeCount: Double = Double(
+            totalPageNumber
+        )
+        var completeFraction: Double = 0
+
+        var currentPageNumber: Int = 1
+        var startRowIndex: Int = 0
+        while currentPageNumber <= totalPageNumber {
+            let mediaBoxPerPage = CGRect(
+                origin: .zero,
+                size: pageSize
+            )
+            let coreInfo = [
+                kCGPDFContextTitle as CFString: metadata.title,
+                kCGPDFContextAuthor as CFString: metadata.author,
+                kCGPDFContextMediaBox: mediaBoxPerPage
+            ] as [CFString : Any]
+            context.beginPDFPage(
+                coreInfo as CFDictionary
+            )
+
+            context.setFillColor(
+                CGColor(
+                    red: 255/255,
+                    green: 255/255,
+                    blue: 255/255,
+                    alpha: 1
+                )
+            )
+            context.fill(
+                CGRect(
+                    origin: .zero,
+                    size: CGSize(
+                        width: pageSize.width,
+                        height: pageSize.height
+                    )
+                )
+            )
+
+            context.setLineWidth(
+                lineWidth
+            )
+#if os(macOS)
+            context.setStrokeColor(
+                Color.separatorColor.cgColor
+            )
+#elseif os(iOS)
+            context.setStrokeColor(
+                Color.separator.cgColor
+            )
+#endif
+            context.setFillColor(
+                CGColor(
+                    red: 33/255,
+                    green: 33/255,
+                    blue: 33/255,
+                    alpha: 1
+                )
+            )
+
+            setColumnText(
+                context: context,
+                columns: columns,
+                boxWidth: Double(
+                    columnWidth
+                ),
+                boxHeight: Double(
+                    rowHeight
+                ),
+                totalHeight: Double(
+                    pageSize.height
+                ),
+                totalWidth: Double(
+                    pageSize.width
+                )
+            )
+            setRowText(
+                context: context,
+                styles: styles,
+                rows: rows,
+                from: 0,
+                rowCountPerPage: rows.count,
+                columnHeight: Double(
+                    rowHeight
+                ),
+                width: Double(
+                    columnWidth
+                ),
+                height: Double(
+                    rowHeight
+                ),
+                totalWidth: Double(
+                    pageSize.width
+                ),
+                totalHeight: Double(
+                    pageSize.height
+                )
+            )
+
+            context.drawPath(
+                using: .stroke
+            )
+
+            completeFraction += 1
+            progress(
+                completeFraction / completeCount
+            )
+
+            currentPageNumber += 1
+            startRowIndex += rows.count
+
+            context.endPDFPage()
+        }
+
+#if os(iOS)
+        UIGraphicsEndPDFContext()
+#endif
+
+        context.closePDF()
+
+        let document = PDFDocument(
+            data: data as Data
+        )!
+        self.latestOutput = document
+        return document
+    }
+
+    func set(
+        metadata: PDFMetadata
     ) {
         self.metadata = metadata
     }
@@ -420,7 +627,7 @@ extension PdfMaker {
             }
         }
     }
-    
+
     private func setColumnText(
         context: CGContext,
         columns: [Csv.Column],
