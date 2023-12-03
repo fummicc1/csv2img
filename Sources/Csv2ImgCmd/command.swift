@@ -126,7 +126,8 @@ public struct Csv2Img: AsyncParsableCommand {
         }
         let exportable = try await csv.generate(
             fontSize: 12,
-            exportType: exportType
+            exportType: exportType,
+            style: .random()
         ).base
         let outputURL = URL(
             fileURLWithPath: output
