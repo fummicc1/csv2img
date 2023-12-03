@@ -2,12 +2,12 @@ import CoreFoundation
 import CoreGraphics
 import PDFKit
 
-public protocol CsvExportable {
+public protocol CsvExportable: Sendable {
 }
 
-public class AnyCsvExportable: CsvExportable {
+public final class AnyCsvExportable: CsvExportable {
 
-    public var base: CsvExportable
+    public let base: CsvExportable
 
     public init(_ csvExportable: CsvExportable) {
         self.base = csvExportable
@@ -16,4 +16,5 @@ public class AnyCsvExportable: CsvExportable {
 
 extension CGImage: CsvExportable { }
 extension Data: CsvExportable { }
+extension PDFDocument: @unchecked Sendable {}
 extension PDFDocument: CsvExportable { }

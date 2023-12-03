@@ -24,7 +24,7 @@ extension Csv {
     /// →Column is [1, 2, 3, 4] and Row is [5, 6, 7, 8].
     ///
     /// Because this class is usually initialized via ``Csv``, you do not have to take care about ``Column`` in detail.
-    public struct Column {
+    public struct Column: Sendable {
         public var name: Name
         public var style: Style
 
@@ -37,7 +37,7 @@ extension Csv {
 
 extension Csv.Column {
     /// ``Style`` decides the appearance of certain ``Column`` group.
-    public struct Style {
+    public struct Style: Sendable {
         /// `color` is a ``CGColor`` corresponding to textColor which is used when drawing
         public var color: CGColor
         /// `applyOnlyColumn` determines whether this style affects both `Column` and `Row` or not.

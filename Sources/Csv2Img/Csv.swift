@@ -130,7 +130,7 @@ extension Csv {
     /**
      `ExportType` is a enum that expresses
      */
-    public enum ExportType: String, Hashable {
+    public enum ExportType: String, Hashable, CaseIterable {
         /// `png` output
         case png
         /// `pdf` output (Work In Progress)
@@ -365,10 +365,9 @@ extension Csv {
         }
         if let maker = maker as? ImageMaker {
             if let fontSize = fontSize {
-                maker.setFontSize(fontSize)
+                maker.set(fontSize: fontSize)
             }
-            // TODO: When Swift5.7 is supported officailly, replace `CGImage` with `any CsvExportable`.
-            let exportable: CGImage = try await withCheckedThrowingContinuation { continuation in
+            let exportable: any CsvExportable = try await withCheckedThrowingContinuation { continuation in
                 queue.async { [weak self] in
                     guard let self = self else {
                         continuation.resume(throwing: Csv.Error.underlying(nil))
@@ -389,7 +388,7 @@ extension Csv {
             return AnyCsvExportable(exportable)
         } else if let maker = maker as? PdfMaker {
             if let fontSize = fontSize {
-                maker.setFontSize(fontSize)
+                maker.set(fontSize: fontSize)
             }
             let exportable: PDFDocument = try await withCheckedThrowingContinuation { continuation in
                 queue.async { [weak self] in
