@@ -33,26 +33,32 @@ public actor Csv {
     ///
     /// `separator` is applied to each row and generate items per row.
     /// `columns` is array of column whose type is ``Column``.
-    /// `Row` is array of row whose type is ``Row``    
+    /// `rows` is array of row whose type is ``Row``
+    /// `exportType` is value of ``ExportType`` with default value `png`.
+    /// `pdfMetadata` is value of ``PDFMetadata`` with default value `nil`.
     public init(
         separator: String=",",
         rawString: String? = nil,
         encoding: String.Encoding = .utf8,
         columns: [Csv.Column] = [],
         rows: [Csv.Row] = [],
-        exportType: ExportType = .png
+        exportType: ExportType = .png,
+        pdfMetadata: PDFMetadata? = nil
     ) {
         self.imageMarker = ImageMaker(
             maximumRowCount: maximumRowCount,
             fontSize: 12
         )
+        self.pdfMetadata = pdfMetadata ?? PDFMetadata(
+            author: "Author",
+            title: "Title",
+            size: .a4,
+            orientation: .portrait
+        )
         self.pdfMarker = PdfMaker(
             maximumRowCount: maximumRowCount,
             fontSize: 12,
-            metadata: PDFMetadata(
-                author: "Author",
-                title: "Title"
-            )
+            metadata: self.pdfMetadata
         )
         self.encoding = encoding
         self.separator = separator
@@ -130,7 +136,14 @@ public actor Csv {
     
     /// `exportType` determines export type. Please choose ``ExportType.png`` or ``ExportType.pdf``.
     public var exportType: ExportType
-    
+
+    /// `pdfMetadata` stores pdf metadata which is used when ``Csv2Img.Csv.ExportType`` is `.png`
+    private var pdfMetadata: PDFMetadata {
+        didSet {
+            pdfMarker.set(metadata: pdfMetadata)
+        }
+    }
+
     /// ``maximumRowCount`` is the max number of Rows. this is fixed due to performance issue.
     private let maximumRowCount: Int? = nil
     
@@ -626,5 +639,12 @@ extension Csv {
             )
             return nil
         }
+    }
+
+    /**
+     - set ``PdfMetadata``
+     */
+    public func update(pdfMetadata: PDFMetadata) {
+        self.pdfMetadata = pdfMetadata
     }
 }
