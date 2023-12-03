@@ -6,22 +6,30 @@ public enum PdfMakingError: Error {
     /// Failed to get/create `CGContext`.
     case noContextAvailabe
     case failedToGeneratePdf
-    case failedToSavePdf(at : String)
+    case failedToSavePdf(
+        at : String
+    )
     case emptyRows
-    case underlying(Error)
+    case underlying(
+        Error
+    )
 }
 
 /// No overview available
 protocol PdfMakerType: Maker {
-    var latestOutput: PDFDocument? { get }
-    func setMetadata(_ metadata: PDFMetadata)
+    var latestOutput: PDFDocument? {
+        get
+    }
+    func setMetadata(
+        _ metadata: PDFMetadata
+    )
 }
 
 /// ``PdfMaker`` generate pdf from ``Csv`` (Work In Progress).
 final class PdfMaker: PdfMakerType {
-
+    
     typealias Exportable = PDFDocument
-
+    
     init(
         maximumRowCount: Int?,
         fontSize: Double,
@@ -31,64 +39,111 @@ final class PdfMaker: PdfMakerType {
         self.fontSize = fontSize
         self.metadata = metadata
     }
-
+    
     let maximumRowCount: Int?
-    private(set) var fontSize: Double
+    private(
+        set
+    ) var fontSize: Double
     var metadata: PDFMetadata
-
+    
     var latestOutput: PDFDocument?
-
-    func set(fontSize size: Double) {
+    
+    func set(
+        fontSize size: Double
+    ) {
         self.fontSize = size
     }
-
+    
     /// generate png-image data from ``Csv``.
     func make(
         columns: [Csv.Column],
         rows: [Csv.Row],
-        progress: @escaping (Double) -> Void
+        progress: @escaping (
+            Double
+        ) -> Void
     ) throws -> PDFDocument {
         // NOTE: Anchor is bottom-left.
         let horizontalSpace: Double = 8
         let verticalSpace: Double = 12
         let maxRowsHeight: Double = 480
-
-        let size = min(maximumRowCount ?? rows.count, rows.count)
-        let rows = rows[..<size].map { $0 }
-
+        
+        let size = min(
+            maximumRowCount ?? rows.count,
+            rows.count
+        )
+        let rows = rows[..<size].map {
+            $0
+        }
+        
         if rows.isEmpty {
             throw PdfMakingError.emptyRows
         }
-
+        
         let textSizeList =
         rows
-            .flatMap({ $0.values })
-            .map({ $0.getSize(fontSize: fontSize) })
+            .flatMap({
+                $0.values
+            })
+            .map({
+                $0.getSize(
+                    fontSize: fontSize
+                )
+            })
         +
         columns
-            .map({ $0.name })
-            .map({ $0.getSize(fontSize: fontSize) })
-
-        let styles: [Csv.Column.Style] = columns.map(\.style)
-
-        let longestHeight = textSizeList.map({ $0.height }).sorted().reversed()[0]
-        let longestWidth = textSizeList.map({ $0.width }).sorted().reversed()[0]
-
+            .map({
+                $0.name
+            })
+            .map({
+                $0.getSize(
+                    fontSize: fontSize
+                )
+            })
+        
+        let styles: [Csv.Column.Style] = columns.map(
+            \.style
+        )
+        
+        let longestHeight = textSizeList.map({
+            $0.height
+        }).sorted().reversed()[0]
+        let longestWidth = textSizeList.map({
+            $0.width
+        }).sorted().reversed()[0]
+        
         let rowHeight = longestHeight + verticalSpace
         let columnWidth = longestWidth + horizontalSpace
         let lineWidth: Double = 1
-
-        let width = (longestWidth + horizontalSpace) * Double(columns.count)
-        let allRowsHeight = Double(rows.count) * (longestHeight + verticalSpace)
-
-        let largestRowsHeight = min(maxRowsHeight, allRowsHeight)
-
-        let totalPageNumber = Int(allRowsHeight / largestRowsHeight)
-
-        let totalHeight = allRowsHeight + Double(totalPageNumber) * rowHeight
-
-        let pageHeight = min(largestRowsHeight + rowHeight, totalHeight)
-
+        
+        let width = (
+            longestWidth + horizontalSpace
+        ) * Double(
+            columns.count
+        )
+        let allRowsHeight = Double(
+            rows.count
+        ) * (
+            longestHeight + verticalSpace
+        )
+        
+        let largestRowsHeight = min(
+            maxRowsHeight,
+            allRowsHeight
+        )
+        
+        let totalPageNumber = Int(
+            allRowsHeight / largestRowsHeight
+        )
+        
+        let totalHeight = allRowsHeight + Double(
+            totalPageNumber
+        ) * rowHeight
+        
+        let pageHeight = min(
+            largestRowsHeight + rowHeight,
+            totalHeight
+        )
+        
         var mediaBox = CGRect(
             origin: .zero,
             size: CGSize(
@@ -96,9 +151,14 @@ final class PdfMaker: PdfMakerType {
                 height: pageHeight
             )
         )
-
-        let data = CFDataCreateMutable(nil, 0)!
-        let consumer = CGDataConsumer(data: data)!
+        
+        let data = CFDataCreateMutable(
+            nil,
+            0
+        )!
+        let consumer = CGDataConsumer(
+            data: data
+        )!
         guard let context = CGContext(
             consumer: consumer,
             mediaBox: &mediaBox,
@@ -106,13 +166,19 @@ final class PdfMaker: PdfMakerType {
         ) else {
             throw PdfMakingError.noContextAvailabe
         }
-
+        
         // `-1` is due to column space.
-        let maxNumberOfRowsInPage: Int = Int(ceil(pageHeight / rowHeight - 1))
-
-        let completeCount: Double = Double(totalPageNumber)
+        let maxNumberOfRowsInPage: Int = Int(
+            ceil(
+                pageHeight / rowHeight - 1
+            )
+        )
+        
+        let completeCount: Double = Double(
+            totalPageNumber
+        )
         var completeFraction: Double = 0
-
+        
         var currentPageNumber: Int = 1
         var startRowIndex: Int = 0
         while currentPageNumber <= totalPageNumber {
@@ -128,46 +194,73 @@ final class PdfMaker: PdfMakerType {
                 kCGPDFContextAuthor as CFString: metadata.author,
                 kCGPDFContextMediaBox: mediaBoxPerPage
             ] as [CFString : Any]
-            context.beginPDFPage(coreInfo as CFDictionary)
-
-            context.setFillColor(CGColor(
-                red: 255/255,
-                green: 255/255,
-                blue: 255/255,
-                alpha: 1)
+            context.beginPDFPage(
+                coreInfo as CFDictionary
+            )
+            
+            context.setFillColor(
+                CGColor(
+                    red: 255/255,
+                    green: 255/255,
+                    blue: 255/255,
+                    alpha: 1
+                )
             )
             context.fill(
                 CGRect(
                     origin: .zero,
-                    size: CGSize(width: width, height: allRowsHeight)
+                    size: CGSize(
+                        width: width,
+                        height: allRowsHeight
+                    )
                 )
             )
-
-            context.setLineWidth(lineWidth)
+            
+            context.setLineWidth(
+                lineWidth
+            )
 #if os(macOS)
-            context.setStrokeColor(Color.separatorColor.cgColor)
+            context.setStrokeColor(
+                Color.separatorColor.cgColor
+            )
 #elseif os(iOS)
-            context.setStrokeColor(Color.separator.cgColor)
+            context.setStrokeColor(
+                Color.separator.cgColor
+            )
 #endif
-            context.setFillColor(CGColor(
-                red: 33/255,
-                green: 33/255,
-                blue: 33/255,
-                alpha: 1
-            ))
-
+            context.setFillColor(
+                CGColor(
+                    red: 33/255,
+                    green: 33/255,
+                    blue: 33/255,
+                    alpha: 1
+                )
+            )
+            
             setColumnText(
                 context: context,
                 columns: columns,
-                boxWidth: Double(columnWidth),
-                boxHeight: Double(rowHeight),
-                totalHeight: Double(pageHeight),
-                totalWidth: Double(width)
+                boxWidth: Double(
+                    columnWidth
+                ),
+                boxHeight: Double(
+                    rowHeight
+                ),
+                totalHeight: Double(
+                    pageHeight
+                ),
+                totalWidth: Double(
+                    width
+                )
             )
             // `Csv.Row.index` begins with `1`.
             let rows = rows.filter({
-                (startRowIndex..<startRowIndex+maxNumberOfRowsInPage)
-                    .contains($0.index-1)
+                (
+                    startRowIndex..<startRowIndex+maxNumberOfRowsInPage
+                )
+                .contains(
+                    $0.index-1
+                )
             })
             setRowText(
                 context: context,
@@ -175,36 +268,54 @@ final class PdfMaker: PdfMakerType {
                 rows: rows,
                 from: 0,
                 rowCountPerPage: maxNumberOfRowsInPage,
-                columnHeight: Double(rowHeight),
-                width: Double(columnWidth),
-                height: Double(rowHeight),
-                totalWidth: Double(width),
-                totalHeight: Double(pageHeight)
+                columnHeight: Double(
+                    rowHeight
+                ),
+                width: Double(
+                    columnWidth
+                ),
+                height: Double(
+                    rowHeight
+                ),
+                totalWidth: Double(
+                    width
+                ),
+                totalHeight: Double(
+                    pageHeight
+                )
             )
-
-            context.drawPath(using: .stroke)
-
+            
+            context.drawPath(
+                using: .stroke
+            )
+            
             completeFraction += 1
-            progress(completeFraction / completeCount)
-
+            progress(
+                completeFraction / completeCount
+            )
+            
             currentPageNumber += 1
             startRowIndex += maxNumberOfRowsInPage
-
+            
             context.endPDFPage()
         }
-
+        
 #if os(iOS)
         UIGraphicsEndPDFContext()
 #endif
-
+        
         context.closePDF()
-
-        let document = PDFDocument(data: data as Data)!
+        
+        let document = PDFDocument(
+            data: data as Data
+        )!
         self.latestOutput = document
         return document
     }
-
-    func setMetadata(_ metadata: PDFMetadata) {
+    
+    func setMetadata(
+        _ metadata: PDFMetadata
+    ) {
         self.metadata = metadata
     }
 }
@@ -230,16 +341,23 @@ extension PdfMaker {
             context.move(
                 to: CGPoint(
                     x: 0,
-                    y: totalHeight - Double(i + 1) * height - columnHeight
+                    y: totalHeight - Double(
+                        i + 1
+                    ) * height - columnHeight
                 )
             )
             context.addLine(
                 to: CGPoint(
                     x: totalWidth,
-                    y: totalHeight - Double(i + 1) * height - columnHeight
+                    y: totalHeight - Double(
+                        i + 1
+                    ) * height - columnHeight
                 )
             )
-            for (j, text) in row.values.enumerated() {
+            for (
+                j,
+                text
+            ) in row.values.enumerated() {
                 if text.isEmpty || j >= styles.count {
                     continue
                 }
@@ -247,37 +365,62 @@ extension PdfMaker {
                 let str = NSAttributedString(
                     string: text,
                     attributes: [
-                        .font: Font.systemFont(ofSize: fontSize),
+                        .font: Font.systemFont(
+                            ofSize: fontSize
+                        ),
                         .foregroundColor: style.displayableColor()
                     ]
                 )
-                let size = str.string.getSize(fontSize: fontSize)
-                let leadingSpaceInBox = (width - size.width) / 2
-                let originX = Double(j) * width + leadingSpaceInBox
-                let topSpaceInBox = (height - size.height) / 2
-                let originY = totalHeight - (Double(i + 1) * height + size.height + topSpaceInBox)
-                let framesetter = CTFramesetterCreateWithAttributedString(str)
+                let size = str.string.getSize(
+                    fontSize: fontSize
+                )
+                let leadingSpaceInBox = (
+                    width - size.width
+                ) / 2
+                let originX = Double(
+                    j
+                ) * width + leadingSpaceInBox
+                let topSpaceInBox = (
+                    height - size.height
+                ) / 2
+                let originY = totalHeight - (
+                    Double(
+                        i + 1
+                    ) * height + size.height + topSpaceInBox
+                )
+                let framesetter = CTFramesetterCreateWithAttributedString(
+                    str
+                )
                 context.textMatrix = CGAffineTransform.identity
                 let framePath = CGPath(
                     rect: CGRect(
-                        origin: CGPoint(x: originX, y: originY),
+                        origin: CGPoint(
+                            x: originX,
+                            y: originY
+                        ),
                         size: size
                     ),
                     transform: nil
                 )
                 let frameRef = CTFramesetterCreateFrame(
                     framesetter,
-                    CFRange(location: 0, length: 0),
+                    CFRange(
+                        location: 0,
+                        length: 0
+                    ),
                     framePath,
                     nil
                 )
                 context.saveGState()
-                CTFrameDraw(frameRef, context)
+                CTFrameDraw(
+                    frameRef,
+                    context
+                )
                 context.restoreGState()
             }
         }
     }
-
+    
     private func setColumnText(
         context: CGContext,
         columns: [Csv.Column],
@@ -286,10 +429,25 @@ extension PdfMaker {
         totalHeight: Double,
         totalWidth: Double
     ) {
-        context.move(to: CGPoint(x: 0, y: totalHeight - height))
-        context.addLine(to: CGPoint(x: totalWidth, y: totalHeight - height))
-        for (i, column) in columns.enumerated() {
-            let i = Double(i)
+        context.move(
+            to: CGPoint(
+                x: 0,
+                y: totalHeight - height
+            )
+        )
+        context.addLine(
+            to: CGPoint(
+                x: totalWidth,
+                y: totalHeight - height
+            )
+        )
+        for (
+            i,
+            column
+        ) in columns.enumerated() {
+            let i = Double(
+                i
+            )
             context.move(
                 to: CGPoint(
                     x: i * width,
@@ -305,30 +463,50 @@ extension PdfMaker {
             let str = NSAttributedString(
                 string: column.name,
                 attributes: [
-                    .font: Font.systemFont(ofSize: fontSize, weight: .bold),
+                    .font: Font.systemFont(
+                        ofSize: fontSize,
+                        weight: .bold
+                    ),
                     .foregroundColor: column.style.displayableColor()
                 ]
             )
-            let size = str.string.getSize(fontSize: fontSize)
-            let originX = i * width + (width - size.width) / 2
-            let originY = totalHeight - (height + size.height) / 2
-            let framesetter = CTFramesetterCreateWithAttributedString(str)
+            let size = str.string.getSize(
+                fontSize: fontSize
+            )
+            let originX = i * width + (
+                width - size.width
+            ) / 2
+            let originY = totalHeight - (
+                height + size.height
+            ) / 2
+            let framesetter = CTFramesetterCreateWithAttributedString(
+                str
+            )
             context.saveGState()
             context.textMatrix = CGAffineTransform.identity
             let framePath = CGPath(
                 rect: CGRect(
-                    origin: CGPoint(x: originX, y: originY),
+                    origin: CGPoint(
+                        x: originX,
+                        y: originY
+                    ),
                     size: size
                 ),
                 transform: nil
             )
             let frameRef = CTFramesetterCreateFrame(
                 framesetter,
-                CFRange(location: 0, length: 0),
+                CFRange(
+                    location: 0,
+                    length: 0
+                ),
                 framePath,
                 nil
             )
-            CTFrameDraw(frameRef, context)
+            CTFrameDraw(
+                frameRef,
+                context
+            )
             context.restoreGState()
         }
     }

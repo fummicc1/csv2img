@@ -14,6 +14,8 @@ public protocol CsvComposition {
 
 extension CsvComposition {
     public func build() throws -> Csv {
-        try CsvBuilder.build(composition: self)
+        try CsvBuilder.build(
+            composition: self
+        )
     }
 }

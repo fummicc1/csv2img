@@ -8,16 +8,24 @@
 import Foundation
 
 /// Under development
-public struct NewCsvComposition<Row, Column: StringProtocol> {
+public struct NewCsvComposition<
+    Row,
+    Column: StringProtocol
+> {
     var columns: [Column]
     var rows: Rows
-
+    
     @dynamicMemberLookup
     public struct Rows {
         public typealias Value = [Column: [Row]]
         var value: Value = [:]
-
-        subscript(dynamicMember keyPath: KeyPath<Rows, [Rows]>) -> Value {
+        
+        subscript(
+            dynamicMember keyPath: KeyPath<
+            Rows,
+            [Rows]
+            >
+        ) -> Value {
             fatalError()
         }
     }

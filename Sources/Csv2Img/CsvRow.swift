@@ -28,7 +28,10 @@ extension Csv {
     ///
     public struct Row {
 
-        public init(index: Int, values: [String]) {
+        public init(
+            index: Int,
+            values: [String]
+        ) {
             self.index = index
             self.values = values
         }
