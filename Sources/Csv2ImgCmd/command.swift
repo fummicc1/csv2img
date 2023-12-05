@@ -124,6 +124,7 @@ public struct Csv2Img: AsyncParsableCommand {
                 url
             )
         }
+		await csv.update(pdfMetadata: .init(size: .a0, orientation: .landscape))
         let exportable = try await csv.generate(
             fontSize: 12,
             exportType: exportType,

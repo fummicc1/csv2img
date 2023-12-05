@@ -532,6 +532,7 @@ final class PdfMaker: PdfMakerType {
         metadata: PDFMetadata
     ) {
         self.metadata = metadata
+		print(metadata)
     }
 }
 
