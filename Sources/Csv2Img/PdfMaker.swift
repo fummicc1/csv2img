@@ -134,7 +134,7 @@ final class PdfMaker: PdfMakerType {
         
         let rowHeight = longestHeight + verticalSpace
         let columnWidth = longestWidth + horizontalSpace
-        let lineWidth: Double = 1
+		let lineWidth: Double = fontSize / 10
         
         let width = (
             longestWidth + horizontalSpace
@@ -343,6 +343,10 @@ final class PdfMaker: PdfMakerType {
             Double
         ) -> Void
     ) throws -> PDFDocument {
+		// NOTE: Anchor is bottom-left.
+		let horizontalSpace: Double = 8
+		let verticalSpace: Double = 12
+
         let pageSize = pdfSize.size(
             orientation: orientation
         )
@@ -363,15 +367,15 @@ final class PdfMaker: PdfMakerType {
             \.style
         )
 
-		let rowHeight = rows[0].values.map { $0.getSize(fontSize: fontSize).height }.max() ?? 0
+		let rowHeight = (rows[0].values.map { $0.getSize(fontSize: fontSize).height }.max() ?? 0) + verticalSpace
 
 		let tableSize = CGSize(
 			width: pageSize.width * 0.8, height: rowHeight * Double(rows.count + 1)
 		)
 
-		let columnWidth = tableSize.width / Double(columns.count)
+		let columnWidth = tableSize.width / Double(columns.count) + horizontalSpace
 
-        let lineWidth: Double = 1
+        let lineWidth: Double = fontSize / 10
 
         let totalPageNumber = 1
 
