@@ -346,7 +346,7 @@ final class PdfMaker: PdfMakerType {
         let pageSize = pdfSize.size(
             orientation: orientation
         )
-        
+
         let totalRowCount = min(
             maximumRowCount ?? rows.count,
             rows.count
@@ -359,16 +359,18 @@ final class PdfMaker: PdfMakerType {
             throw PdfMakingError.emptyRows
         }
 
-        let maxTextCount = rows.flatMap { $0.values }.map(\.count).max() ?? 0
-
-        set(fontSize: pageSize.width / Double(columns.count) / Double(maxTextCount) * 0.8)
-
         let styles: [Csv.Column.Style] = columns.map(
             \.style
         )
 
-        let rowHeight = pageSize.height / Double(rows.count + 1)
-        let columnWidth = pageSize.width / Double(columns.count)
+		let rowHeight = rows[0].values.map { $0.getSize(fontSize: fontSize).height }.max() ?? 0
+
+		let tableSize = CGSize(
+			width: pageSize.width * 0.8, height: rowHeight * Double(rows.count + 1)
+		)
+
+		let columnWidth = tableSize.width / Double(columns.count)
+
         let lineWidth: Double = 1
 
         let totalPageNumber = 1
@@ -462,11 +464,14 @@ final class PdfMaker: PdfMakerType {
                 boxHeight: Double(
                     rowHeight
                 ),
+				xOffSet: (pageSize.width - tableSize.width) / 2,
+				// anchor is bottom-left.
+				yOffSet: pageSize.height - tableSize.height - min(24, (pageSize.height - tableSize.height) / 2),
                 totalHeight: Double(
-                    pageSize.height
+					tableSize.height
                 ),
                 totalWidth: Double(
-                    pageSize.width
+                    tableSize.width
                 )
             )
             setRowText(
@@ -484,11 +489,14 @@ final class PdfMaker: PdfMakerType {
                 height: Double(
                     rowHeight
                 ),
+				xOffSet: (pageSize.width - tableSize.width) / 2,
+				// anchor is bottom-left.
+				yOffSet: pageSize.height - tableSize.height - min(24, (pageSize.height - tableSize.height) / 2),
                 totalWidth: Double(
-                    pageSize.width
+                    tableSize.width
                 ),
                 totalHeight: Double(
-                    pageSize.height
+                    tableSize.height
                 )
             )
 
@@ -537,6 +545,8 @@ extension PdfMaker {
         columnHeight: Double,
         width: Double,
         height: Double,
+		xOffSet: Double = 0,
+		yOffSet: Double = 0,
         totalWidth: Double,
         totalHeight: Double
     ) {
@@ -547,16 +557,16 @@ extension PdfMaker {
             let row = rows[i]
             context.move(
                 to: CGPoint(
-                    x: 0,
-                    y: totalHeight - Double(
+                    x: xOffSet,
+                    y: yOffSet + totalHeight - Double(
                         i + 1
                     ) * height - columnHeight
                 )
             )
             context.addLine(
                 to: CGPoint(
-                    x: totalWidth,
-                    y: totalHeight - Double(
+                    x: xOffSet + totalWidth,
+                    y: yOffSet + totalHeight - Double(
                         i + 1
                     ) * height - columnHeight
                 )
@@ -584,13 +594,13 @@ extension PdfMaker {
                 let leadingSpaceInBox = (
                     width - size.width
                 ) / 2
-                let originX = Double(
+                let originX = xOffSet + Double(
                     j
                 ) * width + leadingSpaceInBox
                 let topSpaceInBox = (
                     height - size.height
                 ) / 2
-                let originY = totalHeight - (
+                let originY = yOffSet + totalHeight - (
                     Double(
                         i + 1
                     ) * height + size.height + topSpaceInBox
@@ -633,21 +643,52 @@ extension PdfMaker {
         columns: [Csv.Column],
         boxWidth width: Double,
         boxHeight height: Double,
+		xOffSet: Double = 0,
+		yOffSet: Double = 0,
         totalHeight: Double,
         totalWidth: Double
     ) {
+		// Draw top `-`.
         context.move(
             to: CGPoint(
-                x: 0,
-                y: totalHeight - height
+                x: xOffSet,
+                y: yOffSet + totalHeight
             )
         )
         context.addLine(
             to: CGPoint(
-                x: totalWidth,
-                y: totalHeight - height
+                x: totalWidth + xOffSet,
+                y: yOffSet + totalHeight
             )
         )
+
+		// Draw top-column `-`.
+		context.move(
+			to: CGPoint(
+				x: xOffSet,
+				y: yOffSet + totalHeight - height
+			)
+		)
+		context.addLine(
+			to: CGPoint(
+				x: totalWidth + xOffSet,
+				y: yOffSet + totalHeight - height
+			)
+		)
+
+		// Draw right `|`.
+		context.move(
+			to: CGPoint(
+				x: xOffSet + totalWidth,
+				y: yOffSet
+			)
+		)
+		context.addLine(
+			to: CGPoint(
+				x: xOffSet + totalWidth,
+				y: yOffSet + totalHeight
+			)
+		)
         for (
             i,
             column
@@ -657,14 +698,14 @@ extension PdfMaker {
             )
             context.move(
                 to: CGPoint(
-                    x: i * width,
-                    y: 0
+                    x: xOffSet + i * width,
+                    y: yOffSet
                 )
             )
             context.addLine(
                 to: CGPoint(
-                    x: i * width,
-                    y: totalHeight
+                    x: xOffSet + i * width,
+                    y: yOffSet + totalHeight
                 )
             )
             let str = NSAttributedString(
@@ -680,10 +721,10 @@ extension PdfMaker {
             let size = str.string.getSize(
                 fontSize: fontSize
             )
-            let originX = i * width + (
+            let originX = xOffSet + i * width + (
                 width - size.width
             ) / 2
-            let originY = totalHeight - (
+            let originY = yOffSet + totalHeight - (
                 height + size.height
             ) / 2
             let framesetter = CTFramesetterCreateWithAttributedString(
