@@ -80,7 +80,7 @@
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "-n https://raw.githubusercontent.com/fummicc1/csv2img/main/Fixtures/sample_1.csv"
+            argument = "-n https://raw.githubusercontent.com/fummicc1/csv2img/main/Fixtures/yolov5x6.csv"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
