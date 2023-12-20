@@ -13,7 +13,12 @@ Convert Csv into png image.
 
 ### Demo
 
-<img src="https://user-images.githubusercontent.com/44002126/189683064-88163a24-290e-4201-9306-86ca1f6dc605.gif" width=300>
+
+<img src="https://github.com/fummicc1/csv2img/assets/44002126/37fdff7c-6947-49a3-9a5d-9b521273c9f0" width=300>
+
+
+
+
 
 
 
@@ -22,7 +27,10 @@ Convert Csv into png image.
 
 ### Demo
 
-<img src="https://user-images.githubusercontent.com/44002126/186823895-c1e74b48-0ea9-4323-9cbd-4cb270b83190.gif" width=640>
+
+<img src="https://github.com/fummicc1/csv2img/assets/44002126/65a9f3f6-e76f-44f1-b18b-b116f7b310af" width=800>
+
+
 
 
 # Csv2Img (Library)
