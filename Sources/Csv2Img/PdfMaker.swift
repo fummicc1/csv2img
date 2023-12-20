@@ -62,10 +62,10 @@ final class PdfMaker: PdfMakerType {
             Double
         ) -> Void
     ) throws -> PDFDocument {
-        return if let size = metadata.size, let orientation = metadata.orientation {
+        return if let size = metadata.size {
             try make(
                 with: size,
-                orientation: orientation,
+                orientation: metadata.orientation,
                 columns: columns,
                 rows: rows,
                 progress: progress
@@ -536,7 +536,6 @@ final class PdfMaker: PdfMakerType {
         metadata: PDFMetadata
     ) {
         self.metadata = metadata
-		print(metadata)
     }
 }
 
