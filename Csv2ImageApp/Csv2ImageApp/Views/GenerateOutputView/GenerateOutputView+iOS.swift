@@ -114,6 +114,7 @@ struct GenerateOutputView_iOS: View {
                 }
             }
             .background(Asset.lightAccentColor.swiftUIColor)
+            .frame(maxHeight: 200)
 
             GeometryReader { proxy in
                 VStack(alignment: .center) {
