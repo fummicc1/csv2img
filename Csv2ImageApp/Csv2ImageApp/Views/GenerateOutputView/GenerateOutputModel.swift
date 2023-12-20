@@ -64,20 +64,17 @@ class GenerateOutputModel: ObservableObject {
     func onAppear() async {
         _state.projectedValue
             .map(\.exportType)
-            .removeDuplicates()
+            .share()
             .combineLatest(
                 _state.projectedValue
-                    .map(\.encoding)
-                    .removeDuplicates(),
+                    .map(\.encoding),
                 _state.projectedValue
-                    .map(\.size)
-                    .removeDuplicates(),
+                    .map(\.size),
                 _state.projectedValue
                     .map(\.orientation)
-                    .removeDuplicates()
             )
             .receive(on: queue)
-            .share()
+            .debounce(for: 1, scheduler: queue)
             .sink { (_, _, _, _) in
                 Task {
                     await self.updateCachedCsv()
@@ -127,7 +124,7 @@ class GenerateOutputModel: ObservableObject {
                     let exportable = try await csv.generate(exportType: exportMode)
                     if type(of: exportable.base) == PDFDocument.self {
                         await self.update(keyPath: \.pdfDocument, value: (exportable.base as! PDFDocument))
-                    } else {
+                    } else {.
                         await self.update(keyPath: \.cgImage, value: (exportable.base as! CGImage))
                     }
                 } catch {

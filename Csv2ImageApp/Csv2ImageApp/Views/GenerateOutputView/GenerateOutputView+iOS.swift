@@ -16,22 +16,56 @@ struct GenerateOutputView_iOS: View {
     @Binding var backToPreviousPage: Bool
     @State private var succeedSavingOutput: Bool = false
 
+    private let availableEncodingType: [String.Encoding] = [
+        .utf8,
+        .utf16,
+        .utf32,
+        .shiftJIS,
+        .ascii,
+    ]
+
     var body: some View {
-        ZStack {
-            Rectangle()
-                .background(Asset.lightAccentColor.swiftUIColor)
-                .ignoresSafeArea()
-            Group {
-                VStack {
-                    HStack {
-                        CButton.labeled("Back") {
-                            withAnimation {
-                                backToPreviousPage = true
-                            }
-                        }
-                        Spacer()
+        NavigationStack {
+            ZStack {
+                Rectangle()
+                    .background(Asset.lightAccentColor.swiftUIColor)
+                    .ignoresSafeArea()
+                loadedContent
+            }
+            .toolbar {
+                ToolbarItem(placement: .primaryAction) {
+                    Button("Save") {
+                        succeedSavingOutput = model.save()
                     }
-                    .padding()
+                }
+            }
+            .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    Button("Back") {
+                        backToPreviousPage = true
+                    }
+                }
+            }
+            .background(Asset.lightAccentColor.swiftUIColor)
+            .alert("Complete Saving!", isPresented: $succeedSavingOutput) {
+                CButton.labeled("Back") {
+                    withAnimation {
+                        backToPreviousPage = true
+                    }
+                }
+                if let savedURL = model.savedURL, Application.shared.canOpenURL(savedURL) {
+                    CButton.labeled("Open") {
+                        Application.shared.open(savedURL)
+                    }
+                }
+            }
+        }
+    }
+
+    var loadedContent: some View {
+        VStack {
+            List {
+                Section("Export Type") {
                     Picker(selection: Binding(get: {
                         model.state.exportType
                     }, set: { exportType in
@@ -42,56 +76,75 @@ struct GenerateOutputView_iOS: View {
                         CText("PNG")
                             .tag(Csv.ExportType.png)
                     } label: {
-                        CText("Export Type")
+                        EmptyView()
                     }
                     .pickerStyle(.segmented)
-                    .padding()
-                    GeometryReader { proxy in
-                        VStack {
-                            GeneratePreviewView(
-                                model: model,
-                                size: .constant(
-                                    CGSize(
-                                        width: proxy.size.width * 0.85,
-                                        height: proxy.size.height * 0.8
-                                    )
-                                )
-                            )
-                            .padding()
-                            Spacer()
-                            HStack {
-                                Spacer()
-                                CButton.labeled("Save") {
-                                    succeedSavingOutput = model.save()
-                                }
+                }
+                Section("Encoding") {
+                    Menu(model.state.encoding.description) {
+                        ForEach(availableEncodingType, id: \.self) { encoding in
+                            Button {
+                                model.update(keyPath: \.encoding, value: encoding)
+                            } label: {
+                                Text(encoding.description)
                             }
-                            .padding()
                         }
                     }
+                    .fixedSize()
                 }
-                .background(Asset.lightAccentColor.swiftUIColor)
-            }
-            if model.state.isLoading {
-                ProgressView {
-                    CText("Loading...", font: .largeTitle)
+                Section("PDF Size") {
+                    Menu(model.state.size.rawValue) {
+                        ForEach(PdfSize.allCases.indices, id: \.self) { index in
+                            let size = PdfSize.allCases[index]
+                            Button {
+                                model.update(keyPath: \.size, value: size)
+                            } label: {
+                                Text(size.rawValue)
+                            }
+                        }
+                    }
+                    .fixedSize()
                 }
-                .padding()
-                .progressViewStyle(.linear)
+                Section("PDF Orientation") {
+                    Menu(model.state.orientation.rawValue) {
+                        ForEach(PdfSize.Orientation.allCases.indices, id: \.self) { index in
+                            let orientation = PdfSize.Orientation.allCases[index]
+                            Button {
+                                model.update(keyPath: \.orientation, value: orientation)
+                            } label: {
+                                Text(orientation.rawValue)
+                            }
+                        }
+                    }
+                    .fixedSize()
+                }
             }
+            .background(Asset.lightAccentColor.swiftUIColor)
+
+            GeometryReader { proxy in
+                VStack(alignment: .center) {
+                    GeneratePreviewView(
+                        model: model,
+                        size: .constant(
+                            CGSize(
+                                width: proxy.size.width,
+                                height: proxy.size.height
+                            )
+                        )
+                    )
+                }
+
+            }
+            .background(Asset.lightAccentColor.swiftUIColor)
         }
-        .background(Asset.lightAccentColor.swiftUIColor)
-        .alert("Complete Saving!", isPresented: $succeedSavingOutput) {
-            CButton.labeled("Back") {
-                withAnimation {
-                    backToPreviousPage = true
-                }
-            }
-            if let savedURL = model.savedURL, Application.shared.canOpenURL(savedURL) {
-                CButton.labeled("Open") {
-                    Application.shared.open(savedURL)
-                }
-            }
+    }
+
+    var loadingContent: some View {
+        ProgressView {
+            CText("Loading...", font: .largeTitle)
         }
+        .padding()
+        .progressViewStyle(.linear)
     }
 }
 #endif
