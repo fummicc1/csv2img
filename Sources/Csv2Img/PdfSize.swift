@@ -15,7 +15,7 @@ public enum PdfSize: String, Codable, Equatable, CaseIterable, Sendable {
     case b4
     case b5
 
-    public enum Orientation: Codable, Equatable, CaseIterable, Sendable {
+    public enum Orientation: String, Codable, Equatable, CaseIterable, Sendable {
         case portrait
         case landscape
     }

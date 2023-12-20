@@ -62,27 +62,40 @@ class GenerateOutputModel: ObservableObject {
 
     @MainActor
     func onAppear() async {
-        _state.projectedValue
-            .map(\.exportType)
-            .removeDuplicates()
-            .combineLatest(
-                _state.projectedValue
-                    .map(\.encoding)
-                    .removeDuplicates()
-            )
-            .receive(on: queue)
-            .share()
-            .sink { (_, _) in
-                Task {
-                    await self.updateCachedCsv()
-                }
+        Publishers.CombineLatest4(
+            _state.projectedValue
+                .map(
+                    \.exportType
+                ).removeDuplicates(),
+            _state.projectedValue
+                .map(
+                    \.encoding
+                ).removeDuplicates(),
+            _state.projectedValue
+                .map(
+                    \.size
+                ).removeDuplicates(),
+            _state.projectedValue
+                .map(
+                    \.orientation
+                )
+                .removeDuplicates()
+        )
+        .share()
+        .receive(on: queue)
+        .sink { (_, _, _, _) in
+            Task {
+                await self.updateCachedCsv()
             }
-            .store(in: &cancellables)
+        }
+        .store(in: &cancellables)
     }
 
     func updateCachedCsv() async {
         let exportMode = await state.exportType
         let encoding = await state.encoding
+        let pdfSize = await state.size
+        let pdfOrientation = await state.orientation
         let url = await state.url
         let fileType = await state.fileType
         let csv: Csv?
@@ -110,6 +123,12 @@ class GenerateOutputModel: ObservableObject {
         csvTask = Task {
             Task {
                 do {
+                    await csv.update(
+                        pdfMetadata: .init(
+                            size: pdfSize,
+                            orientation: pdfOrientation
+                        )
+                    )
                     let exportable = try await csv.generate(exportType: exportMode)
                     if type(of: exportable.base) == PDFDocument.self {
                         await self.update(keyPath: \.pdfDocument, value: (exportable.base as! PDFDocument))
@@ -117,7 +136,7 @@ class GenerateOutputModel: ObservableObject {
                         await self.update(keyPath: \.cgImage, value: (exportable.base as! CGImage))
                     }
                 } catch {
-
+                    print(error)
                 }
             }
             Task {

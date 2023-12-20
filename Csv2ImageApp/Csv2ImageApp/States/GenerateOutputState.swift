@@ -20,6 +20,8 @@ struct GenerateOutputState: Hashable, Equatable {
 
     var encoding: String.Encoding
     var exportType: Csv.ExportType
+    var size: PdfSize = .a3
+    var orientation: PdfSize.Orientation = .portrait
 
     var cgImage: CGImage?
     var pdfDocument: PDFDocument?

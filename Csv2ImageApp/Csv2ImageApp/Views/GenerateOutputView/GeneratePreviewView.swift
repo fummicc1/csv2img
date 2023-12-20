@@ -21,16 +21,15 @@ struct GeneratePreviewView: View {
     var body: some View {
         Group {
             if let cgImage = model.state.cgImage, model.state.exportType == .png {
-                if let image = UIImage(cgImage: cgImage) {
-                    ScrollView {
-                        ScrollView(.horizontal, content: {
-                            Image(uiImage: image)
-                                .resizable()
-                                .aspectRatio(contentMode: .fit)
-                        })
-                    }
-                    .frame(width: size.width, height: size.height)
+                let image = UIImage(cgImage: cgImage)
+                ScrollView {
+                    ScrollView(.horizontal, content: {
+                        Image(uiImage: image)
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                    })
                 }
+                .frame(width: size.width, height: size.height)
             } else if let document = model.state.pdfDocument, model.state.exportType == .pdf {
                 PdfDocumentView(document: document, size: _size)
             }
@@ -40,18 +39,17 @@ struct GeneratePreviewView: View {
     var body: some View {
         Group {
             if let cgImage = model.state.cgImage, model.state.exportType == .png {
-                if let image = NSImage(
+                let image = NSImage(
                     cgImage: cgImage,
                     size: CGSize(width: cgImage.width, height: cgImage.height)
-                ) {
-                    ScrollView(content: {
-                        ScrollView(.horizontal, content: {
-                            Image(nsImage: image)
-                                .resizable()
-                                .aspectRatio(contentMode: .fit)
-                        })
+                )
+                ScrollView(content: {
+                    ScrollView(.horizontal, content: {
+                        Image(nsImage: image)
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
                     })
-                }
+                })
             } else if let document = model.state.pdfDocument, model.state.exportType == .pdf {
                 PdfDocumentView(document: document, size: _size)
             }
@@ -61,12 +59,8 @@ struct GeneratePreviewView: View {
 }
 
 
-extension String.Encoding: Identifiable, Equatable {
-    public var id: String {
-        self.description
-    }
-
-    static func ==(lhs: Self, rhs: Self) -> Bool {
-        lhs.id == rhs.id
+extension String.Encoding: Identifiable {
+    public var id: UInt {
+        self.rawValue
     }
 }

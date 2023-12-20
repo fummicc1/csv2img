@@ -26,104 +26,127 @@ struct GenerateOutputView_macOS: View {
     @Environment(\.dismiss) var dismiss
 
     var body: some View {
-        GeometryReader { proxy in
-            ZStack {
-                if !model.state.isLoading {
-                    VStack {
-                        HStack {
-                            CButton.labeled("Back") {
-                                withAnimation {
-                                    backToPreviousPage = true
-                                }
+        NavigationSplitView(sidebar: {
+            List {
+                Section("Export Type") {
+                    Picker(selection: Binding(get: {
+                        model.state.exportType
+                    }, set: { exportType, _ in
+                        model.update(keyPath: \.exportType, value: exportType)
+                    })) {
+                        CText("png").tag(Csv.ExportType.png)
+                        CText("pdf").tag(Csv.ExportType.pdf)
+                    } label: {
+                        EmptyView()
+                    }
+                    .pickerStyle(.radioGroup)
+                }
+                Section("Encoding") {
+                    let encodingInfo = model.state.encoding.description
+                    Menu(encodingInfo) {
+                        ForEach(availableEncodingType) { encoding in
+                            Button {
+                                model.update(keyPath: \.encoding, value: encoding)
+                            } label: {
+                                Text(encoding.description)
                             }
-                            Spacer()
                         }
-                        .padding()
+                    }
+                    .fixedSize()
+                }
+                Section("PDF Size") {
+                    let encodingInfo = model.state.size.rawValue
+                    Menu(encodingInfo) {
+                        ForEach(PdfSize.allCases.indices, id: \.self) { index in
+                            let size = PdfSize.allCases[index]
+                            Button {
+                                model.update(keyPath: \.size, value: size)
+                            } label: {
+                                Text(size.rawValue)
+                            }
+                        }
+                    }
+                    .fixedSize()
+                }
+                Section("PDF Orientation") {
+                    let orientation = model.state.orientation.rawValue
+                    Menu(orientation) {
+                        ForEach(PdfSize.Orientation.allCases.indices, id: \.self) { index in
+                            let orientation = PdfSize.Orientation.allCases[index]
+                            Button {
+                                model.update(keyPath: \.orientation, value: orientation)
+                            } label: {
+                                Text(orientation.rawValue)
+                            }
+                        }
+                    }
+                    .fixedSize()
+                }
+            }
+            VStack {
+                CButton.labeled("Save", role: .primary) {
+                    model.save()
+                }
+            }.padding()
+        }, detail: {
+            if model.state.isLoading {
+                loadingContent
+            } else {
+                VStack(alignment: .center) {
+                    GeometryReader { proxy in
                         GeneratePreviewView(
                             model: model,
                             size: .constant(
                                 CGSize(
-                                    width: proxy.size.width * 0.7,
-                                    height: proxy.size.height * 0.7
+                                    width: proxy.size.width,
+                                    height: proxy.size.height
                                 )
                             )
                         )
-                        .frame(
-                            width: proxy.size.width * 0.7,
-                            height: proxy.size.height * 0.7
-                        )
-                        Spacer()
-                        HStack {
-                            Picker(selection: Binding(get: {
-                                model.state.exportType
-                            }, set: { exportType, _ in
-                                model.update(keyPath: \.exportType, value: exportType)
-                            })) {
-                                CText("png").tag(Csv.ExportType.png)
-                                CText("pdf").tag(Csv.ExportType.pdf)
-                            } label: {
-                                CText("Export Type")
-                            }
-                            .padding()
-                            .pickerStyle(.radioGroup)
-                            .background(Asset.backgroundColor.swiftUIColor)
-                            .padding()
-
-                            let encodingInfo = model.state.encoding.description
-                            Menu("Encode Type: \(encodingInfo)") {
-                                ForEach(availableEncodingType) { encoding in
-                                    Button {
-                                        model.update(keyPath: \.encoding, value: encoding)
-                                    } label: {
-                                        Text(encoding.description)
-                                    }
-
-                                }
-                            }
-
-                            Spacer()
-                            CButton.labeled("Save", role: .primary) {
-                                model.save()
-                            }
-                        }.padding()
                     }
-                    .background(Asset.lightAccentColor.swiftUIColor)
-                } else {
-                    VStack {
-                        Spacer()
-                        ProgressView(value: model.state.progress) {
-                            CText("Loading...", font: .largeTitle)
-                        }
-                        .padding()
-                        .progressViewStyle(.linear)
-                        Spacer()
-                    }
-                    .background(Asset.lightAccentColor.swiftUIColor)
                 }
-                VStack {
-                    Spacer()
-                    VStack {
-                        CText(model.state.errorMessage ?? "", foregroundColor: .red)
-                            .padding()
-                    }
-                    .fixedSize(horizontal: false, vertical: true)
-                    .background(Asset.secondaryBackgroundColor.swiftUIColor)
-                    .cornerRadius(12)
-                    .padding()
-                }
-                .opacity(model.state.errorMessage != nil ? 1 : 0)
-                .animation(.easeInOut, value: model.state.errorMessage)
-                .onChange(of: model.state.errorMessage, perform: { errorMessage in
-                    if errorMessage != nil {
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
-                            withAnimation {
-                                model.clearError()
-                            }
-                        }
-                    }
-                })
             }
+        })
+        .background(Asset.lightAccentColor.swiftUIColor)
+
+    }
+
+    var loadingContent: some View {
+        VStack {
+            Spacer()
+            ProgressView(value: model.state.progress) {
+                CText("Loading...", font: .largeTitle)
+            }
+            .padding()
+            .progressViewStyle(.linear)
+            Spacer()
         }
+        .background(Asset.lightAccentColor.swiftUIColor)
+    }
+
+    var errorContent: some View {
+        VStack {
+            Spacer()
+            VStack {
+                CText(model.state.errorMessage ?? "", foregroundColor: .red)
+                    .padding()
+            }
+            .fixedSize(horizontal: false, vertical: true)
+            .background(Asset.secondaryBackgroundColor.swiftUIColor)
+            .cornerRadius(12)
+            .padding()
+        }
+        .opacity(model.state.errorMessage != nil ? 1 : 0)
+        .animation(.easeInOut, value: model.state.errorMessage)
+        .onChange(of: model.state.errorMessage, perform: { errorMessage in
+            if errorMessage != nil {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+                    withAnimation {
+                        model.clearError()
+                    }
+                }
+            }
+        })
     }
 }
 

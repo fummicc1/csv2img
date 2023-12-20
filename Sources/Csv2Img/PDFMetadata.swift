@@ -12,13 +12,13 @@ public struct PDFMetadata {
      - specify output pdf size with ``PdfSize``.
      */
     public var size: PdfSize?
-    public var orientation: PdfSize.Orientation?
+    public var orientation: PdfSize.Orientation
 
     public init(
         author: String? = nil,
         title: String? = nil,
         size: PdfSize? = nil,
-        orientation: PdfSize.Orientation? = nil
+        orientation: PdfSize.Orientation = .portrait
     ) {
         self.author = author
         self.title = title
