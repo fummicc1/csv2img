@@ -26,12 +26,7 @@ struct GenerateOutputView_iOS: View {
 
     var body: some View {
         NavigationStack {
-            ZStack {
-                Rectangle()
-                    .background(Asset.lightAccentColor.swiftUIColor)
-                    .ignoresSafeArea()
-                loadedContent
-            }
+            loadedContent.id(model.state.isLoading)
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
                     Button("Save") {
@@ -46,7 +41,6 @@ struct GenerateOutputView_iOS: View {
                     }
                 }
             }
-            .background(Asset.lightAccentColor.swiftUIColor)
             .alert("Complete Saving!", isPresented: $succeedSavingOutput) {
                 CButton.labeled("Back") {
                     withAnimation {

@@ -59,8 +59,8 @@ struct GeneratePreviewView: View {
 }
 
 
-extension String.Encoding: Identifiable, Equatable {
-    public var id: String {
-        self.description
+extension String.Encoding: Identifiable {
+    public var id: UInt {
+        self.rawValue
     }
 }

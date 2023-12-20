@@ -62,25 +62,33 @@ class GenerateOutputModel: ObservableObject {
 
     @MainActor
     func onAppear() async {
-        _state.projectedValue
-            .map(\.exportType)
-            .share()
-            .combineLatest(
-                _state.projectedValue
-                    .map(\.encoding),
-                _state.projectedValue
-                    .map(\.size),
-                _state.projectedValue
-                    .map(\.orientation)
-            )
-            .receive(on: queue)
-            .debounce(for: 1, scheduler: queue)
-            .sink { (_, _, _, _) in
-                Task {
-                    await self.updateCachedCsv()
-                }
+        Publishers.CombineLatest4(
+            _state.projectedValue
+                .map(
+                    \.exportType
+                ).removeDuplicates(),
+            _state.projectedValue
+                .map(
+                    \.encoding
+                ).removeDuplicates(),
+            _state.projectedValue
+                .map(
+                    \.size
+                ).removeDuplicates(),
+            _state.projectedValue
+                .map(
+                    \.orientation
+                )
+                .removeDuplicates()
+        )
+        .share()
+        .receive(on: queue)
+        .sink { (_, _, _, _) in
+            Task {
+                await self.updateCachedCsv()
             }
-            .store(in: &cancellables)
+        }
+        .store(in: &cancellables)
     }
 
     func updateCachedCsv() async {
@@ -124,11 +132,11 @@ class GenerateOutputModel: ObservableObject {
                     let exportable = try await csv.generate(exportType: exportMode)
                     if type(of: exportable.base) == PDFDocument.self {
                         await self.update(keyPath: \.pdfDocument, value: (exportable.base as! PDFDocument))
-                    } else {.
+                    } else {
                         await self.update(keyPath: \.cgImage, value: (exportable.base as! CGImage))
                     }
                 } catch {
-
+                    print(error)
                 }
             }
             Task {
