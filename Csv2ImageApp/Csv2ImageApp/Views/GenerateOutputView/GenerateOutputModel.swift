@@ -68,11 +68,17 @@ class GenerateOutputModel: ObservableObject {
             .combineLatest(
                 _state.projectedValue
                     .map(\.encoding)
+                    .removeDuplicates(),
+                _state.projectedValue
+                    .map(\.size)
+                    .removeDuplicates(),
+                _state.projectedValue
+                    .map(\.orientation)
                     .removeDuplicates()
             )
             .receive(on: queue)
             .share()
-            .sink { (_, _) in
+            .sink { (_, _, _, _) in
                 Task {
                     await self.updateCachedCsv()
                 }
@@ -83,6 +89,8 @@ class GenerateOutputModel: ObservableObject {
     func updateCachedCsv() async {
         let exportMode = await state.exportType
         let encoding = await state.encoding
+        let pdfSize = await state.size
+        let pdfOrientation = await state.orientation
         let url = await state.url
         let fileType = await state.fileType
         let csv: Csv?
@@ -110,6 +118,12 @@ class GenerateOutputModel: ObservableObject {
         csvTask = Task {
             Task {
                 do {
+                    await csv.update(
+                        pdfMetadata: .init(
+                            size: pdfSize,
+                            orientation: pdfOrientation
+                        )
+                    )
                     let exportable = try await csv.generate(exportType: exportMode)
                     if type(of: exportable.base) == PDFDocument.self {
                         await self.update(keyPath: \.pdfDocument, value: (exportable.base as! PDFDocument))

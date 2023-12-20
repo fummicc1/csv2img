@@ -40,18 +40,17 @@ struct GeneratePreviewView: View {
     var body: some View {
         Group {
             if let cgImage = model.state.cgImage, model.state.exportType == .png {
-                if let image = NSImage(
+                let image = NSImage(
                     cgImage: cgImage,
                     size: CGSize(width: cgImage.width, height: cgImage.height)
-                ) {
-                    ScrollView(content: {
-                        ScrollView(.horizontal, content: {
-                            Image(nsImage: image)
-                                .resizable()
-                                .aspectRatio(contentMode: .fit)
-                        })
+                )
+                ScrollView(content: {
+                    ScrollView(.horizontal, content: {
+                        Image(nsImage: image)
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
                     })
-                }
+                })
             } else if let document = model.state.pdfDocument, model.state.exportType == .pdf {
                 PdfDocumentView(document: document, size: _size)
             }

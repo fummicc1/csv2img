@@ -140,9 +140,9 @@ public actor Csv {
     /// `pdfMetadata` stores pdf metadata which is used when ``Csv2Img.Csv.ExportType`` is `.png`
     private var pdfMetadata: PDFMetadata {
         didSet {
-			pdfMarker.set(
-				metadata: pdfMetadata
-			)
+            pdfMarker.set(
+                metadata: pdfMetadata
+            )
 		}
 	}
 	
@@ -556,8 +556,9 @@ extension Csv {
 					}
 					Task {
 						do {
-							let doc: PDFDocument
-							if let pdfSize = maker.metadata.size, let orientation = maker.metadata.orientation {
+                let doc: PDFDocument
+                let orientation = maker.metadata.orientation
+							if let pdfSize = maker.metadata.size {
 								doc = try maker.make(
 									with: pdfSize,
 									orientation: orientation,
