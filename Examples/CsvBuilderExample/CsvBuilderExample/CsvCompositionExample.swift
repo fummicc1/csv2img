@@ -7,5 +7,5 @@ struct CsvCompositionExample: CsvComposition {
     @CsvRows(column: "name")
     var names: [String]
 
-    init() { }
+    init() {}
 }

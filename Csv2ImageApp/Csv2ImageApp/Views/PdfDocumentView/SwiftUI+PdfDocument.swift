@@ -5,9 +5,8 @@
 //  Created by Fumiya Tanaka on 2022/06/22.
 //
 
-import SwiftUI
 import PDFKit
-
+import SwiftUI
 
 struct PdfDocumentView: ViewRepresentable {
 
@@ -17,28 +16,28 @@ struct PdfDocumentView: ViewRepresentable {
     private let view: PDFView = .init()
 
     #if os(macOS)
-    typealias NSViewType = PDFView
-    func makeNSView(context: Context) -> PDFView {
-        view.document = document
-        view.setFrameSize(size)
-        view.displayMode = .twoUpContinuous
-        return view
-    }
+        typealias NSViewType = PDFView
+        func makeNSView(context: Context) -> PDFView {
+            view.document = document
+            view.setFrameSize(size)
+            view.displayMode = .twoUpContinuous
+            return view
+        }
 
-    func updateNSView(_ nsView: PDFView, context: Context) {
-    }
+        func updateNSView(_ nsView: PDFView, context: Context) {
+        }
     #elseif os(iOS)
-    typealias UIViewType = PDFView
+        typealias UIViewType = PDFView
 
-    func makeUIView(context: Context) -> PDFView {
-        view.document = document
-        view.frame.size = size
-        view.displayMode = .singlePage
-        view.usePageViewController(true, withViewOptions: nil)
-        return view
-    }
-    func updateUIView(_ uiView: PDFView, context: Context) {
-    }
+        func makeUIView(context: Context) -> PDFView {
+            view.document = document
+            view.frame.size = size
+            view.displayMode = .singlePage
+            view.usePageViewController(true, withViewOptions: nil)
+            return view
+        }
+        func updateUIView(_ uiView: PDFView, context: Context) {
+        }
     #endif
 }
 

@@ -1,7 +1,7 @@
-import Foundation
-import SwiftSyntax
-import SwiftParser
 import Csv2Img
+import Foundation
+import SwiftParser
+import SwiftSyntax
 
 public struct CsvCompositionParser {
 
@@ -11,7 +11,7 @@ public struct CsvCompositionParser {
         )
         case failedToDecodeWithUtf8
     }
-    
+
     public static func parse<Composition: CsvComposition>(
         type: Composition.Type,
         rows: [Csv.Row] = []
@@ -19,10 +19,12 @@ public struct CsvCompositionParser {
         let compositionType = String(
             describing: type
         )
-        guard let file = Bundle.main.url(
-            forResource: compositionType,
-            withExtension: "txt"
-        ) else {
+        guard
+            let file = Bundle.main.url(
+                forResource: compositionType,
+                withExtension: "txt"
+            )
+        else {
             throw Error.fileNotFound(
                 type: compositionType
             )
@@ -30,10 +32,12 @@ public struct CsvCompositionParser {
         let content = try Data(
             contentsOf: file
         )
-        guard let source = String(
-            data: content,
-            encoding: .utf8
-        ) else {
+        guard
+            let source = String(
+                data: content,
+                encoding: .utf8
+            )
+        else {
             throw Error.failedToDecodeWithUtf8
         }
         let syntax: SourceFileSyntax = Parser.parse(
@@ -45,7 +49,7 @@ public struct CsvCompositionParser {
             rows: rows
         )
     }
-    
+
     static func parseIntoCsv<C: CsvComposition>(
         type: C.Type,
         source: SourceFileSyntax,
@@ -58,9 +62,11 @@ public struct CsvCompositionParser {
             case .decl(
                 let decl
             ):
-                guard let decl = decl.as(
-                    StructDeclSyntax.self
-                ) else {
+                guard
+                    let decl = decl.as(
+                        StructDeclSyntax.self
+                    )
+                else {
                     break
                 }
                 if !validateInheritedType(
@@ -73,12 +79,12 @@ public struct CsvCompositionParser {
                     type: C.self,
                     members: members
                 )
-                    .map {
-                        Csv.Column.init(
-                            name: $0,
-                            style: .random()
-                        )
-                    }
+                .map {
+                    Csv.Column.init(
+                        name: $0,
+                        style: .random()
+                    )
+                }
                 allColumns.append(
                     contentsOf: columns
                 )
@@ -93,7 +99,7 @@ public struct CsvCompositionParser {
             exportType: .pdf
         )
     }
-    
+
     static func validateInheritedType(
         decl: StructDeclSyntax
     ) -> Bool {
@@ -114,7 +120,7 @@ public struct CsvCompositionParser {
                 )
             }) != nil
     }
-    
+
     static func extractColumns<C: CsvComposition>(
         _ type: C.Type,
         variableDecl decl: VariableDeclSyntax
@@ -123,23 +129,29 @@ public struct CsvCompositionParser {
         return attributes.compactMap { attribute in
             var columns: [String] = []
             for attr in attributes {
-                guard let attr = attr.as(
-                    AttributeSyntax.self
-                ) else {
+                guard
+                    let attr = attr.as(
+                        AttributeSyntax.self
+                    )
+                else {
                     continue
                 }
-                let hasCsvRowsAttr = attr.attributeName.as(
-                    IdentifierTypeSyntax.self
-                )?.name.text == "CsvRows"
+                let hasCsvRowsAttr =
+                    attr.attributeName.as(
+                        IdentifierTypeSyntax.self
+                    )?.name.text == "CsvRows"
                 if !hasCsvRowsAttr {
                     continue
                 }
-                guard let tokens = attr.arguments?.tokens(
-                    viewMode: .all
-                ) else {
+                guard
+                    let tokens = attr.arguments?.tokens(
+                        viewMode: .all
+                    )
+                else {
                     continue
                 }
-                let column = tokens
+                let column =
+                    tokens
                     .compactMap {
                         if case let TokenKind.stringSegment(
                             column
@@ -173,9 +185,11 @@ extension StructDeclSyntax {
     ) -> [String] {
         var columns: [String] = []
         for member in members {
-            guard let decl = member.decl.as(
-                VariableDeclSyntax.self
-            ) else {
+            guard
+                let decl = member.decl.as(
+                    VariableDeclSyntax.self
+                )
+            else {
                 continue
             }
             let c = CsvCompositionParser.extractColumns(

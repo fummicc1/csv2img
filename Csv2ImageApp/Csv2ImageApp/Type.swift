@@ -9,17 +9,17 @@ import Foundation
 import SwiftUI
 
 #if os(macOS)
-import AppKit
-typealias Application = NSApplication
-typealias ApplicationDelegate = NSApplicationDelegate
-typealias ApplicationDelegateAdaptor = NSApplicationDelegateAdaptor
-typealias Responder = NSResponder
-typealias ViewRepresentable = NSViewRepresentable
+    import AppKit
+    typealias Application = NSApplication
+    typealias ApplicationDelegate = NSApplicationDelegate
+    typealias ApplicationDelegateAdaptor = NSApplicationDelegateAdaptor
+    typealias Responder = NSResponder
+    typealias ViewRepresentable = NSViewRepresentable
 #elseif os(iOS)
-import UIKit
-typealias Application = UIApplication
-typealias ApplicationDelegate = UIApplicationDelegate
-typealias ApplicationDelegateAdaptor = UIApplicationDelegateAdaptor
-typealias Responder = UIResponder
-typealias ViewRepresentable = UIViewRepresentable
+    import UIKit
+    typealias Application = UIApplication
+    typealias ApplicationDelegate = UIApplicationDelegate
+    typealias ApplicationDelegateAdaptor = UIApplicationDelegateAdaptor
+    typealias Responder = UIResponder
+    typealias ViewRepresentable = UIViewRepresentable
 #endif

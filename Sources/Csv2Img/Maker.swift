@@ -6,7 +6,7 @@ public protocol Maker: Sendable {
     var maximumRowCount: Int? {
         get
     }
-    
+
     func make(
         columns: [Csv.Column],
         rows: [Csv.Row],

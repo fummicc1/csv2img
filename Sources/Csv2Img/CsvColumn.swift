@@ -1,13 +1,12 @@
 //
 //  CsvColumn.swift
-//  
+//
 //
 //  Created by Fumiya Tanaka on 2022/08/26.
 //
 
-import Foundation
 import CoreGraphics
-
+import Foundation
 
 extension Csv {
     /// Column (a head line)
@@ -46,7 +45,7 @@ extension Csv.Column {
         /// `applyOnlyColumn` determines whether this style affects both `Column` and `Row` or not.
         /// Default value of `applyOnlyColumn` is false, which means ``Style`` is also applied to ``Row``.
         public var applyOnlyColumn: Bool
-        
+
         public init(
             color: CGColor,
             applyOnlyColumn: Bool = false
@@ -54,7 +53,7 @@ extension Csv.Column {
             self.color = color
             self.applyOnlyColumn = applyOnlyColumn
         }
-        
+
         public static func random(
             count: Int
         ) -> [Style] {
@@ -64,12 +63,11 @@ extension Csv.Column {
             var hue: Double = 0.5
             for _ in 0..<count {
                 let color: Color
-                if let random = (
-                    0..<360
-                ).randomElement() {
-                    hue = Double(
-                        random
-                    ) / 360
+                if let random = (0..<360).randomElement() {
+                    hue =
+                        Double(
+                            random
+                        ) / 360
                     color = Color(
                         hue: hue,
                         saturation: saturation,
@@ -93,7 +91,7 @@ extension Csv.Column {
             }
             return styles
         }
-        
+
         public static func random() -> Style {
             random(
                 count: 1

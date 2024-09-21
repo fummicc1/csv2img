@@ -23,9 +23,9 @@ class SelectCsvModel: NSObject, ObservableObject {
     @MainActor
     func selectFileOnDisk() async {
         #if os(macOS)
-        await selectFileOnDisk_macOS()
+            await selectFileOnDisk_macOS()
         #elseif os(iOS)
-        await selectFileOnDisk_iOS()
+            await selectFileOnDisk_iOS()
         #endif
     }
 
@@ -54,64 +54,68 @@ class SelectCsvModel: NSObject, ObservableObject {
     }
 }
 
-
 #if os(macOS)
-import AppKit
-extension SelectCsvModel {
-    @MainActor
-    private func selectFileOnDisk_macOS() async {
-        let panel = NSOpenPanel()
-        panel.allowedContentTypes = [.commaSeparatedText]
-        let result = panel.runModal()
-        if result == .OK {
-            guard let url = panel.url else {
-                error = "\(SelectCsvModelError.fileNotFound)"
+    import AppKit
+    extension SelectCsvModel {
+        @MainActor
+        private func selectFileOnDisk_macOS() async {
+            let panel = NSOpenPanel()
+            panel.allowedContentTypes = [.commaSeparatedText]
+            let result = panel.runModal()
+            if result == .OK {
+                guard let url = panel.url else {
+                    error = "\(SelectCsvModelError.fileNotFound)"
+                    return
+                }
+                withAnimation {
+                    selectedCsv = SelectedCsvState(fileType: .local, url: url)
+                }
+            }
+        }
+    }
+#elseif os(iOS)
+    import UIKit
+    extension SelectCsvModel: UIDocumentPickerDelegate {
+        @MainActor
+        private func selectFileOnDisk_iOS() async {
+            let viewController = UIDocumentPickerViewController(
+                forOpeningContentTypes: [.commaSeparatedText]
+            )
+            viewController.delegate = self
+            Application.shared.activeRootViewController?.present(
+                viewController, animated: true
+            )
+        }
+
+        func documentPicker(
+            _ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]
+        ) {
+            guard let url = urls.first else {
                 return
             }
             withAnimation {
-                selectedCsv = SelectedCsvState(fileType: .local, url: url)
+                selectedCsv = .init(fileType: .local, url: url)
+            }
+        }
+
+        func documentPickerWasCancelled(_ controller: UIDocumentPickerViewController) {
+            selectedCsv = nil
+        }
+
+        @MainActor func openFolderApp() {
+            guard
+                var urlPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
+                    .last?.absoluteString
+            else {
+                return
+            }
+            let newPath = urlPath.replacingOccurrences(of: "file://", with: "shareddocuments://")
+            guard let url = URL(string: newPath) else {
+                return
+            }
+            if Application.shared.canOpenURL(url) {
+                Application.shared.open(url)
             }
         }
     }
-}
-#elseif os(iOS)
-import UIKit
-extension SelectCsvModel: UIDocumentPickerDelegate {
-    @MainActor
-    private func selectFileOnDisk_iOS() async {
-        let viewController = UIDocumentPickerViewController(
-            forOpeningContentTypes: [.commaSeparatedText]
-        )
-        viewController.delegate = self
-        Application.shared.activeRootViewController?.present(
-            viewController, animated: true
-        )
-    }
-
-    func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
-        guard let url = urls.first else {
-            return
-        }
-        withAnimation {
-            selectedCsv = .init(fileType: .local, url: url)
-        }
-    }
-
-    func documentPickerWasCancelled(_ controller: UIDocumentPickerViewController) {
-        selectedCsv = nil
-    }
-
-    @MainActor func openFolderApp() {
-        guard var urlPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).last?.absoluteString else {
-            return
-        }
-        let newPath = urlPath.replacingOccurrences(of: "file://", with: "shareddocuments://")
-        guard let url = URL(string: newPath) else {
-            return
-        }
-        if Application.shared.canOpenURL(url) {
-            Application.shared.open(url)
-        }
-    }
-}
 #endif

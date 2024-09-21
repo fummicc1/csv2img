@@ -6,9 +6,8 @@
 //
 //
 
-import Foundation
 import CoreData
-
+import Foundation
 
 extension CsvOutput {
 
@@ -23,6 +22,6 @@ extension CsvOutput {
 
 }
 
-extension CsvOutput : Identifiable {
+extension CsvOutput: Identifiable {
 
 }

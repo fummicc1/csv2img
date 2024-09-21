@@ -1,9 +1,8 @@
-import Foundation
 import ArgumentParser
 import CoreImage
 import Csv2Img
+import Foundation
 import PDFKit
-
 
 /// Csv resource type
 public enum InputType: EnumerableFlag {
@@ -35,19 +34,18 @@ public enum InputType: EnumerableFlag {
                 .customLong(
                     "local"
                 ),
-                .short
+                .short,
             ]
         case .network:
             return [
                 .customLong(
                     "network"
                 ),
-                .short
+                .short,
             ]
         }
     }
 }
-
 
 /// Coomand line interface `Csv2Img`
 ///
@@ -75,33 +73,33 @@ public struct Csv2Img: AsyncParsableCommand {
             shouldDisplay: true,
             helpNames: [
                 .long,
-                .short
+                .short,
             ]
         )
     }
-    
+
     @Flag(
         help: "Csv file type. Choose either `local` or `network`"
     )
     public var inputType: InputType
-    
+
     @Option
     public var exportType: Csv.ExportType = .pdf
-    
+
     @Argument(
         help: "Input. csv absolute-path or url on the internet"
     )
     public var input: String
-    
+
     @Argument(
         help: "Output. Specify local path."
     )
     public var output: String
 
     public init() {
-        
+
     }
-    
+
     public func run() async throws {
         let csv: Csv
         switch inputType {
@@ -112,9 +110,11 @@ public struct Csv2Img: AsyncParsableCommand {
                 )
             )
         case .network:
-            guard let url = URL(
-                string: input
-            ) else {
+            guard
+                let url = URL(
+                    string: input
+                )
+            else {
                 print(
                     "Invalid URL: \(input)."
                 )
@@ -124,7 +124,7 @@ public struct Csv2Img: AsyncParsableCommand {
                 url
             )
         }
-		await csv.update(pdfMetadata: .init(size: .b3, orientation: .landscape))
+        await csv.update(pdfMetadata: .init(size: .b3, orientation: .landscape))
         let exportable = try await csv.generate(
             fontSize: 12,
             exportType: exportType,

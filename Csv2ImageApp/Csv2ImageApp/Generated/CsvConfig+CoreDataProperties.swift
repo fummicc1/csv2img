@@ -6,9 +6,8 @@
 //
 //
 
-import Foundation
 import CoreData
-
+import Foundation
 
 extension CsvConfig {
 
@@ -21,6 +20,6 @@ extension CsvConfig {
 
 }
 
-extension CsvConfig : Identifiable {
+extension CsvConfig: Identifiable {
 
 }

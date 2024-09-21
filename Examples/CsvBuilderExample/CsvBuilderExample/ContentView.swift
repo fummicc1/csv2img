@@ -1,5 +1,5 @@
-import SwiftUI
 import CsvBuilder
+import SwiftUI
 
 struct ContentView: View {
 
@@ -13,9 +13,12 @@ struct ContentView: View {
                 .foregroundColor(.accentColor)
             Text("Hello, world!")
             if let image = image {
-                Image(nsImage: NSImage(cgImage: image, size: CGSize(width: image.width, height: image.height)))
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
+                Image(
+                    nsImage: NSImage(
+                        cgImage: image, size: CGSize(width: image.width, height: image.height))
+                )
+                .resizable()
+                .aspectRatio(contentMode: .fit)
             }
         }
         .padding()

@@ -9,7 +9,7 @@ import Foundation
 import SwiftUI
 
 extension Binding {
-    func isNotNil<V>() -> Binding<Bool> where Value == Optional<V> {
+    func isNotNil<V>() -> Binding<Bool> where Value == V? {
         Binding<Bool> {
             self.wrappedValue != nil
         } set: { v, _ in
@@ -19,7 +19,7 @@ extension Binding {
         }
     }
 
-    func isNil<V>() -> Binding<Bool> where Value == Optional<V> {
+    func isNil<V>() -> Binding<Bool> where Value == V? {
         Binding<Bool> {
             self.wrappedValue == nil
         } set: { v, _ in

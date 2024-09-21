@@ -5,22 +5,38 @@
 //  Created by Fumiya Tanaka on 2022/08/07.
 //
 
-import Foundation
+import Combine
 import Csv2Img
+import Foundation
 import PDFKit
 import SwiftUI
-import Combine
-
 
 enum GenerateOutputModelError: Error {
 }
 
+@globalActor
+actor CsvGlobalActor {
+    static var shared: CsvGlobalActor = .init()
+}
+
+@Observable
 class GenerateOutputModel: ObservableObject {
 
-    @Published @MainActor private(set) var state: GenerateOutputState    
-    @Published @MainActor private(set) var savedURL: URL?
+    private(set) var state: GenerateOutputState {
+        didSet {
+            if oldValue.exportType == state.exportType && oldValue.encoding == state.encoding
+                && oldValue.size == state.size && oldValue.orientation == state.orientation
+            {
+                return
+            }
+            Task { @CsvGlobalActor in
+                await updateCachedCsv()
+            }
+        }
+    }
+    private(set) var savedURL: URL?
 
-    @Published private var cachedCsv: Csv? {
+    private var cachedCsv: Csv? {
         didSet {
             guard let cachedCsv else {
                 return
@@ -34,8 +50,6 @@ class GenerateOutputModel: ObservableObject {
         }
     }
 
-    private var cancellables: Set<AnyCancellable> = []
-    private let queue = DispatchQueue(label: "dev.fummicc1.csv2imgapp.generate-output-model", attributes: .concurrent)
     private var csvTask: Task<Void, Never>?
 
     deinit {
@@ -43,14 +57,19 @@ class GenerateOutputModel: ObservableObject {
     }
 
     @MainActor
-    init(url: URL, urlType: FileURLType, encoding: String.Encoding = .utf8, exportMode: Csv.ExportType = .pdf) {
+    init(
+        url: URL,
+        urlType: FileURLType,
+        encoding: String.Encoding = .utf8,
+        exportMode: Csv.ExportType = .pdf
+    ) {
         self.state = .init(
             url: url,
             fileType: urlType,
             encoding: encoding,
             exportType: exportMode
         )
-        Task {
+        Task { @CsvGlobalActor in
             await updateCachedCsv()
         }
     }
@@ -60,44 +79,14 @@ class GenerateOutputModel: ObservableObject {
         state[keyPath: keyPath] = value
     }
 
-    @MainActor
-    func onAppear() async {
-        Publishers.CombineLatest4(
-            _state.projectedValue
-                .map(
-                    \.exportType
-                ).removeDuplicates(),
-            _state.projectedValue
-                .map(
-                    \.encoding
-                ).removeDuplicates(),
-            _state.projectedValue
-                .map(
-                    \.size
-                ).removeDuplicates(),
-            _state.projectedValue
-                .map(
-                    \.orientation
-                )
-                .removeDuplicates()
-        )
-        .share()
-        .receive(on: queue)
-        .sink { (_, _, _, _) in
-            Task {
-                await self.updateCachedCsv()
-            }
-        }
-        .store(in: &cancellables)
-    }
-
+    @CsvGlobalActor
     func updateCachedCsv() async {
-        let exportMode = await state.exportType
-        let encoding = await state.encoding
-        let pdfSize = await state.size
-        let pdfOrientation = await state.orientation
-        let url = await state.url
-        let fileType = await state.fileType
+        let exportMode = state.exportType
+        let encoding = state.encoding
+        let pdfSize = state.size
+        let pdfOrientation = state.orientation
+        let url = state.url
+        let fileType = state.fileType
         let csv: Csv?
         do {
             switch fileType {
@@ -131,7 +120,8 @@ class GenerateOutputModel: ObservableObject {
                     )
                     let exportable = try await csv.generate(exportType: exportMode)
                     if type(of: exportable.base) == PDFDocument.self {
-                        await self.update(keyPath: \.pdfDocument, value: (exportable.base as! PDFDocument))
+                        await self.update(
+                            keyPath: \.pdfDocument, value: (exportable.base as! PDFDocument))
                     } else {
                         await self.update(keyPath: \.cgImage, value: (exportable.base as! CGImage))
                     }
@@ -165,70 +155,73 @@ class GenerateOutputModel: ObservableObject {
     @discardableResult
     func save() -> Bool {
         #if os(macOS)
-        save_macOS()
+            save_macOS()
         #elseif os(iOS)
-        save_iOS()
+            save_iOS()
         #endif
     }
 }
 
 #if os(macOS)
-extension GenerateOutputModel {
-    @MainActor
-    private func save_macOS() -> Bool {
-        let panel = NSSavePanel()
-        panel.nameFieldStringValue = state.url.lastPathComponent
-        panel.allowedContentTypes = [state.exportType.utType]
-        let result = panel.runModal()
-        if result == .OK {
-            guard let url = panel.url else {
-                return false
-            }
-            do {
-                if let pdf = state.pdfDocument {
-                    if pdf.write(to: url) {
+    extension GenerateOutputModel {
+        @MainActor
+        private func save_macOS() -> Bool {
+            let panel = NSSavePanel()
+            panel.nameFieldStringValue = state.url.lastPathComponent
+            panel.allowedContentTypes = [state.exportType.utType]
+            let result = panel.runModal()
+            if result == .OK {
+                guard let url = panel.url else {
+                    return false
+                }
+                do {
+                    if let pdf = state.pdfDocument {
+                        if pdf.write(to: url) {
+                            savedURL = url
+                            return true
+                        }
+                    } else if let imgData = state.cgImage?.convertToData() {
+                        try imgData.write(to: url)
                         savedURL = url
                         return true
                     }
-                } else if let imgData = state.cgImage?.convertToData() {
-                    try imgData.write(to: url)
+                } catch {
+                    print(error)
+                }
+            }
+            return false
+        }
+    }
+#elseif os(iOS)
+    extension GenerateOutputModel {
+        @MainActor
+        private func save_iOS() -> Bool {
+            guard
+                var url = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
+                    .last
+            else {
+                return false
+            }
+            guard let fileName = state.url.lastPathComponent.split(separator: ".").first else {
+                return false
+            }
+            url.appendPathComponent(String(fileName), conformingTo: state.exportType.utType)
+            if let pdf = state.pdfDocument, state.exportType == .pdf {
+                if pdf.write(to: url) {
                     savedURL = url
                     return true
                 }
-            } catch {
-                print(error)
+            } else if let image = state.cgImage, state.exportType == .png {
+                do {
+                    try image.convertToData()?.write(to: url)
+                    savedURL = url
+                    return true
+                } catch {
+                    print(error)
+                }
             }
-        }
-        return false
-    }
-}
-#elseif os(iOS)
-extension GenerateOutputModel {
-    @MainActor
-    private func save_iOS() -> Bool {
-        guard var url = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).last else {
-            return false
-        }
-        guard let fileName = state.url.lastPathComponent.split(separator: ".").first else {
-            return false
-        }
-        url.appendPathComponent(String(fileName), conformingTo: state.exportType.utType)
-        if let pdf = state.pdfDocument, state.exportType == .pdf {
-            if pdf.write(to: url) {
-                savedURL = url
-                return true
-            }
-        } else if let image = state.cgImage, state.exportType == .png {
-            do {
-                try image.convertToData()?.write(to: url)
-                savedURL = url
-                return true
-            } catch {
-                print(error)
-            }
-        }
 
-        return false
+            return false
+        }
     }
-}
 #endif

@@ -5,10 +5,9 @@
 //  Created by Fumiya Tanaka on 2022/08/07.
 //
 
+import Csv2Img
 import Foundation
 import PDFKit
-import Csv2Img
-
 
 struct GenerateOutputState: Hashable, Equatable {
     let url: URL
@@ -61,18 +60,16 @@ struct GenerateOutputState: Hashable, Equatable {
         }
     }
 
-    static func ==(lhs: GenerateOutputState, rhs: GenerateOutputState) -> Bool {
-        lhs.url == rhs.url &&
-        lhs.exportType == rhs.exportType &&
-        lhs.fileType == rhs.fileType &&
-        lhs.encoding == rhs.encoding &&
-        lhs.cgImage?.convertToData() == rhs.cgImage?.convertToData() &&
-        lhs.pdfDocument?.dataRepresentation() == rhs.pdfDocument?.dataRepresentation()
+    static func == (lhs: GenerateOutputState, rhs: GenerateOutputState) -> Bool {
+        lhs.url == rhs.url && lhs.exportType == rhs.exportType && lhs.fileType == rhs.fileType
+            && lhs.encoding == rhs.encoding
+            && lhs.cgImage?.convertToData() == rhs.cgImage?.convertToData()
+            && lhs.pdfDocument?.dataRepresentation() == rhs.pdfDocument?.dataRepresentation()
     }
 }
 
 extension String.Encoding {
-//    static func ==(lhs: String.Encoding, rhs: String.Encoding) -> Bool {
-//        lhs.id == rhs.id
-//    }
+    //    static func ==(lhs: String.Encoding, rhs: String.Encoding) -> Bool {
+    //        lhs.id == rhs.id
+    //    }
 }

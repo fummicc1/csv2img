@@ -7,31 +7,24 @@
 
 import SwiftUI
 
-
 struct GenerateOutputView: View {
-    
+
     @StateObject var model: GenerateOutputModel
     @Binding var backToPreviousPage: Bool
-    
+
     var body: some View {
-#if os(iOS)
-        GenerateOutputView_iOS(
-            model: model,
-            backToPreviousPage: _backToPreviousPage
-        )
-        .task {
-            await model.onAppear()
-        }
-#elseif os(macOS)
-        GenerateOutputView_macOS(
-            model: model,
-            backToPreviousPage: _backToPreviousPage
-        )
-        .task {
-            await model.onAppear()
-        }
-#endif
-        
+        #if os(iOS)
+            GenerateOutputView_iOS(
+                model: model,
+                backToPreviousPage: _backToPreviousPage
+            )
+        #elseif os(macOS)
+            GenerateOutputView_macOS(
+                model: model,
+                backToPreviousPage: _backToPreviousPage
+            )
+        #endif
+
     }
 }
 
