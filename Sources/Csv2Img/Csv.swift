@@ -1,8 +1,8 @@
-import Foundation
-import CoreGraphics
-import UniformTypeIdentifiers
-import PDFKit
 import Combine
+import CoreGraphics
+import Foundation
+import PDFKit
+import UniformTypeIdentifiers
 
 /** Csv data structure
 
@@ -37,7 +37,7 @@ public actor Csv {
     /// `exportType` is value of ``ExportType`` with default value `png`.
     /// `pdfMetadata` is value of ``PDFMetadata`` with default value `nil`.
     public init(
-        separator: String=",",
+        separator: String = ",",
         rawString: String? = nil,
         encoding: String.Encoding = .utf8,
         columns: [Csv.Column] = [],
@@ -49,12 +49,14 @@ public actor Csv {
             maximumRowCount: maximumRowCount,
             fontSize: 12
         )
-        self.pdfMetadata = pdfMetadata ?? PDFMetadata(
-            author: "Author",
-            title: "Title",
-            size: .a4,
-            orientation: .portrait
-        )
+        self.pdfMetadata =
+            pdfMetadata
+            ?? PDFMetadata(
+                author: "Author",
+                title: "Title",
+                size: .a4,
+                orientation: .portrait
+            )
         self.pdfMarker = PdfMaker(
             maximumRowCount: maximumRowCount,
             fontSize: 12,
@@ -68,9 +70,7 @@ public actor Csv {
         self.exportType = exportType
     }
 
-    private(
-        set
-    ) public var encoding: String.Encoding
+    private(set) public var encoding: String.Encoding
 
     /// A flag whether ``Csv`` is loading contents or not
     public var isLoading: Bool {
@@ -78,21 +78,23 @@ public actor Csv {
     }
 
     /// A `Publisher` to send ``isLoading``.
-    nonisolated public var isLoadingPublisher: AnyPublisher<
-        Bool,
-        Never
-    > {
+    nonisolated public var isLoadingPublisher:
+        AnyPublisher<
+            Bool,
+            Never
+        >
+    {
         isLoadingSubject.eraseToAnyPublisher()
     }
 
     /// `CurrentValueSubject` to store ``isLoading``.
-    private let isLoadingSubject: CurrentValueSubject<
-        Bool,
-        Never
-    > = .init(
-        false
-    )
-
+    private let isLoadingSubject:
+        CurrentValueSubject<
+            Bool,
+            Never
+        > = .init(
+            false
+        )
 
     /// progress stores current completeFraction of convert
     /// Value is in `0...1` with `Double` type
@@ -101,20 +103,23 @@ public actor Csv {
     }
 
     /// A `Publisher` to send ``progress``.
-    nonisolated public var progressPublisher: AnyPublisher<
-        Double,
-        Never
-    > {
+    nonisolated public var progressPublisher:
+        AnyPublisher<
+            Double,
+            Never
+        >
+    {
         progressSubject.eraseToAnyPublisher()
     }
 
     /// `CurrentValueSubject` to store ``progress``.
-    private let progressSubject: CurrentValueSubject<
-        Double,
-        Never
-    > = .init(
-        0
-    )
+    private let progressSubject:
+        CurrentValueSubject<
+            Double,
+            Never
+        > = .init(
+            0
+        )
 
     /// an separator applied to each row and column
     public var separator: String
@@ -170,10 +175,11 @@ public actor Csv {
     func update(
         columnStyles: [Column.Style]
     ) {
-        columnStyles.enumerated().forEach { (
-            i,
-            style
-        ) in
+        columnStyles.enumerated().forEach {
+            (
+                i,
+                style
+            ) in
             columns[i].style = style
         }
     }
@@ -276,7 +282,8 @@ extension Csv {
         maxLength: Int? = nil,
         exportType: ExportType = .png
     ) -> Csv {
-        var lines = str
+        var lines =
+            str
             .components(
                 separatedBy: CharacterSet(
                     charactersIn: "\r\n"
@@ -297,9 +304,7 @@ extension Csv {
                     omittingEmptySubsequences: false
                 )
                 .count
-            let columns = (
-                0..<count
-            ).map {
+            let columns = (0..<count).map {
                 String(
                     $0
                 )
@@ -316,7 +321,8 @@ extension Csv {
             i,
             line
         ) in lines.enumerated() {
-            var items = line
+            var items =
+                line
                 .split(
                     separator: Character(
                         separator
@@ -333,27 +339,30 @@ extension Csv {
                 let styles = Column.Style.random(
                     count: columnCount
                 )
-                columns = items.enumerated().map { (
-                    i,
-                    name
-                ) in
+                columns = items.enumerated().map {
+                    (
+                        i,
+                        name
+                    ) in
                     return Column(
                         name: name,
                         style: styles[i]
                     )
                 }
             } else {
-                items = items.enumerated().compactMap { (
-                    index,
-                    item
-                ) in
+                items = items.enumerated().compactMap {
+                    (
+                        index,
+                        item
+                    ) in
                     let str: String
                     if let maxLength = maxLength, item.count > maxLength {
-                        str = String(
-                            item.prefix(
-                                maxLength
-                            )
-                        ) + "..."
+                        str =
+                            String(
+                                item.prefix(
+                                    maxLength
+                                )
+                            ) + "..."
                     } else {
                         str = item
                     }
@@ -427,35 +436,30 @@ extension Csv {
         exportType: ExportType = .png
     ) throws -> Csv {
         // https://www.hackingwithswift.com/forums/swift/accessing-files-from-the-files-app/8203
-        let canAccess = file.startAccessingSecurityScopedResource()
+        _ = file.startAccessingSecurityScopedResource()
         defer {
             file.stopAccessingSecurityScopedResource()
         }
-        if canAccess {
-            let data = try Data(
-                contentsOf: file
-            )
-            let str: String
-            if let _str = String(
+        let data = try Data(
+            contentsOf: file
+        )
+        let str: String
+        if let _str = String(
+            data: data,
+            encoding: encoding
+        ) {
+            str = _str
+        } else {
+            throw Error.invalidLocalResource(
+                url: file.absoluteString,
                 data: data,
                 encoding: encoding
-            ) {
-                str = _str
-            } else {
-                throw Error.invalidLocalResource(
-                    url: file.absoluteString,
-                    data: data,
-                    encoding: encoding
-                )
-            }
-            return Csv.loadFromString(
-                str,
-                encoding: encoding,
-                separator: separator
             )
         }
-        throw Error.cannotAccessFile(
-            url: file.absoluteString
+        return Csv.loadFromString(
+            str,
+            encoding: encoding,
+            separator: separator
         )
     }
 
@@ -504,7 +508,8 @@ extension Csv {
                     fontSize: fontSize
                 )
             }
-            let exportable: any CsvExportable = try await withCheckedThrowingContinuation { continuation in
+            let exportable: any CsvExportable = try await withCheckedThrowingContinuation {
+                continuation in
                 queue.async { [weak self] in
                     guard let self = self else {
                         continuation.resume(
@@ -544,7 +549,8 @@ extension Csv {
                     fontSize: fontSize
                 )
             }
-            let exportable: PDFDocument = try await withCheckedThrowingContinuation { continuation in
+            let exportable: PDFDocument = try await withCheckedThrowingContinuation {
+                continuation in
                 queue.async { [weak self] in
                     guard let self = self else {
                         continuation.resume(

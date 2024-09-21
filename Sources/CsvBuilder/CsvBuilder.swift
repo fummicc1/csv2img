@@ -1,12 +1,12 @@
 //
 //  CsvBuilder.swift
-//  
+//
 //
 //  Created by Fumiya Tanaka on 2022/08/25.
 //
 
-import Foundation
 import Csv2Img
+import Foundation
 
 public enum CsvBuilderError: Error {
 }
@@ -22,18 +22,18 @@ public enum CsvBuilder {
             reflecting: composition
         )
         let children = mirror.children
-        
+
         var elements: [CsvCompositionElement] = []
         var rowSize: Int = 0
-        
+
         for child in children {
             let value = String(
                 describing: child.value
             )
-            guard let _ = child.label else {
+            guard child.label != nil else {
                 continue
             }
-            
+
             let rowExp = try NSRegularExpression(
                 pattern: rowRegex
             )
@@ -51,12 +51,14 @@ public enum CsvBuilder {
                             at: 1
                         ),
                         in: value
-                    ), let columnRange = Range(
-                        result.range(
-                            at: 2
-                        ),
-                        in: value
-                    ) {
+                    ),
+                        let columnRange = Range(
+                            result.range(
+                                at: 2
+                            ),
+                            in: value
+                        )
+                    {
                         let columnName = String(
                             value[columnRange]
                         )
@@ -86,7 +88,8 @@ public enum CsvBuilder {
         let styles = Csv.Column.Style.random(
             count: elements.count
         )
-        let columns: [Csv.Column] = elements
+        let columns: [Csv.Column] =
+            elements
             .map(
                 \.columnName
             )
@@ -97,7 +100,7 @@ public enum CsvBuilder {
                     style: styles[$0.offset]
                 )
             }
-        
+
         var rows: [Csv.Row] = []
         let flattedRows = elements.map(
             \.rows
@@ -118,7 +121,7 @@ public enum CsvBuilder {
                 row
             )
         }
-        
+
         return Csv(
             separator: ",",
             columns: columns,
@@ -126,14 +129,15 @@ public enum CsvBuilder {
             exportType: .pdf
         )
     }
-    
+
     static func trim(
         str: String
     ) -> [CsvCompositionElement.Row] {
         var str = str
         let head = "\""
         let tail = ","
-        str = str
+        str =
+            str
             .replacingOccurrences(
                 of: "[",
                 with: ""
@@ -153,17 +157,17 @@ public enum CsvBuilder {
         let rows = str.split(
             separator: "\n"
         )
-            .enumerated()
-            .map {
-                CsvCompositionElement.Row(
-                    index: $0.offset,
-                    value: String(
-                        $0.element.trimmingCharacters(
-                            in: .whitespaces
-                        )
+        .enumerated()
+        .map {
+            CsvCompositionElement.Row(
+                index: $0.offset,
+                value: String(
+                    $0.element.trimmingCharacters(
+                        in: .whitespaces
                     )
                 )
-            }
+            )
+        }
         return rows
     }
 }

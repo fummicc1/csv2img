@@ -5,9 +5,8 @@
 //  Created by Fumiya Tanaka on 2022/06/07.
 //
 
-import SwiftUI
 import CoreData
-
+import SwiftUI
 
 enum CsvImageAppError: Swift.Error {
     case invalidNetworkURL(url: String)
@@ -25,7 +24,6 @@ enum CsvImageAppError: Swift.Error {
         }
     }
 }
-
 
 @main
 struct Csv2ImageAppApp: App {
@@ -62,13 +60,16 @@ struct Csv2ImageAppApp: App {
                 .environment(
                     \.managedObjectContext, persistentController.viewContext
                 )
-            #if os(macOS)
-                .onReceive(NotificationCenter.default.publisher(for: Application.willUpdateNotification), perform: { _ in
-                    for window in Application.shared.windows {
-                        window.standardWindowButton(.zoomButton)?.isEnabled = false
-                    }
-                })
-            #endif
+                #if os(macOS)
+                    .onReceive(
+                        NotificationCenter.default.publisher(
+                            for: Application.willUpdateNotification),
+                        perform: { _ in
+                            for window in Application.shared.windows {
+                                window.standardWindowButton(.zoomButton)?.isEnabled = false
+                            }
+                        })
+                #endif
         }
     }
 }

@@ -31,7 +31,7 @@ let package = Package(
         .executable(
             name: "Csv2ImgCmd",
             targets: ["Csv2ImgCmd"]
-        )
+        ),
     ],
     dependencies: [
         // Dependencies declare other packages that this package depends on.
@@ -69,7 +69,7 @@ let package = Package(
                 .product(
                     name: "ArgumentParser",
                     package: "swift-argument-parser"
-                )
+                ),
             ]
         ),
     ]

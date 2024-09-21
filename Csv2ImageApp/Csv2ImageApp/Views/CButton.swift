@@ -27,11 +27,25 @@ struct CButton: View {
     }
 
     let content: () -> AnyView
-    var hPadding: CGFloat = 12
-    var vPadding: CGFloat = 8
+    var hPadding: CGFloat
+    var vPadding: CGFloat
     var role: Role = .normal
 
     let onPressed: () -> Void
+
+    init(
+        content: @escaping () -> AnyView,
+        hPadding: CGFloat = 12,
+        vPadding: CGFloat = 8,
+        role: Role,
+        onPressed: @escaping () -> Void
+    ) {
+        self.content = content
+        self.hPadding = hPadding
+        self.vPadding = vPadding
+        self.role = role
+        self.onPressed = onPressed
+    }
 
     var body: some View {
         Button {
@@ -92,6 +106,6 @@ struct CButton: View {
 
 struct CButton_Previews: PreviewProvider {
     static var previews: some View {
-        CButton.labeled("Hello", onPressed: { })
+        CButton.labeled("Hello", onPressed: {})
     }
 }

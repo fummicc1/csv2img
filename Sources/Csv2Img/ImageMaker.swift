@@ -1,19 +1,18 @@
-#if os(macOS)
-import AppKit
-typealias Image = NSImage
-typealias Color = NSColor
-typealias Rect = NSRect
-#elseif os(iOS)
-import UIKit
-typealias Image = UIImage
-typealias Color = UIColor
-typealias Rect = CGRect
-#endif
-
-import Foundation
 import CoreGraphics
 import CoreText
+import Foundation
 
+#if os(macOS)
+    import AppKit
+    typealias Image = NSImage
+    typealias Color = NSColor
+    typealias Rect = NSRect
+#elseif os(iOS)
+    import UIKit
+    typealias Image = UIImage
+    typealias Color = UIColor
+    typealias Rect = CGRect
+#endif
 
 public enum ImageMakingError: Error {
     /// Failed to get current `CGContext`
@@ -35,9 +34,9 @@ protocol ImageMakerType: Maker {
 
 /// `ImageMarker` generate png-image from ``Csv``.
 final class ImageMaker: ImageMakerType {
-    
+
     typealias Exportable = CGImage
-    
+
     init(
         maximumRowCount: Int?,
         fontSize: Double
@@ -45,19 +44,19 @@ final class ImageMaker: ImageMakerType {
         self.maximumRowCount = maximumRowCount
         self.fontSize = fontSize
     }
-    
+
     var maximumRowCount: Int?
-    
+
     var fontSize: Double
-    
+
     var latestOutput: CGImage?
-    
+
     func set(
         fontSize size: Double
     ) {
         self.fontSize = size
     }
-    
+
     /// generate png-image data from ``Csv``.
     func make(
         columns: [Csv.Column],
@@ -66,7 +65,7 @@ final class ImageMaker: ImageMakerType {
             Double
         ) -> Void
     ) throws -> CGImage {
-        
+
         let length = min(
             maximumRowCount ?? rows.count,
             rows.count
@@ -74,11 +73,11 @@ final class ImageMaker: ImageMakerType {
         let rows = rows[..<length].map {
             $0
         }
-        
+
         let horizontalSpace = 8
         let verticalSpace = 12
         let textSizeList =
-        rows
+            rows
             .flatMap({
                 $0.values
             })
@@ -87,8 +86,7 @@ final class ImageMaker: ImageMakerType {
                     fontSize: fontSize
                 )
             })
-        +
-        columns
+            + columns
             .map({
                 $0.name
             })
@@ -97,62 +95,59 @@ final class ImageMaker: ImageMakerType {
                     fontSize: fontSize
                 )
             })
-        
+
         let longestHeight = textSizeList.map({
             $0.height
         }).sorted().reversed()[0]
         let longestWidth = textSizeList.map({
             $0.width
         }).sorted().reversed()[0]
-        let width = (
-            Int(
+        let width =
+            (Int(
                 longestWidth
-            ) + horizontalSpace
-        ) * columns.count
-        let height = (
-            rows.count + 1
-        ) * (
-            Int(
+            ) + horizontalSpace) * columns.count
+        let height =
+            (rows.count + 1)
+            * (Int(
                 longestHeight
-            ) + verticalSpace
-        )
-        
-#if os(macOS)
-        let canvas = NSImage(
-            size: NSSize(
-                width: width,
-                height: height
+            ) + verticalSpace)
+
+        #if os(macOS)
+            let canvas = NSImage(
+                size: NSSize(
+                    width: width,
+                    height: height
+                )
             )
-        )
-        canvas.lockFocus()
-        guard let context = NSGraphicsContext.current?.cgContext else {
-            throw ImageMakingError.noContextAvailable
-        }
-#elseif os(iOS)
-        UIGraphicsBeginImageContext(
-            CGSize(
-                width: width,
-                height: height
+            canvas.lockFocus()
+            guard let context = NSGraphicsContext.current?.cgContext else {
+                throw ImageMakingError.noContextAvailable
+            }
+        #elseif os(iOS)
+            UIGraphicsBeginImageContext(
+                CGSize(
+                    width: width,
+                    height: height
+                )
             )
-        )
-        guard let context = UIGraphicsGetCurrentContext() else {
-            throw ImageMakingError.noContextAvailable
-        }
-#endif
-        
+            guard let context = UIGraphicsGetCurrentContext() else {
+                throw ImageMakingError.noContextAvailable
+            }
+        #endif
+
         defer {
-#if os(macOS)
-            canvas.unlockFocus()
-#elseif os(iOS)
-            UIGraphicsEndImageContext()
-#endif
+            #if os(macOS)
+                canvas.unlockFocus()
+            #elseif os(iOS)
+                UIGraphicsEndImageContext()
+            #endif
         }
-        
+
         context.setFillColor(
             CGColor(
-                red: 250/255,
-                green: 250/255,
-                blue: 250/255,
+                red: 250 / 255,
+                green: 250 / 255,
+                blue: 250 / 255,
                 alpha: 1
             )
         )
@@ -165,42 +160,44 @@ final class ImageMaker: ImageMakerType {
                 )
             )
         )
-        
+
         context.setLineWidth(
             1
         )
-#if os(macOS)
-        context.setStrokeColor(
-            Color.separatorColor.cgColor
-        )
-#elseif os(iOS)
-        context.setStrokeColor(
-            Color.separator.cgColor
-        )
-#endif
+        #if os(macOS)
+            context.setStrokeColor(
+                Color.separatorColor.cgColor
+            )
+        #elseif os(iOS)
+            context.setStrokeColor(
+                Color.separator.cgColor
+            )
+        #endif
         context.setFillColor(
             CGColor(
-                red: 22/255,
-                green: 22/255,
-                blue: 22/255,
+                red: 22 / 255,
+                green: 22 / 255,
+                blue: 22 / 255,
                 alpha: 1
             )
         )
-        
+
         let columnCount = columns.count
         let rowCount = rows.count + 1
-        let rowHeight = Int(
-            height
-        ) / rowCount
-        let columnWidth = Int(
-            width
-        ) / columnCount
-        
+        let rowHeight =
+            Int(
+                height
+            ) / rowCount
+        let columnWidth =
+            Int(
+                width
+            ) / columnCount
+
         let completeCount: Double = Double(
             rowCount + columnCount
         )
         var completeFraction: Double = 0
-        
+
         for i in 0..<columnCount {
             context.move(
                 to: CGPoint(
@@ -233,7 +230,7 @@ final class ImageMaker: ImageMakerType {
                 )
             )
         }
-        
+
         for (
             i,
             column
@@ -245,24 +242,27 @@ final class ImageMaker: ImageMakerType {
                         ofSize: fontSize,
                         weight: .bold
                     ),
-                    .foregroundColor: column.style.displayableColor()
+                    .foregroundColor: column.style.displayableColor(),
                 ]
             )
             let size = str.string.getSize(
                 fontSize: fontSize
             )
-            let originX = i * columnWidth + columnWidth / 2 - Int(
-                size.width
-            ) / 2
-#if os(macOS)
-            let originY = height - Int(
-                size.height
-            ) / 2 - rowHeight / 2
-#elseif os(iOS)
-            let originY = Int(
-                size.height
-            ) / 2
-#endif
+            let originX =
+                i * columnWidth + columnWidth / 2 - Int(
+                    size.width
+                ) / 2
+            #if os(macOS)
+                let originY =
+                    height - Int(
+                        size.height
+                    ) / 2 - rowHeight / 2
+            #elseif os(iOS)
+                let originY =
+                    Int(
+                        size.height
+                    ) / 2
+            #endif
             context.saveGState()
             str._draw(
                 at: Rect(
@@ -282,7 +282,7 @@ final class ImageMaker: ImageMakerType {
                 completeFraction / completeCount
             )
         }
-        
+
         for (
             var i,
             row
@@ -302,26 +302,27 @@ final class ImageMaker: ImageMakerType {
                         .font: Font.systemFont(
                             ofSize: fontSize
                         ),
-                        .foregroundColor: style.displayableColor()
+                        .foregroundColor: style.displayableColor(),
                     ]
                 )
                 let size = str.string.getSize(
                     fontSize: fontSize
                 )
-                let originX = j * columnWidth + columnWidth / 2 - Int(
-                    size.width
-                ) / 2
-#if os(macOS)
-                let originY = height - (
-                    i+1
-                ) * rowHeight + Int(
-                    size.height
-                ) / 2
-#elseif os(iOS)
-                let originY = i * rowHeight + rowHeight / 2 - Int(
-                    size.height
-                ) / 2
-#endif
+                let originX =
+                    j * columnWidth + columnWidth / 2 - Int(
+                        size.width
+                    ) / 2
+                #if os(macOS)
+                    let originY =
+                        height - (i + 1) * rowHeight + Int(
+                            size.height
+                        ) / 2
+                #elseif os(iOS)
+                    let originY =
+                        i * rowHeight + rowHeight / 2 - Int(
+                            size.height
+                        ) / 2
+                #endif
                 context.saveGState()
                 str._draw(
                     at: Rect(
@@ -353,4 +354,3 @@ final class ImageMaker: ImageMakerType {
         return image
     }
 }
-

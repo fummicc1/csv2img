@@ -17,13 +17,13 @@ public final class AnyCsvExportable: CsvExportable {
 }
 
 extension CGImage: CsvExportable {
-    
+
 }
 extension Data: CsvExportable {
-    
+
 }
 extension PDFDocument: @unchecked Sendable {
 }
 extension PDFDocument: CsvExportable {
-    
+
 }

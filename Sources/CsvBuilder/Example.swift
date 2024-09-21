@@ -4,13 +4,13 @@ struct ExampleComposition: CsvComposition {
         column: "age"
     )
     var ages: [String]
-    
+
     @CsvRows(
         column: "name"
     )
     var names: [String]
-    
+
     init() {
-        
+
     }
 }

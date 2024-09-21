@@ -8,60 +8,63 @@
 import SwiftUI
 
 #if os(iOS)
-struct SelectCsvView_iOS: View {
+    struct SelectCsvView_iOS: View {
 
-    @StateObject var model: SelectCsvModel
+        @StateObject var model: SelectCsvModel
 
-    var body: some View {
-        BrandingFrameView {
-            VStack {
-                Spacer()
-                CButton.labeled("Select Csv File") {
-                    Task {
-                        await model.selectFileOnDisk()
-                    }
-                }
-                Divider().padding()
-                CText("Alternately, please input csv file url on the Internet.")
-                HStack {
-                    TextField("example: https://bit.ly/3c2leMC", text: $model.networkUrlText)
-                        .textFieldStyle(.roundedBorder)
+        var body: some View {
+            BrandingFrameView {
+                VStack {
                     Spacer()
-                    if !model.networkUrlText.isEmpty {
-                        CButton.icon(systemName: "xmark") {
-                            model.networkUrlText = ""
-                        }
-                    }
-                    CButton.labeled("OK") {
+                    CButton.labeled("Select Csv File") {
                         Task {
-                            await model.selectFileOnTheInternet()
+                            await model.selectFileOnDisk()
                         }
                     }
-                    Spacer().frame(width: 16)
+                    Divider().padding()
+                    CText("Alternately, please input csv file url on the Internet.")
+                    HStack {
+                        TextField("example: https://bit.ly/3c2leMC", text: $model.networkUrlText)
+                            .textFieldStyle(.roundedBorder)
+                        Spacer()
+                        if !model.networkUrlText.isEmpty {
+                            CButton.icon(systemName: "xmark") {
+                                model.networkUrlText = ""
+                            }
+                        }
+                        CButton.labeled("OK") {
+                            Task {
+                                await model.selectFileOnTheInternet()
+                            }
+                        }
+                        Spacer().frame(width: 16)
+                    }
+                    Spacer()
+                    Divider()
+                    CText("Saved data is stored in Folder App.", isBold: true)
+                    CButton.labeled("Open Folder App") {
+                        model.openFolderApp()
+                    }
+                    Spacer().frame(height: 40)
                 }
-                Spacer()
-                Divider()
-                CText("Saved data is stored in Folder App.", isBold: true)
-                CButton.labeled("Open Folder App") {
-                    model.openFolderApp()
-                }
-                Spacer().frame(height: 40)
+                .padding()
             }
-            .padding()
+            .alert(
+                "Error", isPresented: $model.error.isNotNil(),
+                actions: {
+                    Button("Close") {
+                        model.error = nil
+                    }
+                },
+                message: {
+                    Text(model.error ?? "")
+                })
         }
-        .alert("Error", isPresented: $model.error.isNotNil(), actions: {
-            Button("Close") {
-                model.error = nil
-            }
-        }, message: {
-            Text(model.error ?? "")
-        })
     }
-}
 
-struct SelectCsvView_iOS_Previews: PreviewProvider {
-    static var previews: some View {
-        SelectCsvView_iOS(model: SelectCsvModel())
+    struct SelectCsvView_iOS_Previews: PreviewProvider {
+        static var previews: some View {
+            SelectCsvView_iOS(model: SelectCsvModel())
+        }
     }
-}
 #endif

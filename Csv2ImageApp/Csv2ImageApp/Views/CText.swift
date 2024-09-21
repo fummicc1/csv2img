@@ -14,7 +14,10 @@ struct CText: View {
     let font: Font
     let foregroundColor: Color
 
-    init(_ text: String, isBold: Bool = true, font: Font = .body, foregroundColor: Color = Asset.textColor.swiftUIColor) {
+    init(
+        _ text: String, isBold: Bool = true, font: Font = .body,
+        foregroundColor: Color = Asset.textColor.swiftUIColor
+    ) {
         self.text = text
         self.isBold = isBold
         self.font = font

@@ -5,8 +5,8 @@
 //  Created by Fumiya Tanaka on 2022/06/20.
 //
 
-import Foundation
 import CoreData
+import Foundation
 
 class HistoryModel: ObservableObject {
     let context: NSManagedObjectContext
@@ -37,7 +37,9 @@ class HistoryModel: ObservableObject {
             if let updated = notification.userInfo?[NSUpdatedObjectsKey] as? Set<CsvOutput> {
                 for updatedElement in updated {
                     Task {
-                        if let i = await self.histories.firstIndex(where: { $0.objectID == updatedElement.objectID }) {
+                        if let i = await self.histories.firstIndex(where: {
+                            $0.objectID == updatedElement.objectID
+                        }) {
                             await MainActor.run(body: {
                                 self.update(index: i, value: updatedElement)
                             })
@@ -56,6 +58,5 @@ class HistoryModel: ObservableObject {
     func save() throws {
         try context.save()
     }
-
 
 }

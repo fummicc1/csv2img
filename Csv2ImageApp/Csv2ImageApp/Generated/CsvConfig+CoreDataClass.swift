@@ -6,8 +6,8 @@
 //
 //
 
-import Foundation
 import CoreData
+import Foundation
 
 @objc(CsvConfig)
 public class CsvConfig: NSManagedObject {
