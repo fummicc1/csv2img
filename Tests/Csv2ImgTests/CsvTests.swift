@@ -2,60 +2,66 @@ import XCTest
 
 @testable import Csv2Img
 
-final class Csv2ImgTests: XCTestCase {
-
-    // MARK: - Setup and Teardown
-
-    override func setUp() {
-        super.setUp()
-        // Set up any necessary test fixtures here
-    }
-
-    override func tearDown() {
-        // Clean up any resources after each test
-        super.tearDown()
-    }
-
-    // MARK: - Test Cases
-
-    func testCsvParsing() throws {
-        // Assuming you have a CSV parsing function in your Csv2Img module
-        let csvString = "Name,Age\nJohn,30\nJane,25"
-        let expectedResult = [
-            ["Name": "John", "Age": "30"],
-            ["Name": "Jane", "Age": "25"],
+final class Csv2Tests: XCTestCase {
+    func testCsvParseFromString() async {
+        let input = """
+            name,beginnerValue,middleValue,expertValue,unit
+            Requirements Analysis,1.00,1.00,1.00,H
+            Concept Design,0.10,0.50,1.00,H
+            Detail Design,0.10,0.50,1.00,page
+            Graphic Design,0.00,0.10,0.25,item
+            HTML Coding,50.00,80.00,100.00,step
+            Review,1.00,1.00,1.00,H
+            Test,0.50,1.00,1.00,H
+            Release,1.00,1.00,1.00,H
+            """
+        let styles = [
+            Csv.Column.Style(color: Color.red.cgColor, applyOnlyColumn: false),
+            Csv.Column.Style(color: Color.black.cgColor, applyOnlyColumn: false),
+            Csv.Column.Style(color: Color.green.cgColor, applyOnlyColumn: false),
+            Csv.Column.Style(color: Color.blue.cgColor, applyOnlyColumn: false),
+            Csv.Column.Style(color: Color.yellow.cgColor, applyOnlyColumn: false),
         ]
-
-        // Replace this with your actual CSV parsing function
-			let result = Csv2Img
-
-        XCTAssertEqual(result, expectedResult, "CSV parsing result does not match expected output")
+        let csv = Csv.loadFromString(input, styles: styles)
+        let actualColumns = await csv.columns
+        let actualRows = await csv.rows
+        XCTAssertEqual(
+            actualColumns,
+            [
+                Csv.Column(
+                    name: "name",
+                    style: styles[0]
+                ),
+                Csv.Column(
+                    name: "beginnerValue",
+                    style: styles[1]
+                ),
+                Csv.Column(
+                    name: "middleValue",
+                    style: styles[2]
+                ),
+                Csv.Column(
+                    name: "expertValue",
+                    style: styles[3]
+                ),
+                Csv.Column(
+                    name: "unit",
+                    style: styles[4]
+                ),
+            ]
+        )
+        XCTAssertEqual(
+            actualRows,
+            [
+                .init(index: 1, values: ["Requirements Analysis", "1.00", "1.00", "1.00", "H"]),
+                .init(index: 2, values: ["Concept Design", "0.10", "0.50", "1.00", "H"]),
+                .init(index: 3, values: ["Detail Design", "0.10", "0.50", "1.00", "page"]),
+                .init(index: 4, values: ["Graphic Design", "0.00", "0.10", "0.25", "item"]),
+                .init(index: 5, values: ["HTML Coding", "50.00", "80.00", "100.00", "step"]),
+                .init(index: 6, values: ["Review", "1.00", "1.00", "1.00", "H"]),
+                .init(index: 7, values: ["Test", "0.50", "1.00", "1.00", "H"]),
+                .init(index: 8, values: ["Release", "1.00", "1.00", "1.00", "H"]),
+            ]
+        )
     }
-
-    func testImageGeneration() throws {
-        // Assuming you have an image generation function in your Csv2Img module
-        let csvData = [
-            ["Name": "John", "Age": "30"],
-            ["Name": "Jane", "Age": "25"],
-        ]
-
-        // Replace this with your actual image generation function
-        let image = Csv2Img.generateImage(from: csvData)
-
-        XCTAssertNotNil(image, "Generated image should not be nil")
-        // Add more assertions to check the properties of the generated image
-    }
-
-    func testErrorHandling() {
-        // Test how your module handles invalid input
-        let invalidCsvString = "Name,Age\nJohn,30\nJane"
-
-        // Replace this with your actual CSV parsing function
-        XCTAssertThrowsError(try Csv2Img.parseCsv(invalidCsvString)) { error in
-            XCTAssertEqual(
-                error as? Csv2Img.ParsingError, .invalidFormat, "Expected invalidFormat error")
-        }
-    }
-
-    // Add more test cases as needed
 }

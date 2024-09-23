@@ -280,7 +280,8 @@ extension Csv {
         encoding: String.Encoding = .utf8,
         separator: String = ",",
         maxLength: Int? = nil,
-        exportType: ExportType = .png
+        exportType: ExportType = .png,
+        styles: [Csv.Column.Style]? = nil
     ) -> Csv {
         var lines =
             str
@@ -336,9 +337,11 @@ extension Csv {
                 })
             if i == 0 {
                 let columnCount = items.count
-                let styles = Column.Style.random(
-                    count: columnCount
-                )
+                let styles =
+                    styles
+                    ?? Column.Style.random(
+                        count: columnCount
+                    )
                 columns = items.enumerated().map {
                     (
                         i,

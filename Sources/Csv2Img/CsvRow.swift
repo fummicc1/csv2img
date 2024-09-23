@@ -25,7 +25,7 @@ extension Csv {
     ///
     /// Because this class is usually initialized via ``Csv``, you do not have to take care about ``Row`` in detail.
     ///
-    public struct Row {
+    public struct Row: Sendable, Equatable {
 
         public init(
             index: Int,
