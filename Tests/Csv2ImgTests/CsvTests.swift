@@ -27,7 +27,7 @@ final class Csv2ImgTests: XCTestCase {
         ]
 
         // Replace this with your actual CSV parsing function
-        let result = Csv2Img.parseCsv(csvString)
+			let result = Csv2Img
 
         XCTAssertEqual(result, expectedResult, "CSV parsing result does not match expected output")
     }
