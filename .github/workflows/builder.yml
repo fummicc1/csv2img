@@ -25,12 +25,12 @@ jobs:
           set -o pipefail && \
           xcodebuild -scheme CsvBuilder \
           clean build test \
-          -destination 'platform=OS X,arch=x86_64' \
+          -destination 'platform=OS X,arch=arm64' \
           | xcbeautify
       - name: Build and Test (iOS)
         run: |
           set -o pipefail && \
           xcodebuild -scheme CsvBuilder \
           clean build test \
-          -destination 'platform=iOS Simulator,name=iPhone 13' \
+          -destination 'platform=iOS Simulator,name=iPhone 15' \
           | xcbeautify
