@@ -4,6 +4,14 @@ import XCTest
 class ImageMakerTests: XCTestCase {
     func testMakeImage() async throws {
         // Given
+        let packageRootPath = URL(fileURLWithPath: #file).pathComponents
+            .prefix(while: { $0 != "Tests" }).joined(
+                separator: "/"
+            ).dropFirst()
+        let fileURLPath = String(packageRootPath + "/Fixtures/outputs/category.png")
+        let fileURL = URL(fileURLWithPath: fileURLPath)
+        XCTAssertTrue(FileManager.default.fileExists(atPath: fileURL.path))
+        let expected = try Data(contentsOf: fileURL)
         let csv = Csv.loadFromString(
             """
             name,beginnerValue,middleValue,expertValue,unit
@@ -27,14 +35,6 @@ class ImageMakerTests: XCTestCase {
         ) { double in
         }
         // Then
-        let packageRootPath = URL(fileURLWithPath: #file).pathComponents
-            .prefix(while: { $0 != "Tests" }).joined(
-                separator: "/"
-            ).dropFirst()
-        let fileURLPath = String(packageRootPath + "/Fixtures/outputs/category.png")
-        let fileURL = URL(fileURLWithPath: fileURLPath)
-        XCTAssertTrue(FileManager.default.fileExists(atPath: fileURL.path))
-        let expected = try Data(contentsOf: fileURL)
         XCTAssertEqual(image.convertToData(), expected)
     }
 }
