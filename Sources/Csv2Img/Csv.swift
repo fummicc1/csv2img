@@ -189,7 +189,7 @@ extension Csv {
     /**
      `ExportType` is a enum that expresses
      */
-    public enum ExportType: String, Hashable, CaseIterable {
+    public enum ExportType: String, Hashable, CaseIterable, Sendable {
         /// `png` output
         case png
         /// `pdf` output (Work In Progress)
