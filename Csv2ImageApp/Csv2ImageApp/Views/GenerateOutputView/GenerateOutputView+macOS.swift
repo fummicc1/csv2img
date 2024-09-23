@@ -26,25 +26,56 @@ import SwiftUI
         @Environment(\.dismiss) var dismiss
 
         var body: some View {
-            VStack {
-                GeneratePreviewView(
-                    model: model,
-                    size: .constant(
-                        .init(
-                            width: 320,
-                            height: 240
+            NavigationView {
+                HSplitView {
+                    List {
+                        Section("Settings") {
+                            Picker("Encoding", selection: $model.encoding) {
+                                ForEach(availableEncodingType, id: \.self) { encoding in
+                                    Text(encoding.description).tag(encoding)
+                                }
+                            }
+                            // Add more settings here as needed
+                        }
+                    }
+                    .listStyle(SidebarListStyle())
+                    .frame(minWidth: 200, idealWidth: 250, maxWidth: 300)
+
+                    VStack {
+                        GeneratePreviewView(
+                            model: model,
+                            size: .constant(
+                                .init(
+                                    width: 480,
+                                    height: 360
+                                )
+                            )
                         )
-                    )
-                )
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+
+                        HStack {
+                            Button("Generate") {
+                                // Add generation logic here
+                            }
+                            .keyboardShortcut(.defaultAction)
+
+                            Button("Save As...") {
+                                // Add save logic here
+                            }
+                        }
+                        .padding()
+                    }
+                }
             }
+            .navigationTitle("Generate Output")
             .toolbar {
-                CButton.labeled(
-                    "cancel",
-                    onPressed: {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") {
                         dismiss()
                     }
-                )
+                }
             }
+            .frame(minWidth: 800, minHeight: 600)
         }
     }
 

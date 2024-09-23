@@ -20,43 +20,41 @@ struct GeneratePreviewView: View {
 
     #if os(iOS)
         var body: some View {
-            Group {
-                if let cgImage = model.state.cgImage, model.state.exportType == .png {
-                    let image = UIImage(cgImage: cgImage)
-                    ScrollView {
-                        ScrollView(
-                            .horizontal,
-                            content: {
-                                Image(uiImage: image)
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fit)
-                            })
+            GeometryReader { geometry in
+                Group {
+                    if let cgImage = model.state.cgImage, model.state.exportType == .png {
+                        let image = UIImage(cgImage: cgImage)
+                        ScrollView([.vertical, .horizontal], showsIndicators: true) {
+                            Image(uiImage: image)
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .frame(width: geometry.size.width, height: geometry.size.height)
+                        }
+                    } else if let document = model.state.pdfDocument, model.state.exportType == .pdf {
+                        PdfDocumentView(document: document, size: $size)
                     }
-                    .frame(width: size.width, height: size.height)
-                } else if let document = model.state.pdfDocument, model.state.exportType == .pdf {
-                    PdfDocumentView(document: document, size: _size)
                 }
             }
+            .edgesIgnoringSafeArea(.all)
         }
     #elseif os(macOS)
         var body: some View {
-            Group {
-                if let cgImage = model.state.cgImage, model.state.exportType == .png {
-                    let image = NSImage(
-                        cgImage: cgImage,
-                        size: CGSize(width: cgImage.width, height: cgImage.height)
-                    )
-                    ScrollView(content: {
-                        ScrollView(
-                            .horizontal,
-                            content: {
-                                Image(nsImage: image)
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fit)
-                            })
-                    })
-                } else if let document = model.state.pdfDocument, model.state.exportType == .pdf {
-                    PdfDocumentView(document: document, size: _size)
+            GeometryReader { geometry in
+                Group {
+                    if let cgImage = model.state.cgImage, model.state.exportType == .png {
+                        let image = NSImage(
+                            cgImage: cgImage,
+                            size: CGSize(width: cgImage.width, height: cgImage.height)
+                        )
+                        ScrollView([.vertical, .horizontal], showsIndicators: true) {
+                            Image(nsImage: image)
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .frame(width: geometry.size.width, height: geometry.size.height)
+                        }
+                    } else if let document = model.state.pdfDocument, model.state.exportType == .pdf {
+                        PdfDocumentView(document: document, size: $size)
+                    }
                 }
             }
         }
