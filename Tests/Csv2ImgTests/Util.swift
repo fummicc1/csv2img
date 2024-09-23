@@ -18,5 +18,6 @@ func getRelativeFilePathFromPackageSource(path: String) -> URL {
         FileManager.default.fileExists(atPath: fileURL.path),
         "\(fileURLPath) does not exists."
     )
+    print("fileURL.absoluteString", fileURL.absoluteString)
     return fileURL
 }
