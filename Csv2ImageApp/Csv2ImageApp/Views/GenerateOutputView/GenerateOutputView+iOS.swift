@@ -24,125 +24,78 @@ import SwiftUI
         ]
 
         var body: some View {
-            NavigationStack {
-                loadedContent.id(model.state.isLoading)
-                    .toolbar {
-                        ToolbarItem(placement: .primaryAction) {
-                            Button("Save") {
-                                succeedSavingOutput = model.save()
-                            }
+            NavigationView {
+                Form {
+                    Section(header: Text("Export Settings")) {
+                        Picker("Export Type", selection: Binding(
+                            get: { model.state.exportType },
+                            set: { model.update(keyPath: \.exportType, value: $0) }
+                        )) {
+                            Text("PDF").tag(Csv.ExportType.pdf)
+                            Text("PNG").tag(Csv.ExportType.png)
                         }
-                    }
-                    .toolbar {
-                        ToolbarItem(placement: .topBarLeading) {
-                            Button("Back") {
-                                backToPreviousPage = true
-                            }
-                        }
-                    }
-                    .alert("Complete Saving!", isPresented: $succeedSavingOutput) {
-                        CButton.labeled("Back") {
-                            withAnimation {
-                                backToPreviousPage = true
-                            }
-                        }
-                        if let savedURL = model.savedURL, Application.shared.canOpenURL(savedURL) {
-                            CButton.labeled("Open") {
-                                Application.shared.open(savedURL)
-                            }
-                        }
-                    }
-            }
-        }
+                        .pickerStyle(SegmentedPickerStyle())
 
-        var loadedContent: some View {
-            VStack {
-                List {
-                    Section("Export Type") {
-                        Picker(
-                            selection: Binding(
-                                get: {
-                                    model.state.exportType
-                                },
-                                set: { exportType in
-                                    model.update(keyPath: \.exportType, value: exportType)
-                                })
-                        ) {
-                            CText("PDF")
-                                .tag(Csv.ExportType.pdf)
-                            CText("PNG")
-                                .tag(Csv.ExportType.png)
-                        } label: {
-                            EmptyView()
-                        }
-                        .pickerStyle(.segmented)
-                    }
-                    Section("Encoding") {
-                        Menu(model.state.encoding.description) {
+                        Picker("Encoding", selection: Binding(
+                            get: { model.state.encoding },
+                            set: { model.update(keyPath: \.encoding, value: $0) }
+                        )) {
                             ForEach(availableEncodingType, id: \.self) { encoding in
-                                Button {
-                                    model.update(keyPath: \.encoding, value: encoding)
-                                } label: {
-                                    Text(encoding.description)
-                                }
+                                Text(encoding.description).tag(encoding)
                             }
                         }
-                        .fixedSize()
-                    }
-                    Section("PDF Size") {
-                        Menu(model.state.size.rawValue) {
-                            ForEach(PdfSize.allCases.indices, id: \.self) { index in
-                                let size = PdfSize.allCases[index]
-                                Button {
-                                    model.update(keyPath: \.size, value: size)
-                                } label: {
-                                    Text(size.rawValue)
-                                }
-                            }
-                        }
-                        .fixedSize()
-                    }
-                    Section("PDF Orientation") {
-                        Menu(model.state.orientation.rawValue) {
-                            ForEach(PdfSize.Orientation.allCases.indices, id: \.self) { index in
-                                let orientation = PdfSize.Orientation.allCases[index]
-                                Button {
-                                    model.update(keyPath: \.orientation, value: orientation)
-                                } label: {
-                                    Text(orientation.rawValue)
-                                }
-                            }
-                        }
-                        .fixedSize()
-                    }
-                }
-                .background(Asset.lightAccentColor.swiftUIColor)
-                .frame(maxHeight: 200)
 
-                GeometryReader { proxy in
-                    VStack(alignment: .center) {
+                        Picker("PDF Size", selection: Binding(
+                            get: { model.state.size },
+                            set: { model.update(keyPath: \.size, value: $0) }
+                        )) {
+                            ForEach(PdfSize.allCases, id: \.self) { size in
+                                Text(size.rawValue).tag(size)
+                            }
+                        }
+
+                        Picker("PDF Orientation", selection: Binding(
+                            get: { model.state.orientation },
+                            set: { model.update(keyPath: \.orientation, value: $0) }
+                        )) {
+                            ForEach(PdfSize.Orientation.allCases, id: \.self) { orientation in
+                                Text(orientation.rawValue).tag(orientation)
+                            }
+                        }
+                    }
+
+                    Section(header: Text("Preview")) {
                         GeneratePreviewView(
                             model: model,
-                            size: .constant(
-                                CGSize(
-                                    width: proxy.size.width,
-                                    height: proxy.size.height
-                                )
-                            )
+                            size: .constant(CGSize(width: UIScreen.main.bounds.width - 32, height: 300))
                         )
+                        .frame(height: 300)
+                        .background(Asset.lightAccentColor.swiftUIColor)
+                        .cornerRadius(8)
                     }
-
                 }
-                .background(Asset.lightAccentColor.swiftUIColor)
+                .navigationBarTitle("Generate Output", displayMode: .inline)
+                .navigationBarItems(
+                    leading: Button("Back") { backToPreviousPage = true },
+                    trailing: Button("Save") { succeedSavingOutput = model.save() }
+                )
             }
-        }
-
-        var loadingContent: some View {
-            ProgressView {
-                CText("Loading...", font: .largeTitle)
+            .alert(isPresented: $succeedSavingOutput) {
+                Alert(
+                    title: Text("Complete Saving!"),
+                    message: nil,
+                    primaryButton: .default(Text("Back")) {
+                        withAnimation {
+                            backToPreviousPage = true
+                        }
+                    },
+                    secondaryButton: .default(Text("Open")) {
+                        if let savedURL = model.savedURL, Application.shared.canOpenURL(savedURL) {
+                            Application.shared.open(savedURL)
+                        }
+                    }
+                )
             }
-            .padding()
-            .progressViewStyle(.linear)
         }
     }
 #endif

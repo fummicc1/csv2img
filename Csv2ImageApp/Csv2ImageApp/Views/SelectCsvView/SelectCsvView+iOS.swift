@@ -13,41 +13,46 @@ import SwiftUI
         @StateObject var model: SelectCsvModel
 
         var body: some View {
-            BrandingFrameView {
-                VStack {
-                    Spacer()
-                    CButton.labeled("Select Csv File") {
-                        Task {
-                            await model.selectFileOnDisk()
+            NavigationView {
+                Form {
+                    Section(header: Text("Select CSV File")) {
+                        Button(action: {
+                            Task {
+                                await model.selectFileOnDisk()
+                            }
+                        }) {
+                            Label("Choose File", systemImage: "doc")
                         }
                     }
-                    Divider().padding()
-                    CText("Alternately, please input csv file url on the Internet.")
-                    HStack {
-                        TextField("example: https://bit.ly/3c2leMC", text: $model.networkUrlText)
-                            .textFieldStyle(.roundedBorder)
-                        Spacer()
-                        if !model.networkUrlText.isEmpty {
-                            CButton.icon(systemName: "xmark") {
-                                model.networkUrlText = ""
+
+                    Section(header: Text("Or Enter URL")) {
+                        HStack {
+                            TextField("https://example.com/file.csv", text: $model.networkUrlText)
+                            if !model.networkUrlText.isEmpty {
+                                Button(action: {
+                                    model.networkUrlText = ""
+                                }) {
+                                    Image(systemName: "xmark.circle.fill")
+                                        .foregroundColor(.secondary)
+                                }
                             }
                         }
-                        CButton.labeled("OK") {
+                        Button("Load from URL") {
                             Task {
                                 await model.selectFileOnTheInternet()
                             }
                         }
-                        Spacer().frame(width: 16)
                     }
-                    Spacer()
-                    Divider()
-                    CText("Saved data is stored in Folder App.", isBold: true)
-                    CButton.labeled("Open Folder App") {
-                        model.openFolderApp()
+                    
+                    Section(footer: Text("Saved data is stored in Folder App.").font(.footnote)) {
+                        Button(action: {
+                            model.openFolderApp()
+                        }) {
+                            Label("Open Folder App", systemImage: "folder")
+                        }
                     }
-                    Spacer().frame(height: 40)
                 }
-                .padding()
+                .navigationTitle("Select CSV")
             }
             .alert(
                 "Error", isPresented: $model.error.isNotNil(),
