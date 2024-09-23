@@ -69,6 +69,7 @@
 		D35DB0D3285FA754009C252D /* CsvViewer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CsvViewer.swift; sourceTree = "<group>"; };
 		D35DB0D5285FADA5009C252D /* HistoryModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryModel.swift; sourceTree = "<group>"; };
 		D3736B27286393D8004C20C8 /* Csv2Img */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = Csv2Img; path = ..; sourceTree = "<group>"; };
+		D39EA3632CA139E300F20514 /* .editorconfig */ = {isa = PBXFileReference; lastKnownFileType = text; path = .editorconfig; sourceTree = "<group>"; };
 		D3A4EB14284F11A3002E3499 /* Csv2ImageApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Csv2ImageApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D3A4EB17284F11A3002E3499 /* Csv2ImageAppApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Csv2ImageAppApp.swift; sourceTree = "<group>"; };
 		D3A4EB19284F11A3002E3499 /* SelectCsvView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectCsvView.swift; sourceTree = "<group>"; };
@@ -148,6 +149,7 @@
 		D3A4EB0B284F11A3002E3499 = {
 			isa = PBXGroup;
 			children = (
+				D39EA3632CA139E300F20514 /* .editorconfig */,
 				D3736B26286393D8004C20C8 /* Packages */,
 				D3A4EB16284F11A3002E3499 /* Csv2ImageApp */,
 				D3A4EB28284F11A4002E3499 /* Csv2ImageAppTests */,

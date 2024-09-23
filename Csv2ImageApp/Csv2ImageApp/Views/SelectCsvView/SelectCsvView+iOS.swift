@@ -43,7 +43,7 @@ import SwiftUI
                             }
                         }
                     }
-                    
+
                     Section(footer: Text("Saved data is stored in Folder App.").font(.footnote)) {
                         Button(action: {
                             model.openFolderApp()

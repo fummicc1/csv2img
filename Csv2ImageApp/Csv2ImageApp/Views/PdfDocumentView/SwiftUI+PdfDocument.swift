@@ -10,8 +10,8 @@ import SwiftUI
 
 struct PdfDocumentView: ViewRepresentable {
 
-    let document: PDFDocument
-    @Binding var size: CGSize
+    @Binding var document: PDFDocument?
+    let size: CGSize
 
     private let view: PDFView = .init()
 
@@ -25,6 +25,9 @@ struct PdfDocumentView: ViewRepresentable {
         }
 
         func updateNSView(_ nsView: PDFView, context: Context) {
+            nsView.document = document
+            nsView.setFrameSize(size)
+            nsView.displayMode = .twoUpContinuous
         }
     #elseif os(iOS)
         typealias UIViewType = PDFView
@@ -37,12 +40,21 @@ struct PdfDocumentView: ViewRepresentable {
             return view
         }
         func updateUIView(_ uiView: PDFView, context: Context) {
+            uiView.document = document
+            uiView.frame.size = size
+            uiView.displayMode = .singlePage
+            uiView.usePageViewController(true, withViewOptions: nil)
         }
     #endif
 }
 
 struct PdfDocumentView_Previews: PreviewProvider {
     static var previews: some View {
-        PdfDocumentView(document: .init(), size: .constant(CGSize(width: 100, height: 100)))
+        PdfDocumentView(
+            document: .constant(
+                .init()
+            ),
+            size: CGSize(width: 100, height: 100)
+        )
     }
 }

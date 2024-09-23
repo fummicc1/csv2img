@@ -27,47 +27,61 @@ import SwiftUI
             NavigationView {
                 Form {
                     Section(header: Text("Export Settings")) {
-                        Picker("Export Type", selection: Binding(
-                            get: { model.state.exportType },
-                            set: { model.update(keyPath: \.exportType, value: $0) }
-                        )) {
+                        Picker(
+                            "Export Type",
+                            selection: Binding(
+                                get: { model.state.exportType },
+                                set: { model.update(keyPath: \.exportType, value: $0) }
+                            )
+                        ) {
                             Text("PDF").tag(Csv.ExportType.pdf)
                             Text("PNG").tag(Csv.ExportType.png)
                         }
                         .pickerStyle(SegmentedPickerStyle())
 
-                        Picker("Encoding", selection: Binding(
-                            get: { model.state.encoding },
-                            set: { model.update(keyPath: \.encoding, value: $0) }
-                        )) {
+                        Picker(
+                            "Encoding",
+                            selection: Binding(
+                                get: { model.state.encoding },
+                                set: { model.update(keyPath: \.encoding, value: $0) }
+                            )
+                        ) {
                             ForEach(availableEncodingType, id: \.self) { encoding in
                                 Text(encoding.description).tag(encoding)
                             }
                         }
-
-                        Picker("PDF Size", selection: Binding(
-                            get: { model.state.size },
-                            set: { model.update(keyPath: \.size, value: $0) }
-                        )) {
-                            ForEach(PdfSize.allCases, id: \.self) { size in
-                                Text(size.rawValue).tag(size)
+                        
+                        if model.state.exportType == .pdf {
+                            
+                            Picker(
+                                "PDF Size",
+                                selection: Binding(
+                                    get: { model.state.size },
+                                    set: { model.update(keyPath: \.size, value: $0) }
+                                )
+                            ) {
+                                ForEach(PdfSize.allCases, id: \.self) { size in
+                                    Text(size.rawValue).tag(size)
+                                }
                             }
-                        }
-
-                        Picker("PDF Orientation", selection: Binding(
-                            get: { model.state.orientation },
-                            set: { model.update(keyPath: \.orientation, value: $0) }
-                        )) {
-                            ForEach(PdfSize.Orientation.allCases, id: \.self) { orientation in
-                                Text(orientation.rawValue).tag(orientation)
+                            
+                            Picker(
+                                "PDF Orientation",
+                                selection: Binding(
+                                    get: { model.state.orientation },
+                                    set: { model.update(keyPath: \.orientation, value: $0) }
+                                )
+                            ) {
+                                ForEach(PdfSize.Orientation.allCases, id: \.self) { orientation in
+                                    Text(orientation.rawValue).tag(orientation)
+                                }
                             }
                         }
                     }
 
                     Section(header: Text("Preview")) {
                         GeneratePreviewView(
-                            model: model,
-                            size: .constant(CGSize(width: UIScreen.main.bounds.width - 32, height: 300))
+                            model: model
                         )
                         .frame(height: 300)
                         .background(Asset.lightAccentColor.swiftUIColor)

@@ -8,6 +8,8 @@ import Foundation
             let rep = NSBitmapImageRep(
                 cgImage: self
             )
+            rep.pixelsHigh = height
+            rep.pixelsWide = width
             return rep.representation(
                 using: .png,
                 properties: [:]

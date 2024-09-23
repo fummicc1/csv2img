@@ -15,8 +15,7 @@ import SwiftUI
 
 struct GeneratePreviewView: View {
 
-    @StateObject var model: GenerateOutputModel
-    @Binding var size: CGSize
+    @Bindable var model: GenerateOutputModel
 
     #if os(iOS)
         var body: some View {
@@ -30,8 +29,15 @@ struct GeneratePreviewView: View {
                                 .aspectRatio(contentMode: .fit)
                                 .frame(width: geometry.size.width, height: geometry.size.height)
                         }
-                    } else if let document = model.state.pdfDocument, model.state.exportType == .pdf {
-                        PdfDocumentView(document: document, size: $size)
+                    } else if model.state.pdfDocument != nil, model.state.exportType == .pdf
+                    {
+                        PdfDocumentView(
+                            document: $model.state.pdfDocument,
+                            size: CGSize(
+                                width: geometry.size.width,
+                                height: geometry.size.height
+                            )
+                        )
                     }
                 }
             }
@@ -52,8 +58,15 @@ struct GeneratePreviewView: View {
                                 .aspectRatio(contentMode: .fit)
                                 .frame(width: geometry.size.width, height: geometry.size.height)
                         }
-                    } else if let document = model.state.pdfDocument, model.state.exportType == .pdf {
-                        PdfDocumentView(document: document, size: $size)
+                    } else if model.state.pdfDocument != nil, model.state.exportType == .pdf
+                    {
+                        PdfDocumentView(
+                            document: $model.state.pdfDocument,
+                            size: CGSize(
+                                width: geometry.size.width,
+                                height: geometry.size.height
+                            )
+                        )
                     }
                 }
             }

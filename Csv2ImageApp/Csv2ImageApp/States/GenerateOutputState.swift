@@ -9,7 +9,7 @@ import Csv2Img
 import Foundation
 import PDFKit
 
-struct GenerateOutputState: Hashable, Equatable {
+struct GenerateOutputState: Hashable, Equatable, Sendable {
     let url: URL
     let fileType: FileURLType
 
