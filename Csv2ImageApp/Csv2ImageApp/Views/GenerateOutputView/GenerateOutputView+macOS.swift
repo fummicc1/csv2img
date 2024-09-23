@@ -12,8 +12,9 @@ import SwiftUI
 #if os(macOS)
     struct GenerateOutputView_macOS: View {
 
-        @StateObject var model: GenerateOutputModel
+        @Bindable var model: GenerateOutputModel
         @Binding var backToPreviousPage: Bool
+        @State private var succeedSavingOutput: Bool = false
 
         private let availableEncodingType: [String.Encoding] = [
             .utf8,
@@ -30,37 +31,43 @@ import SwiftUI
                 HSplitView {
                     List {
                         Section("Settings") {
-                            Picker("Encoding", selection: $model.encoding) {
+                            Picker("Export Type", selection: $model.state.exportType) {
+                                ForEach(Csv.ExportType.allCases, id: \.self) { exportType in
+                                    Text(exportType.fileExtension).tag(exportType)
+                                }
+                            }
+                            Picker("Encoding", selection: $model.state.encoding) {
                                 ForEach(availableEncodingType, id: \.self) { encoding in
                                     Text(encoding.description).tag(encoding)
                                 }
                             }
-                            // Add more settings here as needed
+                            if model.state.exportType == .pdf {
+                                Picker("PDF Size", selection: $model.state.size) {
+                                    ForEach(PdfSize.allCases, id: \.self) { pdfSize in
+                                        Text(pdfSize.rawValue).tag(pdfSize)
+                                    }
+                                }
+                                Picker("PDF Orientation", selection: $model.state.orientation) {
+                                    ForEach(PdfSize.Orientation.allCases, id: \.self) { orientation in
+                                        Text(orientation.rawValue).tag(orientation)
+                                    }
+                                }
+                            }
                         }
                     }
                     .listStyle(SidebarListStyle())
                     .frame(minWidth: 200, idealWidth: 250, maxWidth: 300)
 
                     VStack {
-                        GeneratePreviewView(
-                            model: model,
-                            size: .constant(
-                                .init(
-                                    width: 480,
-                                    height: 360
-                                )
+                        GeometryReader(content: { proxy in
+                            GeneratePreviewView(
+                                model: model
                             )
-                        )
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        })
 
                         HStack {
-                            Button("Generate") {
-                                // Add generation logic here
-                            }
-                            .keyboardShortcut(.defaultAction)
-
                             Button("Save As...") {
-                                // Add save logic here
+                                succeedSavingOutput = model.save()
                             }
                         }
                         .padding()
@@ -76,6 +83,22 @@ import SwiftUI
                 }
             }
             .frame(minWidth: 800, minHeight: 600)
+            .alert(isPresented: $succeedSavingOutput) {
+                Alert(
+                    title: Text("Complete Saving!"),
+                    message: nil,
+                    primaryButton: .default(Text("Back")) {
+                        withAnimation {
+                            backToPreviousPage = true
+                        }
+                    },
+                    secondaryButton: .default(Text("Open")) {
+                        if let savedURL = model.savedURL, NSWorkspace.shared.open(savedURL) {
+                            NSWorkspace.shared.open(savedURL)
+                        }
+                    }
+                )
+            }
         }
     }
 

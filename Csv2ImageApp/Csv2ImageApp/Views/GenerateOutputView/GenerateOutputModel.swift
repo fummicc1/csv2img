@@ -22,7 +22,7 @@ actor CsvGlobalActor {
 @Observable
 class GenerateOutputModel: ObservableObject {
 
-    private(set) var state: GenerateOutputState {
+    var state: GenerateOutputState {
         didSet {
             if oldValue.exportType == state.exportType && oldValue.encoding == state.encoding
                 && oldValue.size == state.size && oldValue.orientation == state.orientation
@@ -36,19 +36,7 @@ class GenerateOutputModel: ObservableObject {
     }
     private(set) var savedURL: URL?
 
-    private var cachedCsv: Csv? {
-        didSet {
-            guard let cachedCsv else {
-                return
-            }
-            Task { @MainActor in
-                let encoding = await cachedCsv.encoding
-                state.encoding = encoding
-                let exportType = await cachedCsv.exportType
-                state.exportType = exportType
-            }
-        }
-    }
+    private var cachedCsv: Csv?
 
     private var csvTask: Task<Void, Never>?
 
