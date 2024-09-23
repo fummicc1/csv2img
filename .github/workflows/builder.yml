@@ -32,5 +32,5 @@ jobs:
           set -o pipefail && \
           xcodebuild -scheme CsvBuilder \
           clean build test \
-          -destination 'platform=iOS Simulator,name=iPhone 16' \
+          -destination 'platform=iOS Simulator,name=iPhone 15' \
           | xcbeautify
