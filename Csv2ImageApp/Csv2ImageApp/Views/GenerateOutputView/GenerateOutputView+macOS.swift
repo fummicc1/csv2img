@@ -48,7 +48,8 @@ import SwiftUI
                                     }
                                 }
                                 Picker("PDF Orientation", selection: $model.state.orientation) {
-                                    ForEach(PdfSize.Orientation.allCases, id: \.self) { orientation in
+                                    ForEach(PdfSize.Orientation.allCases, id: \.self) {
+                                        orientation in
                                         Text(orientation.rawValue).tag(orientation)
                                     }
                                 }
