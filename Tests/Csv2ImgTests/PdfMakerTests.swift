@@ -1,5 +1,6 @@
-import XCTest
 import PDFKit
+import XCTest
+
 @testable import Csv2Img
 
 class PdfMakerTests: XCTestCase {
@@ -19,7 +20,7 @@ class PdfMakerTests: XCTestCase {
                 Csv.Column.Style(color: Color.blue.cgColor),
                 Csv.Column.Style(color: Color.blue.cgColor),
                 Csv.Column.Style(color: Color.blue.cgColor),
-                Csv.Column.Style(color: Color.blue.cgColor)
+                Csv.Column.Style(color: Color.blue.cgColor),
             ]
         )
         let pdfMaker = PdfMaker(

@@ -50,9 +50,9 @@ import SwiftUI
                                 Text(encoding.description).tag(encoding)
                             }
                         }
-                        
+
                         if model.state.exportType == .pdf {
-                            
+
                             Picker(
                                 "PDF Size",
                                 selection: Binding(
@@ -64,7 +64,7 @@ import SwiftUI
                                     Text(size.rawValue).tag(size)
                                 }
                             }
-                            
+
                             Picker(
                                 "PDF Orientation",
                                 selection: Binding(

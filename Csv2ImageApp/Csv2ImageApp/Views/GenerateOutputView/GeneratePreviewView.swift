@@ -29,8 +29,7 @@ struct GeneratePreviewView: View {
                                 .aspectRatio(contentMode: .fit)
                                 .frame(width: geometry.size.width, height: geometry.size.height)
                         }
-                    } else if model.state.pdfDocument != nil, model.state.exportType == .pdf
-                    {
+                    } else if model.state.pdfDocument != nil, model.state.exportType == .pdf {
                         PdfDocumentView(
                             document: $model.state.pdfDocument,
                             size: CGSize(
@@ -58,8 +57,7 @@ struct GeneratePreviewView: View {
                                 .aspectRatio(contentMode: .fit)
                                 .frame(width: geometry.size.width, height: geometry.size.height)
                         }
-                    } else if model.state.pdfDocument != nil, model.state.exportType == .pdf
-                    {
+                    } else if model.state.pdfDocument != nil, model.state.exportType == .pdf {
                         PdfDocumentView(
                             document: $model.state.pdfDocument,
                             size: CGSize(

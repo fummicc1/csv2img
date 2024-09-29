@@ -8,30 +8,23 @@ Convert Csv into png image.
 
 <a href="https://apps.apple.com/jp/app/csv-converter-app/id1628273936?mt=12"><img src="https://raw.github.com/fummicc1/csv2img/1.3.2/res/Download_on_the_App_Store_Badge_US-UK_RGB_blk_092917.svg?sanitize=true"></a>
 
-## iOS App
+## Demo
 
+### iOS App
 
-### Demo
+https://github.com/user-attachments/assets/a9a7847e-7edc-4e28-b918-66de4b992aa3
 
+### MacOS App
 
-<img src="https://github.com/fummicc1/csv2img/assets/44002126/37fdff7c-6947-49a3-9a5d-9b521273c9f0" width=300>
+https://github.com/user-attachments/assets/9b6f5064-ab6e-4897-a0ab-cf5f104e3bbe
 
+# Installation
 
+Add the following to your `Package.swift` file:
 
-
-
-
-
-
-## MacOS App
-
-### Demo
-
-
-<img src="https://github.com/fummicc1/csv2img/assets/44002126/65a9f3f6-e76f-44f1-b18b-b116f7b310af" width=800>
-
-
-
+```swift
+.package(url: "https://github.com/fummicc1/csv2img.git", from: "1.9.0"),
+```
 
 # Csv2Img (Library)
 
@@ -39,7 +32,15 @@ Convert Csv into png image.
 
 - [documentation](https://fummicc1.github.io/csv2img/documentation/csv2img/)
 
-## Usage
+## Installation of Csv2Img
+
+Add the following to your `Package.swift` file:
+
+```swift
+.product(name: "Csv2Img", package: "csv2img"),
+```
+
+## Usage of Csv2Img
 
 You cloud convert csv into image / pdf in 3 ways.
 
@@ -112,7 +113,7 @@ let data = try await csv.generate(fontSize: 12, exportType: .png)
  | 10 | 11 | 12 |
 ```
 
-#### Output Image
+### Output Image
 
 ![sample](https://user-images.githubusercontent.com/44002126/186811765-ecc16ca5-9121-47ee-a5a6-a51ac181abd5.png)
 
@@ -120,7 +121,15 @@ let data = try await csv.generate(fontSize: 12, exportType: .png)
 
 A helper library to generate `Csv` in Csv2Img library.
 
-## How to use
+## Installation of CsvBuilder
+
+Add the following to your `Package.swift` file:
+
+```swift
+.product(name: "CsvBuilder", package: "csv2img"),
+```
+
+## Usage of CsvBuilder
 
 1. Define custom type that conforms to `CsvComposition`.
 
@@ -168,7 +177,15 @@ A command line tool which generates png-image from csv. (Using `Csv2Img` library
 
 - [documentation](https://fummicc1.github.io/Csv2ImgCmd_DocC/documentation/csv2imgcmd/)
 
-## Usage
+## Installation of Csv2ImgCmd
+
+Add the following to your `Package.swift` file:
+
+```swift
+.product(name: "Csv2ImgCmd", package: "csv2img"),
+```
+
+## Usage of Csv2ImgCmd
 
 Coomand line interface using `Csv2Img` library.
 

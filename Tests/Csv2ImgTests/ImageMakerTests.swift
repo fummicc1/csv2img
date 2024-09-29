@@ -1,4 +1,5 @@
 import XCTest
+
 @testable import Csv2Img
 
 class ImageMakerTests: XCTestCase {
@@ -20,7 +21,7 @@ class ImageMakerTests: XCTestCase {
                 Csv.Column.Style(color: Color.blue.cgColor),
                 Csv.Column.Style(color: Color.blue.cgColor),
                 Csv.Column.Style(color: Color.blue.cgColor),
-                Csv.Column.Style(color: Color.blue.cgColor)
+                Csv.Column.Style(color: Color.blue.cgColor),
             ]
         )
         let imageMaker = ImageMaker(maximumRowCount: nil, fontSize: 12)
