@@ -8,7 +8,7 @@ let argumentParser: PackageDescription.Package.Dependency = .package(
     .upToNextMinor(from: "1.1.0")
 )
 let docc: PackageDescription.Package.Dependency = .package(
-    url: "https://github.com/swiftlang/swift-docc-plugin", from: "1.0.0"
+    url: "https://github.com/swiftlang/swift-docc-plugin", from: "1.4.3"
 )
 let swiftSyntax = PackageDescription.Package.Dependency.package(
     url: "https://github.com/swiftlang/swift-syntax",
