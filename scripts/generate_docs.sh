@@ -10,4 +10,3 @@ swift package --allow-writing-to-directory docs \
     --output-path docs
 
 cp res/app_privacy_policy.html docs/app_privacy_policy.html
-cp README.md docs/index.md
