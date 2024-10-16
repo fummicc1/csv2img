@@ -6,7 +6,7 @@
 
 Convert Csv into png image.
 
-<a href="https://apps.apple.com/jp/app/csv-converter-app/id1628273936?mt=12"><img src="https://raw.github.com/fummicc1/csv2img/1.3.2/res/Download_on_the_App_Store_Badge_US-UK_RGB_blk_092917.svg?sanitize=true"></a>
+<a href="https://apps.apple.com/jp/app/csv-converter-app/id1628273936?mt=12"><img src="https://raw.github.com/fummicc1/csv2img/1.9.0/res/Download_on_the_App_Store_Badge_US-UK_RGB_blk_092917.svg?sanitize=true"></a>
 
 ## Demo
 
@@ -23,14 +23,14 @@ https://github.com/user-attachments/assets/9b6f5064-ab6e-4897-a0ab-cf5f104e3bbe
 Add the following to your `Package.swift` file:
 
 ```swift
-.package(url: "https://github.com/fummicc1/csv2img.git", from: "1.9.0"),
+.package(url: "https://github.com/fummicc1/csv2img.git", from: "1.9.1"),
 ```
 
-# Csv2Img (Library)
+# Csv2ImgCore (Library)
 
 Convert Csv into png image.
 
-- [documentation](https://fummicc1.github.io/csv2img/documentation/csv2img/)
+- [documentation](https://fummicc1.github.io/csv2img/documentation/csv2imgcore/)
 
 ## Installation of Csv2Img
 
