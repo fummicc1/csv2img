@@ -21,8 +21,8 @@ let package = Package(
     products: [
         // Products define the executables and libraries a package produces, and make them visible to other packages.
         .library(
-            name: "Csv2Img",
-            targets: ["Csv2Img"]
+            name: "Csv2ImgCore",
+            targets: ["Csv2ImgCore"]
         ),
         .library(
             name: "CsvBuilder",
@@ -44,16 +44,16 @@ let package = Package(
         // Targets are the basic building blocks of a package. A target can define a module or a test suite.
         // Targets can depend on other targets in this package, and on products in packages this package depends on.
         .target(
-            name: "Csv2Img",
+            name: "Csv2ImgCore",
             dependencies: []),
         .testTarget(
-            name: "Csv2ImgTests",
-            dependencies: ["Csv2Img"]
+            name: "Csv2ImgCoreTests",
+            dependencies: ["Csv2ImgCore"]
         ),
         .target(
             name: "CsvBuilder",
             dependencies: [
-                "Csv2Img",
+                "Csv2ImgCore",
                 .product(name: "SwiftSyntax", package: "swift-syntax"),
                 .product(name: "SwiftParser", package: "swift-syntax"),
             ]
@@ -65,7 +65,7 @@ let package = Package(
         .executableTarget(
             name: "Csv2ImgCmd",
             dependencies: [
-                "Csv2Img",
+                "Csv2ImgCore",
                 .product(
                     name: "ArgumentParser",
                     package: "swift-argument-parser"

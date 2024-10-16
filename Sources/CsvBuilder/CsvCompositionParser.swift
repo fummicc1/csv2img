@@ -1,4 +1,4 @@
-import Csv2Img
+import Csv2ImgCore
 import Foundation
 import SwiftParser
 import SwiftSyntax

@@ -1,6 +1,6 @@
 import ArgumentParser
 import CoreImage
-import Csv2Img
+import Csv2ImgCore
 import Foundation
 import PDFKit
 

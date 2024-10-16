@@ -1,6 +1,6 @@
 import XCTest
 
-@testable import Csv2Img
+@testable import Csv2ImgCore
 
 final class Csv2Tests: XCTestCase {
     func testCsvParseFromString() async {
