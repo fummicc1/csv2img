@@ -1,14 +1,13 @@
+import PDFKit
 import XCTest
 
-@testable import Csv2Img
+@testable import Csv2ImgCore
 
-class ImageMakerTests: XCTestCase {
-    func testMakeImage() async throws {
+class PdfMakerTests: XCTestCase {
+    func test_make() async throws {
         // Given
-        let fileURL = getRelativeFilePathFromPackageSource(
-            path: "/Fixtures/outputs/category.png"
-        )
-        let expected = try Data(contentsOf: fileURL)
+        let fileURL = getRelativeFilePathFromPackageSource(path: "/Fixtures/outputs/category.pdf")
+        let expected = PDFDocument(url: fileURL)!
         let csv = Csv.loadFromString(
             """
             name,beginnerValue,middleValue,expertValue,unit
@@ -24,16 +23,24 @@ class ImageMakerTests: XCTestCase {
                 Csv.Column.Style(color: Color.blue.cgColor),
             ]
         )
-        let imageMaker = ImageMaker(maximumRowCount: nil, fontSize: 12)
+        let pdfMaker = PdfMaker(
+            maximumRowCount: nil,
+            fontSize: 12,
+            metadata: .init()
+        )
         // When
-        let image = try imageMaker.make(
+        let pdf = try pdfMaker.make(
+            with: 12,
             columns: await csv.columns,
             rows: await csv.rows
-        ) { double in
+        ) { _ in
         }
         // Then
         // TODO: Remove XCTSkip
-        try XCTSkipIf(image.convertToData() != expected)
-        XCTAssertEqual(image.convertToData(), expected)
+        try XCTSkipIf(pdf.dataRepresentation() != expected.dataRepresentation())
+        XCTAssertEqual(
+            pdf.dataRepresentation(),
+            expected.dataRepresentation()
+        )
     }
 }

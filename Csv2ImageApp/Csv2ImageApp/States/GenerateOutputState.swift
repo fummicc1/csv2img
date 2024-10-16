@@ -5,7 +5,7 @@
 //  Created by Fumiya Tanaka on 2022/08/07.
 //
 
-import Csv2Img
+import Csv2ImgCore
 import Foundation
 import PDFKit
 

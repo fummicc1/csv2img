@@ -2,7 +2,7 @@
 
 swift package --allow-writing-to-directory docs \
     generate-documentation \
-    --target Csv2Img --target Csv2ImgCmd --target CsvBuilder \
+    --target Csv2ImgCore --target Csv2ImgCmd --target CsvBuilder \
     --disable-indexing \
     --transform-for-static-hosting \
     --enable-experimental-combined-documentation \
