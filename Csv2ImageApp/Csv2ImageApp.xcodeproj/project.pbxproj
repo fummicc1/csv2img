@@ -3,18 +3,18 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 55;
+	objectVersion = 60;
 	objects = {
 
 /* Begin PBXBuildFile section */
-		D3095CC6286394720086EEEE /* Csv2Img in Frameworks */ = {isa = PBXBuildFile; productRef = D3095CC5286394720086EEEE /* Csv2Img */; };
 		D30B17E6285F865700EA92B5 /* Csv2Img.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = D30B17E4285F865700EA92B5 /* Csv2Img.xcdatamodeld */; };
 		D30B181A285F8A5300EA92B5 /* SelectCsvView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3A4EB19284F11A3002E3499 /* SelectCsvView.swift */; };
 		D359BADA28621B85006DFDCE /* SwiftUI+PdfDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = D359BAD928621B85006DFDCE /* SwiftUI+PdfDocument.swift */; };
 		D359BADC28621BFE006DFDCE /* Type.swift in Sources */ = {isa = PBXBuildFile; fileRef = D359BADB28621BFE006DFDCE /* Type.swift */; };
 		D35DB0D4285FA754009C252D /* CsvViewer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D35DB0D3285FA754009C252D /* CsvViewer.swift */; };
 		D35DB0D6285FADA5009C252D /* HistoryModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D35DB0D5285FADA5009C252D /* HistoryModel.swift */; };
-		D3776F22298A589200A09A90 /* CsvBuilder in Frameworks */ = {isa = PBXBuildFile; productRef = D3776F21298A589200A09A90 /* CsvBuilder */; };
+		D37E66772CC0074000C0B18C /* Csv2ImgCore in Frameworks */ = {isa = PBXBuildFile; productRef = D37E66762CC0074000C0B18C /* Csv2ImgCore */; };
+		D37E66792CC0074000C0B18C /* CsvBuilder in Frameworks */ = {isa = PBXBuildFile; productRef = D37E66782CC0074000C0B18C /* CsvBuilder */; };
 		D3A4EB18284F11A3002E3499 /* Csv2ImageAppApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3A4EB17284F11A3002E3499 /* Csv2ImageAppApp.swift */; };
 		D3A4EB1C284F11A4002E3499 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D3A4EB1B284F11A4002E3499 /* Assets.xcassets */; };
 		D3A4EB1F284F11A4002E3499 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D3A4EB1E284F11A4002E3499 /* Preview Assets.xcassets */; };
@@ -109,8 +109,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D3095CC6286394720086EEEE /* Csv2Img in Frameworks */,
-				D3776F22298A589200A09A90 /* CsvBuilder in Frameworks */,
+				D37E66772CC0074000C0B18C /* Csv2ImgCore in Frameworks */,
+				D37E66792CC0074000C0B18C /* CsvBuilder in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -313,8 +313,8 @@
 			);
 			name = Csv2ImageApp;
 			packageProductDependencies = (
-				D3095CC5286394720086EEEE /* Csv2Img */,
-				D3776F21298A589200A09A90 /* CsvBuilder */,
+				D37E66762CC0074000C0B18C /* Csv2ImgCore */,
+				D37E66782CC0074000C0B18C /* CsvBuilder */,
 			);
 			productName = Csv2ImageApp;
 			productReference = D3A4EB14284F11A3002E3499 /* Csv2ImageApp.app */;
@@ -389,6 +389,7 @@
 			);
 			mainGroup = D3A4EB0B284F11A3002E3499;
 			packageReferences = (
+				D37E66752CC0074000C0B18C /* XCLocalSwiftPackageReference "../../Csv2Img" */,
 			);
 			productRefGroup = D3A4EB15284F11A3002E3499 /* Products */;
 			projectDirPath = "";
@@ -818,12 +819,19 @@
 		};
 /* End XCConfigurationList section */
 
-/* Begin XCSwiftPackageProductDependency section */
-		D3095CC5286394720086EEEE /* Csv2Img */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = Csv2Img;
+/* Begin XCLocalSwiftPackageReference section */
+		D37E66752CC0074000C0B18C /* XCLocalSwiftPackageReference "../../Csv2Img" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ../../Csv2Img;
 		};
-		D3776F21298A589200A09A90 /* CsvBuilder */ = {
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		D37E66762CC0074000C0B18C /* Csv2ImgCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Csv2ImgCore;
+		};
+		D37E66782CC0074000C0B18C /* CsvBuilder */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = CsvBuilder;
 		};

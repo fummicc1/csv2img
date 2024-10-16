@@ -74,16 +74,6 @@
             skipped = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "Csv2ImgTests"
-               BuildableName = "Csv2ImgTests"
-               BlueprintName = "Csv2ImgTests"
-               ReferencedContainer = "container:">
-            </BuildableReference>
-         </TestableReference>
-         <TestableReference
-            skipped = "NO">
-            <BuildableReference
-               BuildableIdentifier = "primary"
                BlueprintIdentifier = "CsvBuilderTests"
                BuildableName = "CsvBuilderTests"
                BlueprintName = "CsvBuilderTests"
