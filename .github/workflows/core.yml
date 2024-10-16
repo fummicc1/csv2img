@@ -10,12 +10,13 @@ on:
       - develop
 
 jobs:
-  test:
+  test_core:
     name: "Build Csv2ImgCore"
     runs-on: macos-14
     steps:
       - uses: actions/checkout@v3
       - uses: maxim-lobanov/setup-xcode@v1
+        if: ${{ env.LOCAL != 'true' }}
         with:
           xcode-version: latest-stable
       - name: Install xcbeautify
