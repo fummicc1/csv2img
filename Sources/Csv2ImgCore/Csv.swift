@@ -507,45 +507,32 @@ extension Csv {
         }
         if let maker = maker as? ImageMaker {
             if let fontSize = fontSize {
-                maker.set(
-                    fontSize: fontSize
-                )
+                maker.set(fontSize: fontSize)
             }
-            let exportable: any CsvExportable = try await withCheckedThrowingContinuation {
+            let image: CGImage = try await withCheckedThrowingContinuation {
                 continuation in
                 queue.async { [weak self] in
                     guard let self = self else {
-                        continuation.resume(
-                            throwing: Csv.Error.underlying(
-                                nil
-                            )
-                        )
+                        continuation.resume(throwing: Csv.Error.underlying(nil))
                         return
                     }
                     Task {
                         do {
-                            let img = try maker.make(
+                            let image = try maker.make(
                                 columns: await self.columns,
                                 rows: await self.rows
                             ) { progress in
                                 self.progressSubject.value = progress
                             }
-                            continuation.resume(
-                                returning: img
-                            )
+                            continuation.resume(returning: image)
                         } catch {
-                            continuation.resume(
-                                throwing: Csv.Error.underlying(
-                                    error
-                                )
-                            )
+                            continuation.resume(throwing: Csv.Error.underlying(error))
                         }
                     }
                 }
             }
-            return AnyCsvExportable(
-                exportable
-            )
+
+            return AnyCsvExportable(image)
         } else if let maker = maker as? PdfMaker {
             if let fontSize = fontSize {
                 maker.set(
