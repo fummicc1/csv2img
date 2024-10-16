@@ -1,0 +1,22 @@
+{
+  "configurations": [
+    {
+      "type": "swift-lldb",
+      "request": "launch",
+      "name": "Debug Csv2ImgCmd",
+      "program": "${workspaceFolder:Csv2Img}/.build/debug/Csv2ImgCmd",
+      "args": [],
+      "cwd": "${workspaceFolder:Csv2Img}",
+      "preLaunchTask": "swift: Build Debug Csv2ImgCmd"
+    },
+    {
+      "type": "swift-lldb",
+      "request": "launch",
+      "name": "Release Csv2ImgCmd",
+      "program": "${workspaceFolder:Csv2Img}/.build/release/Csv2ImgCmd",
+      "args": [],
+      "cwd": "${workspaceFolder:Csv2Img}",
+      "preLaunchTask": "swift: Build Release Csv2ImgCmd"
+    }
+  ]
+}
