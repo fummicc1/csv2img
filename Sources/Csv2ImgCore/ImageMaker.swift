@@ -57,6 +57,45 @@ final class ImageMaker: ImageMakerType {
         self.fontSize = size
     }
 
+    private func createContext(
+        width: Int,
+        height: Int
+    ) throws -> CGContext {
+
+        #if os(macOS)
+            let canvas = NSImage(
+                size: NSSize(
+                    width: width,
+                    height: height
+                )
+            )
+            canvas.lockFocus()
+            guard let context = NSGraphicsContext.current?.cgContext else {
+                throw ImageMakingError.noContextAvailable
+            }
+        #elseif os(iOS)
+            UIGraphicsBeginImageContext(
+                CGSize(
+                    width: width,
+                    height: height
+                )
+            )
+            guard let context = UIGraphicsGetCurrentContext() else {
+                throw ImageMakingError.noContextAvailable
+            }
+        #endif
+
+        defer {
+            #if os(macOS)
+                canvas.unlockFocus()
+            #elseif os(iOS)
+                UIGraphicsEndImageContext()
+            #endif
+        }
+
+        return context
+    }
+
     /// generate png-image data from ``Csv``.
     internal func make(
         columns: [Csv.Column],
@@ -66,22 +105,15 @@ final class ImageMaker: ImageMakerType {
         ) -> Void
     ) throws -> CGImage {
         let representation = try build(columns: columns, rows: rows, progress: progress)
-        guard
-            let context = CGContext(
-                data: nil,
-                width: representation.width,
-                height: representation.height,
-                bitsPerComponent: 8,
-                bytesPerRow: 0,
-                space: CGColorSpaceCreateDeviceRGB(),
-                bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue
-            )
-        else {
-            throw ImageMakingError.noContextAvailable
-        }
-        guard let image = ImageRenderer().render(context: context, representation) else {
+        let context = try createContext(width: representation.width, height: representation.height)
+
+        let renderer = ImageRenderer()
+        let image = renderer.render(context: context, representation)
+        guard let image = image else {
             throw ImageMakingError.failedCreateImage(context)
         }
+
+        self.latestOutput = image
         return image
     }
 
@@ -103,46 +135,15 @@ final class ImageMaker: ImageMakerType {
 
         let horizontalSpace = 8
         let verticalSpace = 12
-        let textSizeList =
-            rows
-            .flatMap({
-                $0.values
-            })
-            .map({
-                $0.getSize(
-                    fontSize: fontSize
-                )
-            })
-            + columns
-            .map({
-                $0.name
-            })
-            .map({
-                $0.getSize(
-                    fontSize: fontSize
-                )
-            })
-
-        let longestHeight = textSizeList.map({
-            $0.height
-        }).sorted().reversed()[0]
-        let longestWidth = textSizeList.map({
-            $0.width
-        }).sorted().reversed()[0]
-        let width =
-            (Int(
-                longestWidth
-            ) + horizontalSpace) * columns.count
-        let height =
-            (rows.count + 1)
-            * (Int(
-                longestHeight
-            ) + verticalSpace)
 
         let backgroundColor = CGColor(red: 250 / 255, green: 250 / 255, blue: 250 / 255, alpha: 1)
 
-        let columnWidth = width / columns.count
-        let rowHeight = height / (rows.count + 1)
+        let columnWidths = calculateColumnWidths(columns: columns, rows: rows)
+        let width = columnWidths.reduce(0, +) + (columns.count + 1) * horizontalSpace
+
+        let rowHeights = calculateRowHeights(
+            columns: columns, rows: rows, columnWidths: columnWidths)
+        let height = rowHeights.reduce(0, +) + (rows.count + 2) * verticalSpace
 
         var columnRepresentations: [CsvImageRepresentation.ColumnRepresentation] = []
         var rowRepresentations: [CsvImageRepresentation.RowRepresentation] = []
@@ -150,53 +151,39 @@ final class ImageMaker: ImageMakerType {
         let completeCount: Double = Double(rows.count + columns.count)
         var completeFraction: Double = 0
 
+        var yOffset = verticalSpace
+        // ヘッダー行の描画
         for (i, column) in columns.enumerated() {
-            let size = column.name.getSize(fontSize: fontSize)
-            let originX = i * columnWidth + columnWidth / 2 - Int(size.width) / 2
-            let originY = height - Int(size.height) / 2 - rowHeight / 2
-
+            let xOffset = columnWidths[0..<i].reduce(0, +) + (i + 1) * horizontalSpace
+            let frame = CGRect(
+                x: xOffset, y: yOffset, width: columnWidths[i], height: rowHeights[0])
             columnRepresentations.append(
                 CsvImageRepresentation.ColumnRepresentation(
                     name: column.name,
                     style: column.style,
-                    frame: CGRect(
-                        x: originX,
-                        y: originY,
-                        width: columnWidth,
-                        height: rowHeight
-                    )
+                    frame: frame
                 )
             )
-
-            completeFraction += 1
-            progress(completeFraction / completeCount)
         }
+        yOffset += rowHeights[0] + verticalSpace
 
+        // データ行の描画
         for (i, row) in rows.enumerated() {
             var rowFrames: [CGRect] = []
             for (j, item) in row.values.enumerated() {
                 if columns.count <= j { continue }
-
-                let size = item.getSize(fontSize: fontSize)
-                let originX = j * columnWidth + columnWidth / 2 - Int(size.width) / 2
-                let originY = height - (i + 2) * rowHeight + Int(size.height) / 2
-
-                rowFrames.append(
-                    CGRect(
-                        x: originX,
-                        y: originY,
-                        width: columnWidth,
-                        height: rowHeight
-                    )
-                )
+                let xOffset = columnWidths[0..<j].reduce(0, +) + (j + 1) * horizontalSpace
+                let frame = CGRect(
+                    x: xOffset, y: yOffset, width: columnWidths[j], height: rowHeights[i + 1])
+                rowFrames.append(frame)
             }
-
             rowRepresentations.append(
                 CsvImageRepresentation.RowRepresentation(
                     values: row.values,
                     frames: rowFrames
                 )
             )
+            yOffset += rowHeights[i + 1] + verticalSpace
 
             completeFraction += 1
             progress(completeFraction / completeCount)
@@ -210,5 +197,39 @@ final class ImageMaker: ImageMakerType {
             columns: columnRepresentations,
             rows: rowRepresentations
         )
+    }
+
+    private func calculateColumnWidths(columns: [Csv.Column], rows: [Csv.Row]) -> [Int] {
+        return columns.enumerated().map { (index, column) in
+            let headerWidth = column.name.getSize(fontSize: fontSize).width
+            let maxContentWidth =
+                rows.map { row in
+                    row.values.count > index
+                        ? row.values[index].getSize(fontSize: fontSize).width : 0
+                }.max() ?? 0
+            return Int(max(headerWidth, maxContentWidth)) + 20  // 20はパディング
+        }
+    }
+
+    private func calculateRowHeights(columns: [Csv.Column], rows: [Csv.Row], columnWidths: [Int])
+        -> [Int]
+    {
+        let headerHeight =
+            Int(columns.map { $0.name.getSize(fontSize: fontSize).height }.max() ?? 0) + 10
+
+        let contentHeights = rows.map { row in
+            let maxHeight =
+                row.values.enumerated().map { (index, value) in
+                    if index < columnWidths.count {
+                        let size = value.getSize(fontSize: fontSize)
+                        let lines = ceil(size.width / CGFloat(columnWidths[index]))
+                        return size.height * lines
+                    }
+                    return 0
+                }.max() ?? 0
+            return Int(maxHeight) + 10  // 10はパディング
+        }
+
+        return [headerHeight] + contentHeights
     }
 }
