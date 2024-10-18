@@ -12,13 +12,7 @@
 
   },
   "testTargets" : [
-    {
-      "target" : {
-        "containerPath" : "container:",
-        "identifier" : "Csv2ImgCoreTests",
-        "name" : "Csv2ImgCoreTests"
-      }
-    }
+
   ],
   "version" : 1
 }
