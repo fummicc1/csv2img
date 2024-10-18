@@ -70,8 +70,12 @@ public class ImageRenderer {
         )
 
         context.saveGState()
-        context.translateBy(x: 0, y: CGFloat(context.height))
-        context.scaleBy(x: 1.0, y: -1.0)
+
+        #if os(macOS)
+            context.translateBy(x: 0, y: CGFloat(context.height))
+            context.scaleBy(x: 1.0, y: -1.0)
+        #endif
+
         attributedString.draw(in: rect)
         context.restoreGState()
     }
