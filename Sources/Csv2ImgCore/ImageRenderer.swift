@@ -2,6 +2,12 @@ import CoreGraphics
 import CoreText
 import Foundation
 
+#if canImport(UIKit)
+    import UIKit
+#elseif canImport(AppKit)
+    import AppKit
+#endif
+
 public class ImageRenderer {
     public func render(context: CGContext, _ representation: CsvImageRepresentation) -> CGImage? {
         let width = representation.width
@@ -10,9 +16,16 @@ public class ImageRenderer {
         context.setFillColor(representation.backgroundColor)
         context.fill(CGRect(x: 0, y: 0, width: width, height: height))
 
-        // Draw grid lines
         context.setLineWidth(1)
-        context.setStrokeColor(CGColor(gray: 0.8, alpha: 1))
+        #if os(macOS)
+            context.setStrokeColor(
+                Color.separatorColor.cgColor
+            )
+        #elseif os(iOS)
+            context.setStrokeColor(
+                Color.separator.cgColor
+            )
+        #endif
 
         for column in representation.columns {
             context.move(to: CGPoint(x: column.frame.minX, y: 0))
@@ -31,14 +44,17 @@ public class ImageRenderer {
 
         context.strokePath()
 
-        // Draw columns
+        #if os(macOS)
+            context.translateBy(x: 0, y: CGFloat(height))
+            context.scaleBy(x: 1.0, y: -1.0)
+        #endif
+
         for column in representation.columns {
             drawText(
                 context: context, text: column.name, frame: column.frame, style: column.style,
                 fontSize: representation.fontSize)
         }
 
-        // Draw rows
         for row in representation.rows {
             for (index, (value, frame)) in zip(row.values, row.frames).enumerated() {
                 let column = representation.columns[index]
@@ -60,9 +76,10 @@ public class ImageRenderer {
         ]
 
         let attributedString = NSAttributedString(string: text, attributes: attributes)
-        let textSize = (text as NSString).size(withAttributes: attributes)
 
-        let rect = CGRect(
+        let textSize = attributedString.size()
+
+        let textRect = CGRect(
             x: frame.origin.x + (frame.width - textSize.width) / 2,
             y: frame.origin.y + (frame.height - textSize.height) / 2,
             width: textSize.width,
@@ -71,12 +88,23 @@ public class ImageRenderer {
 
         context.saveGState()
 
+        // テキストの描画位置を設定
+        let textPath = CGPath(rect: textRect, transform: nil)
+        context.addPath(textPath)
+        context.clip()
+
+        // テキストを描画
         #if os(macOS)
-            context.translateBy(x: 0, y: CGFloat(context.height))
-            context.scaleBy(x: 1.0, y: -1.0)
+            NSGraphicsContext.saveGraphicsState()
+            NSGraphicsContext.current = NSGraphicsContext(cgContext: context, flipped: true)
+            attributedString.draw(in: textRect)
+            NSGraphicsContext.restoreGraphicsState()
+        #else
+            UIGraphicsPushContext(context)
+            attributedString.draw(in: textRect)
+            UIGraphicsPopContext()
         #endif
 
-        attributedString.draw(in: rect)
         context.restoreGState()
     }
 }
