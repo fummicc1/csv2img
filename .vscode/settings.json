@@ -1,0 +1,21 @@
+{
+    "editor.formatOnSave": true,
+    "swift.diagnostics": true,
+    "apple-swift-format.enable": true,
+    "swift.autoGenerateLaunchConfigurations": true,
+    "swift.buildArguments": [],
+    "swift.testEnvironmentVariables": {},
+    "[swift]": {
+        "editor.tabSize": 4,
+        "editor.insertSpaces": true
+    },
+    "editor.formatOnSaveMode": "file",
+    "editor.defaultFormatter": "vknabel.vscode-apple-swift-format",
+    "makefile.configureOnOpen": false,
+    "swift.sourcekit-lsp.serverArguments": [
+        "-Xswiftc",
+        "-sdk",
+        "-Xswiftc",
+        "/Applications/Xcode-16.0.0.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator18.0.sdk",
+    ]
+}

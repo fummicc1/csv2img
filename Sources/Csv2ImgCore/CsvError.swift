@@ -34,6 +34,8 @@ extension Csv {
         case emptyData
         /// Csv denied execution because it is generating another contents.
         case workInProgress
+        /// Failed to render image from `CsvImageRepresentation`.
+        case failedToRenderImage
         case underlying(
             Swift.Error?
         )
