@@ -591,9 +591,7 @@ extension PdfMaker {
                 let str = NSAttributedString(
                     string: text,
                     attributes: [
-                        .font: Font.systemFont(
-                            ofSize: fontSize
-                        ),
+                        .font: text.getFont(ofSize: fontSize),
                         .foregroundColor: style.displayableColor(),
                     ]
                 )
@@ -717,10 +715,7 @@ extension PdfMaker {
             let str = NSAttributedString(
                 string: column.name,
                 attributes: [
-                    .font: Font.systemFont(
-                        ofSize: fontSize,
-                        weight: .bold
-                    ),
+                    .font: column.name.getFont(ofSize: fontSize),
                     .foregroundColor: column.style.displayableColor(),
                 ]
             )

@@ -74,11 +74,13 @@ final class ImageMaker: ImageMakerType {
                 throw ImageMakingError.noContextAvailable
             }
         #elseif os(iOS)
-            UIGraphicsBeginImageContext(
+        UIGraphicsBeginImageContextWithOptions(
                 CGSize(
                     width: width,
                     height: height
-                )
+                ),
+                true,
+                0
             )
             guard let context = UIGraphicsGetCurrentContext() else {
                 throw ImageMakingError.noContextAvailable

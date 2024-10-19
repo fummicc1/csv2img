@@ -71,7 +71,7 @@ public class ImageRenderer {
         context: CGContext, text: String, frame: CGRect, style: Csv.Column.Style, fontSize: CGFloat
     ) {
         let attributes: [NSAttributedString.Key: Any] = [
-            .font: Font.systemFont(ofSize: fontSize),
+            .font: text.getFont(ofSize: fontSize),
             .foregroundColor: style.displayableColor(),
         ]
 
