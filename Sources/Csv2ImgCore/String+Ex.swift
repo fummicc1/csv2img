@@ -1,26 +1,30 @@
 import Foundation
-
-#if canImport(AppKit)
-    import AppKit
-    typealias Font = NSFont
-#elseif canImport(UIKit)
-    import UIKit
-    typealias Font = UIFont
-#endif
+import CoreText
 
 extension String {
     func getSize(
         fontSize: Double
     ) -> CGSize {
-        (self as NSString)
-            .size(
-                withAttributes: [
-                    .font: Font.systemFont(
-                        ofSize: fontSize,
-                        weight: .bold
-                    )
-                ]
-            )
+        // Calculate the size of the string using CoreText
+        let font = getFont(ofSize: fontSize)
+        let attrString = NSAttributedString(
+            string: self,
+            attributes: [
+                .font: font
+            ])
+        let size = attrString.size()
+        return CGSize(
+            width: Int(size.width),
+            height: Int(size.height)
+        )
+    }
+    
+    func getFont(ofSize fontSize: CGFloat) -> CTFont {
+        CTFontCreateWithName(
+            "San Francisco" as CFString,
+            fontSize,
+            nil
+        )
     }
 }
 
