@@ -35,6 +35,8 @@
 		D3C41324289FB12F00936C02 /* GenerateOutputView+iOS.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3C41323289FB12F00936C02 /* GenerateOutputView+iOS.swift */; platformFilter = ios; };
 		D3C41326289FB13800936C02 /* GenerateOutputView+macOS.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3C41325289FB13800936C02 /* GenerateOutputView+macOS.swift */; platformFilters = (macos, ); };
 		D3C41328289FB66400936C02 /* CButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3C41327289FB66400936C02 /* CButton.swift */; };
+		D3DA4F1F2CCE2F2C00EF2177 /* Csv2ImgCore in Frameworks */ = {isa = PBXBuildFile; productRef = D3DA4F1E2CCE2F2C00EF2177 /* Csv2ImgCore */; };
+		D3DA4F212CCE2F2C00EF2177 /* CsvBuilder in Frameworks */ = {isa = PBXBuildFile; productRef = D3DA4F202CCE2F2C00EF2177 /* CsvBuilder */; };
 		D3E3789828A92C5600154577 /* UIApplication+Ex.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3E3789728A92C5600154577 /* UIApplication+Ex.swift */; };
 		D3E378B528A9391600154577 /* CsvConfig+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3E378B028A9391600154577 /* CsvConfig+CoreDataProperties.swift */; };
 		D3E378B628A9391600154577 /* CsvOutput+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3E378B128A9391600154577 /* CsvOutput+CoreDataClass.swift */; };
@@ -110,6 +112,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				D37E66772CC0074000C0B18C /* Csv2ImgCore in Frameworks */,
+				D3DA4F212CCE2F2C00EF2177 /* CsvBuilder in Frameworks */,
+				D3DA4F1F2CCE2F2C00EF2177 /* Csv2ImgCore in Frameworks */,
 				D37E66792CC0074000C0B18C /* CsvBuilder in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -315,6 +319,8 @@
 			packageProductDependencies = (
 				D37E66762CC0074000C0B18C /* Csv2ImgCore */,
 				D37E66782CC0074000C0B18C /* CsvBuilder */,
+				D3DA4F1E2CCE2F2C00EF2177 /* Csv2ImgCore */,
+				D3DA4F202CCE2F2C00EF2177 /* CsvBuilder */,
 			);
 			productName = Csv2ImageApp;
 			productReference = D3A4EB14284F11A3002E3499 /* Csv2ImageApp.app */;
@@ -389,7 +395,7 @@
 			);
 			mainGroup = D3A4EB0B284F11A3002E3499;
 			packageReferences = (
-				D37E66752CC0074000C0B18C /* XCLocalSwiftPackageReference "../../Csv2Img" */,
+				D3DA4F1D2CCE2F2C00EF2177 /* XCLocalSwiftPackageReference "../../csv2img" */,
 			);
 			productRefGroup = D3A4EB15284F11A3002E3499 /* Products */;
 			projectDirPath = "";
@@ -820,9 +826,9 @@
 /* End XCConfigurationList section */
 
 /* Begin XCLocalSwiftPackageReference section */
-		D37E66752CC0074000C0B18C /* XCLocalSwiftPackageReference "../../Csv2Img" */ = {
+		D3DA4F1D2CCE2F2C00EF2177 /* XCLocalSwiftPackageReference "../../csv2img" */ = {
 			isa = XCLocalSwiftPackageReference;
-			relativePath = ../../Csv2Img;
+			relativePath = ../../csv2img;
 		};
 /* End XCLocalSwiftPackageReference section */
 
@@ -832,6 +838,14 @@
 			productName = Csv2ImgCore;
 		};
 		D37E66782CC0074000C0B18C /* CsvBuilder */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = CsvBuilder;
+		};
+		D3DA4F1E2CCE2F2C00EF2177 /* Csv2ImgCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Csv2ImgCore;
+		};
+		D3DA4F202CCE2F2C00EF2177 /* CsvBuilder */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = CsvBuilder;
 		};
