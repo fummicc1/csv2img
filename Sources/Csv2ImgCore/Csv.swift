@@ -396,12 +396,10 @@ extension Csv {
     ///     - url: Network url, commonly `HTTPS` schema.
     ///     - separator: Default `separator` in a row is `","`. You cloud change it by giving separator to `separator` parameter.
     ///     - encoding: Default: `.utf8`. if you get the unexpected result after convert, please try changing this parameter into other encoding style.
-    ///     - exportType: Default `exportType` is `.png`. If you use too big image size, I strongly recommend use `.pdf` instead.
     public static func loadFromNetwork(
         _ url: URL,
         separator: String = ",",
-        encoding: String.Encoding = .utf8,
-        exportType: ExportType = .png
+        encoding: String.Encoding = .utf8
     ) throws -> Csv {
         let data = try Data(
             contentsOf: url
@@ -431,12 +429,10 @@ extension Csv {
     ///     - file: Local disk url, commonly starts from `file://` schema. Relative-path method is not allowed, please specify by absolute-path method.
     ///     - separator: Default `separator` in a row is `","`. You cloud change it by giving separator to `separator` parameter.
     ///     - encoding: Default: `.utf8`. if you get the unexpected result after convert, please try changing this parameter into other encoding style.
-    ///     - exportType: Default `exportType` is `.png`. If you use too big image size, I strongly recommend use `.pdf` instead.
     public static func loadFromDisk(
         _ file: URL,
         separator: String = ",",
-        encoding: String.Encoding = .utf8,
-        exportType: ExportType = .png
+        encoding: String.Encoding = .utf8
     ) throws -> Csv {
         // https://www.hackingwithswift.com/forums/swift/accessing-files-from-the-files-app/8203
         _ = file.startAccessingSecurityScopedResource()
