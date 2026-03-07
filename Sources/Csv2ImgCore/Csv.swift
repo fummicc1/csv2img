@@ -283,111 +283,41 @@ extension Csv {
         exportType: ExportType = .png,
         styles: [Csv.Column.Style]? = nil
     ) -> Csv {
-        var lines =
-            str
-            .components(
-                separatedBy: CharacterSet(
-                    charactersIn: "\r\n"
-                )
-            )
-            .filter({
-                !$0.isEmpty
-            })
-        var columns: [Csv.Column] = []
-        var rows: [Row] = []
+        let parser = CsvParser()
+        let options = CsvParser.Options(
+            separator: Character(separator),
+            encoding: encoding,
+            maxFieldLength: maxLength
+        )
 
-        if lines.count == 1 {
-            let count = lines[0]
-                .split(
-                    separator: Character(
-                        separator
-                    ),
-                    omittingEmptySubsequences: false
-                )
-                .count
-            let columns = (0..<count).map {
-                String(
-                    $0
-                )
-            }
-            lines.insert(
-                columns.joined(
-                    separator: separator
-                ),
-                at: 0
-            )
-        }
-
-        for (
-            i,
-            line
-        ) in lines.enumerated() {
-            var items =
-                line
-                .split(
-                    separator: Character(
-                        separator
-                    ),
-                    omittingEmptySubsequences: false
-                )
-                .map({
-                    String(
-                        $0
-                    )
-                })
-            if i == 0 {
-                let columnCount = items.count
-                let styles =
-                    styles
-                    ?? Column.Style.random(
-                        count: columnCount
-                    )
-                columns = items.enumerated().map {
-                    (
-                        i,
-                        name
-                    ) in
-                    return Column(
-                        name: name,
-                        style: styles[i]
-                    )
+        do {
+            let result = try parser.parse(str, options: options)
+            let columns: [Column]
+            if let styles = styles {
+                columns = result.columns.enumerated().map { (i, col) in
+                    Column(name: col.name, style: i < styles.count ? styles[i] : col.style)
                 }
             } else {
-                items = items.enumerated().compactMap {
-                    (
-                        index,
-                        item
-                    ) in
-                    let str: String
-                    if let maxLength = maxLength, item.count > maxLength {
-                        str =
-                            String(
-                                item.prefix(
-                                    maxLength
-                                )
-                            ) + "..."
-                    } else {
-                        str = item
-                    }
-                    return str
-                }
-                let row = Row(
-                    index: i,
-                    values: items
-                )
-                rows.append(
-                    row
-                )
+                columns = result.columns
             }
+            return Csv(
+                separator: separator,
+                rawString: str,
+                encoding: encoding,
+                columns: columns,
+                rows: result.rows,
+                exportType: exportType
+            )
+        } catch {
+            return Csv(
+                separator: separator,
+                rawString: str,
+                encoding: encoding,
+                columns: [],
+                rows: [],
+                exportType: exportType
+            )
         }
-        return Csv(
-            separator: separator,
-            rawString: str,
-            encoding: encoding,
-            columns: columns,
-            rows: rows,
-            exportType: .pdf
-        )
     }
 
     /// Generate `Csv` from network url (like `HTTPS`).
