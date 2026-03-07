@@ -1,4 +1,5 @@
 import CoreGraphics
+import CoreText
 import Foundation
 import PDFKit
 
@@ -177,11 +178,12 @@ final class PdfMaker: PdfMakerType {
         let consumer = CGDataConsumer(
             data: data
         )!
+        let auxInfo = buildMetadataDictionary(mediaBox: mediaBox)
         guard
             let context = CGContext(
                 consumer: consumer,
                 mediaBox: &mediaBox,
-                nil
+                auxInfo
             )
         else {
             throw PdfMakingError.noContextAvailabe
@@ -209,14 +211,8 @@ final class PdfMaker: PdfMakerType {
                     height: pageHeight
                 )
             )
-            let coreInfo =
-                [
-                    kCGPDFContextTitle as CFString: metadata.title,
-                    kCGPDFContextAuthor as CFString: metadata.author,
-                    kCGPDFContextMediaBox: mediaBoxPerPage,
-                ] as [CFString: Any]
             context.beginPDFPage(
-                coreInfo as CFDictionary
+                [kCGPDFContextMediaBox: mediaBoxPerPage] as CFDictionary
             )
 
             context.setFillColor(
@@ -341,10 +337,6 @@ final class PdfMaker: PdfMakerType {
             Double
         ) -> Void
     ) throws -> PDFDocument {
-        // NOTE: Anchor is bottom-left.
-        let horizontalSpace: Double = 8
-        let verticalSpace: Double = 12
-
         let pageSize = pdfSize.size(
             orientation: orientation
         )
@@ -365,19 +357,14 @@ final class PdfMaker: PdfMakerType {
             \.style
         )
 
-        let rowHeight =
-            (rows[0].values.map { $0.getSize(fontSize: fontSize).height }.max() ?? 0)
-            + verticalSpace
-
-        let tableSize = CGSize(
-            width: pageSize.width * 0.8, height: rowHeight * Double(rows.count + 1)
+        let calculator = PdfLayoutCalculator(fontSize: fontSize)
+        let layout = calculator.calculateFixedSize(
+            columns: columns,
+            rows: rows,
+            pageSize: pageSize
         )
 
-        let columnWidth = tableSize.width / Double(columns.count) + horizontalSpace
-
         let lineWidth: Double = fontSize / 10
-
-        let totalPageNumber = 1
 
         var mediaBox = CGRect(
             origin: .zero,
@@ -391,38 +378,30 @@ final class PdfMaker: PdfMakerType {
         let consumer = CGDataConsumer(
             data: data
         )!
+        let auxInfo = buildMetadataDictionary(mediaBox: mediaBox)
         guard
             let context = CGContext(
                 consumer: consumer,
                 mediaBox: &mediaBox,
-                nil
+                auxInfo
             )
         else {
             throw PdfMakingError.noContextAvailabe
         }
 
-        let completeCount: Double = Double(
-            totalPageNumber
-        )
+        let completeCount = Double(layout.pages.count)
         var completeFraction: Double = 0
 
-        var currentPageNumber: Int = 1
-        var startRowIndex: Int = 0
-        while currentPageNumber <= totalPageNumber {
+        for page in layout.pages {
             let mediaBoxPerPage = CGRect(
                 origin: .zero,
                 size: pageSize
             )
-            let coreInfo =
-                [
-                    kCGPDFContextTitle as CFString: metadata.title,
-                    kCGPDFContextAuthor as CFString: metadata.author,
-                    kCGPDFContextMediaBox: mediaBoxPerPage,
-                ] as [CFString: Any]
             context.beginPDFPage(
-                coreInfo as CFDictionary
+                [kCGPDFContextMediaBox: mediaBoxPerPage] as CFDictionary
             )
 
+            // Fill white background
             context.setFillColor(
                 CGColor(
                     red: 255 / 255,
@@ -434,16 +413,11 @@ final class PdfMaker: PdfMakerType {
             context.fill(
                 CGRect(
                     origin: .zero,
-                    size: CGSize(
-                        width: pageSize.width,
-                        height: pageSize.height
-                    )
+                    size: pageSize
                 )
             )
 
-            context.setLineWidth(
-                lineWidth
-            )
+            context.setLineWidth(lineWidth)
             #if os(macOS)
                 context.setStrokeColor(
                     Color.separatorColor.cgColor
@@ -462,64 +436,48 @@ final class PdfMaker: PdfMakerType {
                 )
             )
 
-            setColumnText(
+            // Calculate the table height for this page (header + rows on this page)
+            let pageRowHeights = layout.rowHeights[page.rowRange]
+            let pageTableHeight = layout.headerHeight + pageRowHeights.reduce(0, +)
+
+            // Center the table horizontally; place from the top with margin
+            let xOffset = layout.tableOrigin.x
+            let yBase = pageSize.height - calculator.pageMargin - pageTableHeight
+
+            drawHeaderRow(
                 context: context,
                 columns: columns,
-                boxWidth: Double(
-                    columnWidth
-                ),
-                boxHeight: Double(
-                    rowHeight
-                ),
-                xOffSet: (pageSize.width - tableSize.width) / 2,
-                // anchor is bottom-left.
-                yOffSet: pageSize.height - tableSize.height
-                    - min(24, (pageSize.height - tableSize.height) / 2),
-                totalHeight: Double(
-                    tableSize.height
-                ),
-                totalWidth: Double(
-                    tableSize.width
-                )
+                columnWidths: layout.columnWidths,
+                headerHeight: layout.headerHeight,
+                xOffset: xOffset,
+                yBase: yBase,
+                pageTableHeight: pageTableHeight
             )
-            setRowText(
+
+            drawDataRows(
                 context: context,
                 styles: styles,
                 rows: rows,
-                from: 0,
-                rowCountPerPage: rows.count,
-                columnHeight: Double(
-                    rowHeight
-                ),
-                width: Double(
-                    columnWidth
-                ),
-                height: Double(
-                    rowHeight
-                ),
-                xOffSet: (pageSize.width - tableSize.width) / 2,
-                // anchor is bottom-left.
-                yOffSet: pageSize.height - tableSize.height
-                    - min(24, (pageSize.height - tableSize.height) / 2),
-                totalWidth: Double(
-                    tableSize.width
-                ),
-                totalHeight: Double(
-                    tableSize.height
-                )
+                columnWidths: layout.columnWidths,
+                rowHeights: layout.rowHeights,
+                headerHeight: layout.headerHeight,
+                page: page,
+                xOffset: xOffset,
+                yBase: yBase
             )
 
-            context.drawPath(
-                using: .stroke
+            context.drawPath(using: .stroke)
+
+            drawPageNumber(
+                context: context,
+                pageNumber: page.pageNumber,
+                totalPages: page.totalPages,
+                pageSize: pageSize,
+                bottomMargin: calculator.pageMargin
             )
 
             completeFraction += 1
-            progress(
-                completeFraction / completeCount
-            )
-
-            currentPageNumber += 1
-            startRowIndex += rows.count
+            progress(completeFraction / completeCount)
 
             context.endPDFPage()
         }
@@ -545,6 +503,221 @@ final class PdfMaker: PdfMakerType {
 }
 
 extension PdfMaker {
+
+    // MARK: - Metadata
+
+    private func buildMetadataDictionary(mediaBox: CGRect) -> CFDictionary {
+        var dict: [CFString: Any] = [
+            kCGPDFContextMediaBox: mediaBox
+        ]
+        if let title = metadata.title {
+            dict[kCGPDFContextTitle] = title
+        }
+        if let author = metadata.author {
+            dict[kCGPDFContextAuthor] = author
+        }
+        if let subject = metadata.subject {
+            dict[kCGPDFContextSubject] = subject
+        }
+        if let keywords = metadata.keywords, !keywords.isEmpty {
+            dict[kCGPDFContextKeywords] = keywords as CFArray
+        }
+        if let creator = metadata.creator {
+            dict[kCGPDFContextCreator] = creator
+        }
+        return dict as CFDictionary
+    }
+
+    // MARK: - Variable-width drawing helpers
+
+    /// Draws the header row with variable column widths and grid lines for the full table.
+    private func drawHeaderRow(
+        context: CGContext,
+        columns: [Csv.Column],
+        columnWidths: [Double],
+        headerHeight: Double,
+        xOffset: Double,
+        yBase: Double,
+        pageTableHeight: Double
+    ) {
+        let tableWidth = columnWidths.reduce(0, +)
+        let tableTop = yBase + pageTableHeight
+        let headerBottom = tableTop - headerHeight
+
+        // Top border line
+        context.move(to: CGPoint(x: xOffset, y: tableTop))
+        context.addLine(to: CGPoint(x: xOffset + tableWidth, y: tableTop))
+
+        // Header-data separator line
+        context.move(to: CGPoint(x: xOffset, y: headerBottom))
+        context.addLine(to: CGPoint(x: xOffset + tableWidth, y: headerBottom))
+
+        // Bottom border line
+        context.move(to: CGPoint(x: xOffset, y: yBase))
+        context.addLine(to: CGPoint(x: xOffset + tableWidth, y: yBase))
+
+        // Vertical column separators (full height)
+        var colX = xOffset
+        for (i, colWidth) in columnWidths.enumerated() {
+            // Left edge of each column
+            context.move(to: CGPoint(x: colX, y: yBase))
+            context.addLine(to: CGPoint(x: colX, y: tableTop))
+
+            // Draw header text centered in cell
+            let column = columns[i]
+            let str = NSAttributedString(
+                string: column.name,
+                attributes: [
+                    .font: column.name.getFont(ofSize: fontSize),
+                    .foregroundColor: column.style.displayableColor(),
+                ]
+            )
+            let textSize = str.string.getSize(fontSize: fontSize)
+            let cellCenterX = colX + (colWidth - textSize.width) / 2
+            let cellCenterY = headerBottom + (headerHeight - textSize.height) / 2
+
+            let framesetter = CTFramesetterCreateWithAttributedString(str)
+            context.saveGState()
+            context.textMatrix = CGAffineTransform.identity
+            let framePath = CGPath(
+                rect: CGRect(
+                    origin: CGPoint(x: cellCenterX, y: cellCenterY),
+                    size: textSize
+                ),
+                transform: nil
+            )
+            let frameRef = CTFramesetterCreateFrame(
+                framesetter, CFRange(location: 0, length: 0), framePath, nil
+            )
+            CTFrameDraw(frameRef, context)
+            context.restoreGState()
+
+            colX += colWidth
+        }
+
+        // Right border line
+        context.move(to: CGPoint(x: xOffset + tableWidth, y: yBase))
+        context.addLine(to: CGPoint(x: xOffset + tableWidth, y: tableTop))
+    }
+
+    /// Draws data rows for a specific page with variable column widths and row heights.
+    /// - `yBase`: bottom Y coordinate of the entire table on this page.
+    private func drawDataRows(
+        context: CGContext,
+        styles: [Csv.Column.Style],
+        rows: [Csv.Row],
+        columnWidths: [Double],
+        rowHeights: [Double],
+        headerHeight: Double,
+        page: PdfLayoutCalculator.PageContent,
+        xOffset: Double,
+        yBase: Double
+    ) {
+        let pageRowHeights = Array(rowHeights[page.rowRange])
+        let dataAreaHeight = pageRowHeights.reduce(0, +)
+        // Data area top sits just below the header
+        let dataAreaTop = yBase + dataAreaHeight
+
+        // Draw each row from top to bottom (highest Y to lowest Y)
+        var currentY = dataAreaTop
+        for (localIndex, globalIndex) in page.rowRange.enumerated() {
+            let rowH = pageRowHeights[localIndex]
+            let rowBottom = currentY - rowH
+
+            // Horizontal separator at row bottom
+            context.move(to: CGPoint(x: xOffset, y: rowBottom))
+            context.addLine(
+                to: CGPoint(x: xOffset + columnWidths.reduce(0, +), y: rowBottom)
+            )
+
+            let row = rows[globalIndex]
+            var colX = xOffset
+            for (colIndex, text) in row.values.enumerated() {
+                guard colIndex < columnWidths.count, colIndex < styles.count else { continue }
+                if text.isEmpty {
+                    colX += columnWidths[colIndex]
+                    continue
+                }
+
+                let style = styles[colIndex]
+                let colWidth = columnWidths[colIndex]
+                let str = NSAttributedString(
+                    string: text,
+                    attributes: [
+                        .font: text.getFont(ofSize: fontSize),
+                        .foregroundColor: style.displayableColor(),
+                    ]
+                )
+                let textSize = str.string.getSize(fontSize: fontSize)
+
+                // Center text horizontally, vertically within the cell
+                let cellCenterX = colX + (colWidth - textSize.width) / 2
+                let cellCenterY = rowBottom + (rowH - textSize.height) / 2
+
+                let framesetter = CTFramesetterCreateWithAttributedString(str)
+                context.saveGState()
+                context.textMatrix = CGAffineTransform.identity
+                let framePath = CGPath(
+                    rect: CGRect(
+                        origin: CGPoint(x: cellCenterX, y: cellCenterY),
+                        size: textSize
+                    ),
+                    transform: nil
+                )
+                let frameRef = CTFramesetterCreateFrame(
+                    framesetter, CFRange(location: 0, length: 0), framePath, nil
+                )
+                CTFrameDraw(frameRef, context)
+                context.restoreGState()
+
+                colX += colWidth
+            }
+
+            currentY = rowBottom
+        }
+    }
+
+    /// Draws page number text ("N / M") centered at the bottom of the page.
+    private func drawPageNumber(
+        context: CGContext,
+        pageNumber: Int,
+        totalPages: Int,
+        pageSize: CGSize,
+        bottomMargin: Double
+    ) {
+        let text = "\(pageNumber) / \(totalPages)"
+        let str = NSAttributedString(
+            string: text,
+            attributes: [
+                .font: text.getFont(ofSize: fontSize)
+            ]
+        )
+        let textSize = text.getSize(fontSize: fontSize)
+        let originX = (pageSize.width - textSize.width) / 2
+        let originY = bottomMargin / 2 - textSize.height / 2
+
+        let framesetter = CTFramesetterCreateWithAttributedString(str)
+        context.saveGState()
+        context.textMatrix = CGAffineTransform.identity
+        context.setFillColor(
+            CGColor(red: 33 / 255, green: 33 / 255, blue: 33 / 255, alpha: 1)
+        )
+        let framePath = CGPath(
+            rect: CGRect(
+                origin: CGPoint(x: originX, y: max(originY, 4)),
+                size: textSize
+            ),
+            transform: nil
+        )
+        let frameRef = CTFramesetterCreateFrame(
+            framesetter, CFRange(location: 0, length: 0), framePath, nil
+        )
+        CTFrameDraw(frameRef, context)
+        context.restoreGState()
+    }
+
+    // MARK: - Legacy uniform-width drawing helpers
+
     private func setRowText(
         context: CGContext,
         styles: [Csv.Column.Style],
