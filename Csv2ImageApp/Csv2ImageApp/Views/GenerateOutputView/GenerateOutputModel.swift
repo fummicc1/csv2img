@@ -79,9 +79,9 @@ class GenerateOutputModel: ObservableObject {
         do {
             switch fileType {
             case .local:
-                csv = try Csv.loadFromDisk(url, encoding: encoding, exportType: exportMode)
+                csv = try Csv.loadFromDisk(url, encoding: encoding)
             case .network:
-                csv = try Csv.loadFromNetwork(url, encoding: encoding, exportType: exportMode)
+                csv = try Csv.loadFromNetwork(url, encoding: encoding)
             }
         } catch {
             csv = await MainActor.run(body: {
