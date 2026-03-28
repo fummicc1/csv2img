@@ -751,35 +751,7 @@ extension PdfMaker {
                     - (Double(
                         i + 1
                     ) * height + size.height + topSpaceInBox)
-                let framesetter = CTFramesetterCreateWithAttributedString(
-                    str
-                )
-                context.textMatrix = CGAffineTransform.identity
-                let framePath = CGPath(
-                    rect: CGRect(
-                        origin: CGPoint(
-                            x: originX,
-                            y: originY
-                        ),
-                        size: size
-                    ),
-                    transform: nil
-                )
-                let frameRef = CTFramesetterCreateFrame(
-                    framesetter,
-                    CFRange(
-                        location: 0,
-                        length: 0
-                    ),
-                    framePath,
-                    nil
-                )
-                context.saveGState()
-                CTFrameDraw(
-                    frameRef,
-                    context
-                )
-                context.restoreGState()
+                drawText(str, at: CGPoint(x: originX, y: originY), in: context)
             }
         }
     }
@@ -866,35 +838,7 @@ extension PdfMaker {
             )
             let originX = xOffSet + i * width + (width - size.width) / 2
             let originY = yOffSet + totalHeight - (height + size.height) / 2
-            let framesetter = CTFramesetterCreateWithAttributedString(
-                str
-            )
-            context.saveGState()
-            context.textMatrix = CGAffineTransform.identity
-            let framePath = CGPath(
-                rect: CGRect(
-                    origin: CGPoint(
-                        x: originX,
-                        y: originY
-                    ),
-                    size: size
-                ),
-                transform: nil
-            )
-            let frameRef = CTFramesetterCreateFrame(
-                framesetter,
-                CFRange(
-                    location: 0,
-                    length: 0
-                ),
-                framePath,
-                nil
-            )
-            CTFrameDraw(
-                frameRef,
-                context
-            )
-            context.restoreGState()
+            drawText(str, at: CGPoint(x: originX, y: originY), in: context)
         }
     }
 }
