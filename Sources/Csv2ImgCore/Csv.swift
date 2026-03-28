@@ -282,7 +282,7 @@ extension Csv {
         maxLength: Int? = nil,
         exportType: ExportType = .png,
         styles: [Csv.Column.Style]? = nil
-    ) -> Csv {
+    ) throws -> Csv {
         let parser = CsvParser()
         let options = CsvParser.Options(
             separator: Character(separator),
@@ -290,34 +290,23 @@ extension Csv {
             maxFieldLength: maxLength
         )
 
-        do {
-            let result = try parser.parse(str, options: options)
-            let columns: [Column]
-            if let styles = styles {
-                columns = result.columns.enumerated().map { (i, col) in
-                    Column(name: col.name, style: i < styles.count ? styles[i] : col.style)
-                }
-            } else {
-                columns = result.columns
+        let result = try parser.parse(str, options: options)
+        let columns: [Column]
+        if let styles = styles {
+            columns = result.columns.enumerated().map { (i, col) in
+                Column(name: col.name, style: i < styles.count ? styles[i] : col.style)
             }
-            return Csv(
-                separator: separator,
-                rawString: str,
-                encoding: encoding,
-                columns: columns,
-                rows: result.rows,
-                exportType: exportType
-            )
-        } catch {
-            return Csv(
-                separator: separator,
-                rawString: str,
-                encoding: encoding,
-                columns: [],
-                rows: [],
-                exportType: exportType
-            )
+        } else {
+            columns = result.columns
         }
+        return Csv(
+            separator: separator,
+            rawString: str,
+            encoding: encoding,
+            columns: columns,
+            rows: result.rows,
+            exportType: exportType
+        )
     }
 
     /// Generate `Csv` from network url (like `HTTPS`).
@@ -346,7 +335,7 @@ extension Csv {
                 data: data
             )
         }
-        return Csv.loadFromString(
+        return try Csv.loadFromString(
             str,
             encoding: encoding,
             separator: separator
@@ -385,7 +374,7 @@ extension Csv {
                 encoding: encoding
             )
         }
-        return Csv.loadFromString(
+        return try Csv.loadFromString(
             str,
             encoding: encoding,
             separator: separator

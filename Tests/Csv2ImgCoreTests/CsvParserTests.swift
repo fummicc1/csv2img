@@ -213,37 +213,33 @@ final class CsvParserTests: XCTestCase {
         }
     }
 
-    /// T103: Unclosed quote throws invalidQuoting.
+    /// T103: Unclosed quote falls back gracefully instead of throwing.
     func testT103_unclosedQuote() throws {
         let input = "a\n\"unclosed"
-        XCTAssertThrowsError(try parser.parse(input)) { error in
-            guard case Csv.Error.invalidQuoting = error else {
-                XCTFail("Expected invalidQuoting, got \(error)")
-                return
-            }
-        }
+        let result = try parser.parse(input)
+        XCTAssertEqual(result.columns.count, 1)
+        XCTAssertEqual(result.rows.count, 1)
+        // The unclosed quoted field is committed as-is
+        XCTAssertEqual(result.rows[0].values, ["unclosed"])
     }
 
-    /// T104: Invalid char after closing quote throws invalidQuoting.
+    /// T104: Invalid char after closing quote falls back to unquoted field.
     func testT104_invalidCharAfterClosingQuote() throws {
         let input = "a\n\"value\"x"
-        XCTAssertThrowsError(try parser.parse(input)) { error in
-            guard case Csv.Error.invalidQuoting = error else {
-                XCTFail("Expected invalidQuoting, got \(error)")
-                return
-            }
-        }
+        let result = try parser.parse(input)
+        XCTAssertEqual(result.columns.count, 1)
+        XCTAssertEqual(result.rows.count, 1)
+        // The closing quote and trailing char are treated as content
+        XCTAssertEqual(result.rows[0].values, ["value\"x"])
     }
 
-    /// T105: EOF inside quote throws invalidQuoting.
+    /// T105: EOF inside quote falls back gracefully.
     func testT105_eofInsideQuote() throws {
         let input = "a\n\""
-        XCTAssertThrowsError(try parser.parse(input)) { error in
-            guard case Csv.Error.invalidQuoting = error else {
-                XCTFail("Expected invalidQuoting, got \(error)")
-                return
-            }
-        }
+        let result = try parser.parse(input)
+        XCTAssertEqual(result.columns.count, 1)
+        XCTAssertEqual(result.rows.count, 1)
+        XCTAssertEqual(result.rows[0].values, [""])
     }
 
     // MARK: - Boundary cases
@@ -278,5 +274,41 @@ final class CsvParserTests: XCTestCase {
         let input = "a,b\n🎉,🚀"
         let result = try parser.parse(input)
         XCTAssertEqual(result.rows[0].values, ["🎉", "🚀"])
+    }
+
+    // MARK: - Non-RFC 4180 resilience
+
+    /// T301: Bare quote in unquoted field is treated as regular character.
+    func testT301_bareQuoteInUnquotedField() throws {
+        let input = "a,b\nHe said \"hello\",world"
+        let result = try parser.parse(input)
+        XCTAssertEqual(result.rows[0].values, ["He said \"hello\"", "world"])
+    }
+
+    /// T302: Quote after closing quote falls back to unquoted mode.
+    func testT302_quoteAfterClosingQuoteFallback() throws {
+        let input = "a,b\n\"val\"ue,other"
+        let result = try parser.parse(input)
+        XCTAssertEqual(result.rows[0].values, ["val\"ue", "other"])
+    }
+
+    /// T303: Unclosed quote at EOF commits field content (padded to column count).
+    func testT303_unclosedQuoteAtEofCommitsContent() throws {
+        let input = "a,b\n\"unclosed,data"
+        let result = try parser.parse(input)
+        // The unclosed quoted field captures everything until EOF as one field.
+        // Since header has 2 columns, the row is padded with an empty string.
+        XCTAssertEqual(result.rows[0].values, ["unclosed,data", ""])
+    }
+
+    /// T304: loadFromString with non-RFC 4180 quotes succeeds.
+    func testT304_loadFromStringWithBareQuotes() async throws {
+        let input = "name,desc\nAlice,She said \"hi\""
+        let csv = try Csv.loadFromString(input)
+        let columns = await csv.columns
+        let rows = await csv.rows
+        XCTAssertEqual(columns.count, 2)
+        XCTAssertEqual(rows.count, 1)
+        XCTAssertEqual(rows[0].values, ["Alice", "She said \"hi\""])
     }
 }

@@ -79,6 +79,14 @@ import SwiftUI
                         }
                     }
 
+                    if let errorMessage = model.state.errorMessage {
+                        Section(header: Text("Error")) {
+                            Text(errorMessage)
+                                .foregroundColor(.red)
+                                .font(.caption)
+                        }
+                    }
+
                     Section(header: Text("Preview")) {
                         GeneratePreviewView(
                             model: model

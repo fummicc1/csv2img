@@ -5,7 +5,7 @@ import XCTest
 class ImageMakerTests: XCTestCase {
     func testBuildImage() async throws {
         // Given
-        let csv = Csv.loadFromString(
+        let csv = try Csv.loadFromString(
             """
             name,beginnerValue,middleValue,expertValue,unit
             Requirements Analysis,1.00,1.00,1.00,H
@@ -191,7 +191,7 @@ class ImageMakerTests: XCTestCase {
         let outputFileURL = getRelativeFilePathFromPackageSource(
             path: "Fixtures/outputs/category.png"
         )
-        let csv = Csv.loadFromString(
+        let csv = try Csv.loadFromString(
             """
             name,beginnerValue,middleValue,expertValue,unit
             Requirements Analysis,1.00,1.00,1.00,H
