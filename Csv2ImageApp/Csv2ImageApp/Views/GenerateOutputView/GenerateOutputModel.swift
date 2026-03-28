@@ -100,45 +100,48 @@ class GenerateOutputModel: ObservableObject {
         })
         csvTask?.cancel()
         csvTask = Task {
-            Task {
-                do {
-                    await csv.update(
-                        pdfMetadata: .init(
-                            size: pdfSize,
-                            orientation: pdfOrientation
+            await withTaskGroup(of: Void.self) { group in
+                group.addTask {
+                    do {
+                        await csv.update(
+                            pdfMetadata: .init(
+                                size: pdfSize,
+                                orientation: pdfOrientation
+                            )
                         )
-                    )
-                    let exportable = try await csv.generate(exportType: exportMode)
-                    if type(of: exportable.base) == PDFDocument.self {
-                        await MainActor.run {
-                            self.state.cgImage = nil
-                            self.state.pdfDocument = exportable.base as? PDFDocument
+                        let exportable = try await csv.generate(exportType: exportMode)
+                        if type(of: exportable.base) == PDFDocument.self {
+                            await MainActor.run {
+                                self.state.cgImage = nil
+                                self.state.pdfDocument = exportable.base as? PDFDocument
+                            }
+                        } else {
+                            await MainActor.run {
+                                self.state.pdfDocument = nil
+                                self.state.cgImage = exportable.base as! CGImage
+                            }
                         }
-                    } else {
+                    } catch {
+                        guard !Task.isCancelled else { return }
+                        print("[Csv2Img] Failed to generate output: \(error)")
                         await MainActor.run {
-                            self.state.pdfDocument = nil
-                            self.state.cgImage = exportable.base as! CGImage
+                            self.state.errorMessage = "Failed to generate: \(error)"
                         }
                     }
-                } catch {
-                    print("[Csv2Img] Failed to generate output: \(error)")
-                    await MainActor.run {
-                        self.state.errorMessage = "Failed to generate: \(error)"
+                }
+                group.addTask {
+                    for await isLoading in csv.isLoadingPublisher.values {
+                        await MainActor.run {
+                            self.state.isLoading = isLoading
+                        }
                     }
                 }
-            }
-            Task {
-                for await isLoading in csv.isLoadingPublisher.values {
-                    await MainActor.run(body: {
-                        state.isLoading = isLoading
-                    })
-                }
-            }
-            Task {
-                for await progress in csv.progressPublisher.values {
-                    await MainActor.run(body: {
-                        state.progress = progress
-                    })
+                group.addTask {
+                    for await progress in csv.progressPublisher.values {
+                        await MainActor.run {
+                            self.state.progress = progress
+                        }
+                    }
                 }
             }
         }

@@ -39,7 +39,5 @@ extension Csv {
         case underlying(
             Swift.Error?
         )
-        /// Quoting error detected during CSV parsing.
-        case invalidQuoting(line: Int, column: Int)
     }
 }
