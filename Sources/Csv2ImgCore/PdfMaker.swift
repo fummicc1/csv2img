@@ -576,21 +576,7 @@ extension PdfMaker {
             let cellCenterX = colX + (colWidth - textSize.width) / 2
             let cellCenterY = headerBottom + (headerHeight - textSize.height) / 2
 
-            let framesetter = CTFramesetterCreateWithAttributedString(str)
-            context.saveGState()
-            context.textMatrix = CGAffineTransform.identity
-            let framePath = CGPath(
-                rect: CGRect(
-                    origin: CGPoint(x: cellCenterX, y: cellCenterY),
-                    size: textSize
-                ),
-                transform: nil
-            )
-            let frameRef = CTFramesetterCreateFrame(
-                framesetter, CFRange(location: 0, length: 0), framePath, nil
-            )
-            CTFrameDraw(frameRef, context)
-            context.restoreGState()
+            drawText(str, at: CGPoint(x: cellCenterX, y: cellCenterY), in: context)
 
             colX += colWidth
         }
@@ -654,21 +640,7 @@ extension PdfMaker {
                 let cellCenterX = colX + (colWidth - textSize.width) / 2
                 let cellCenterY = rowBottom + (rowH - textSize.height) / 2
 
-                let framesetter = CTFramesetterCreateWithAttributedString(str)
-                context.saveGState()
-                context.textMatrix = CGAffineTransform.identity
-                let framePath = CGPath(
-                    rect: CGRect(
-                        origin: CGPoint(x: cellCenterX, y: cellCenterY),
-                        size: textSize
-                    ),
-                    transform: nil
-                )
-                let frameRef = CTFramesetterCreateFrame(
-                    framesetter, CFRange(location: 0, length: 0), framePath, nil
-                )
-                CTFrameDraw(frameRef, context)
-                context.restoreGState()
+                drawText(str, at: CGPoint(x: cellCenterX, y: cellCenterY), in: context)
 
                 colX += colWidth
             }
@@ -696,23 +668,20 @@ extension PdfMaker {
         let originX = (pageSize.width - textSize.width) / 2
         let originY = bottomMargin / 2 - textSize.height / 2
 
-        let framesetter = CTFramesetterCreateWithAttributedString(str)
+        drawText(str, at: CGPoint(x: originX, y: max(originY, 4)), in: context)
+    }
+
+    /// Draws an attributed string at the given position using CTLine (more reliable than CTFrame in PDF contexts).
+    private func drawText(
+        _ attributedString: NSAttributedString,
+        at point: CGPoint,
+        in context: CGContext
+    ) {
+        let line = CTLineCreateWithAttributedString(attributedString)
         context.saveGState()
         context.textMatrix = CGAffineTransform.identity
-        context.setFillColor(
-            CGColor(red: 33 / 255, green: 33 / 255, blue: 33 / 255, alpha: 1)
-        )
-        let framePath = CGPath(
-            rect: CGRect(
-                origin: CGPoint(x: originX, y: max(originY, 4)),
-                size: textSize
-            ),
-            transform: nil
-        )
-        let frameRef = CTFramesetterCreateFrame(
-            framesetter, CFRange(location: 0, length: 0), framePath, nil
-        )
-        CTFrameDraw(frameRef, context)
+        context.textPosition = point
+        CTLineDraw(line, context)
         context.restoreGState()
     }
 

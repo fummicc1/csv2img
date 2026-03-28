@@ -147,7 +147,11 @@ public struct CsvParser: Sendable {
 
             case .quotedField:
                 guard let scalar = peekScalar() else {
-                    throw Csv.Error.invalidQuoting(line: line, column: column)
+                    // Non-RFC 4180: EOF inside quoted field.
+                    // Treat the opening quote as part of content and commit what we have.
+                    commitField()
+                    commitRow()
+                    break mainLoop
                 }
 
                 if scalar == "\"" {
@@ -206,7 +210,13 @@ public struct CsvParser: Sendable {
                     commitRow()
                     break mainLoop
                 } else {
-                    throw Csv.Error.invalidQuoting(line: line, column: column)
+                    // Non-RFC 4180: unexpected character after closing quote.
+                    // Treat the closing quote as part of the field content and
+                    // continue as an unquoted field for resilience.
+                    currentField.unicodeScalars.append("\"")
+                    currentField.unicodeScalars.append(scalar!)
+                    advanceIndex()
+                    state = .unquotedField
                 }
 
             case .rowEnd:

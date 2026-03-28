@@ -9,13 +9,13 @@ final class IntegrationTests: XCTestCase {
     // MARK: - T701-T706: Csv backward compatibility + new features
 
     /// T701: Existing Csv.loadFromString behavior preserved.
-    func testT701_existingBehaviorPreserved() async {
+    func testT701_existingBehaviorPreserved() async throws {
         let input = """
             name,value,unit
             Alpha,1.00,H
             Beta,2.00,page
             """
-        let csv = Csv.loadFromString(input)
+        let csv = try Csv.loadFromString(input)
         let columns = await csv.columns
         let rows = await csv.rows
         XCTAssertEqual(columns.count, 3)
@@ -26,9 +26,9 @@ final class IntegrationTests: XCTestCase {
     }
 
     /// T702: Explicit separator is respected.
-    func testT702_explicitSeparator() async {
+    func testT702_explicitSeparator() async throws {
         let input = "a;b;c\n1;2;3"
-        let csv = Csv.loadFromString(input, separator: ";")
+        let csv = try Csv.loadFromString(input, separator: ";")
         let columns = await csv.columns
         let rows = await csv.rows
         XCTAssertEqual(columns.map(\.name), ["a", "b", "c"])
@@ -42,7 +42,7 @@ final class IntegrationTests: XCTestCase {
             John,"Tokyo, Japan"
             Jane,"New York, USA"
             """
-        let csv = Csv.loadFromString(input, exportType: .pdf)
+        let csv = try Csv.loadFromString(input, exportType: .pdf)
         let columns = await csv.columns
         let rows = await csv.rows
 
@@ -63,7 +63,7 @@ final class IntegrationTests: XCTestCase {
     /// T706: Japanese CSV through to PDF generation.
     func testT706_japaneseCsvToPdf() async throws {
         let input = "名前,年齢,都市\n太郎,30,東京\n花子,25,大阪"
-        let csv = Csv.loadFromString(input, exportType: .pdf)
+        let csv = try Csv.loadFromString(input, exportType: .pdf)
         let columns = await csv.columns
         let rows = await csv.rows
 
@@ -85,7 +85,7 @@ final class IntegrationTests: XCTestCase {
         // Excel-style CSV with CRLF, Japanese, and quoted fields
         let input = "商品名,価格,説明\r\n\"りんご\",\"¥100\",\"青森産の\"\"ふじ\"\"\"\r\n\"みかん\",\"¥80\",\"愛媛産\"\r\n\"バナナ\",\"¥150\",\"フィリピン産\""
 
-        let csv = Csv.loadFromString(input, exportType: .pdf)
+        let csv = try Csv.loadFromString(input, exportType: .pdf)
         let columns = await csv.columns
         let rows = await csv.rows
 
@@ -140,7 +140,7 @@ final class IntegrationTests: XCTestCase {
         }
         let input = lines.joined(separator: "\n")
 
-        let csv = Csv.loadFromString(input, exportType: .pdf)
+        let csv = try Csv.loadFromString(input, exportType: .pdf)
         let columns = await csv.columns
         let rows = await csv.rows
 
@@ -174,7 +174,7 @@ final class IntegrationTests: XCTestCase {
 
     func testSecurity_scriptInjectionInFields() async throws {
         let input = "name,value\n<script>alert('xss')</script>,normal"
-        let csv = Csv.loadFromString(input, exportType: .pdf)
+        let csv = try Csv.loadFromString(input, exportType: .pdf)
         let rows = await csv.rows
 
         // Script tags are treated as plain text
@@ -189,5 +189,50 @@ final class IntegrationTests: XCTestCase {
         let columns = await csv.columns
         let pdf = try pdfMaker.make(columns: columns, rows: rows) { _ in }
         XCTAssertNotNil(pdf.dataRepresentation())
+    }
+
+    // MARK: - yolov5x6.csv end-to-end test
+
+    func testYolov5x6_loadFromDiskAndGenerate() async throws {
+        let fileURL = getRelativeFilePathFromPackageSource(path: "Fixtures/yolov5x6.csv")
+        let csv = try Csv.loadFromDisk(fileURL, encoding: .utf8)
+        let columns = await csv.columns
+        let rows = await csv.rows
+        XCTAssertEqual(columns.count, 6)
+        XCTAssertEqual(rows.count, 18)
+
+        // Test PDF generation (the default export mode in the app)
+        let exportable = try await csv.generate(exportType: .pdf)
+        XCTAssertTrue(type(of: exportable.base) == PDFDocument.self)
+    }
+
+    /// Fixed-size PDF (.a3) contains actual text content, not just grid lines.
+    func testYolov5x6_fixedSizePdfHasText() async throws {
+        let fileURL = getRelativeFilePathFromPackageSource(path: "Fixtures/yolov5x6.csv")
+        let csv = try Csv.loadFromDisk(fileURL, encoding: .utf8)
+        let columns = await csv.columns
+        let rows = await csv.rows
+
+        // Simulate the app's flow: update metadata with .a3 size
+        await csv.update(pdfMetadata: .init(size: .a3, orientation: .portrait))
+
+        let pdfMaker = PdfMaker(
+            maximumRowCount: nil,
+            fontSize: 12,
+            metadata: PDFMetadata(size: .a3, orientation: .portrait)
+        )
+        let pdf = try pdfMaker.make(
+            with: .a3,
+            orientation: .portrait,
+            columns: columns,
+            rows: rows
+        ) { _ in }
+
+        XCTAssertGreaterThan(pdf.pageCount, 0)
+
+        // Verify PDF contains text by checking data size
+        // (a PDF with only grid lines is ~5KB, with text it's ~20KB+)
+        let dataSize = pdf.dataRepresentation()?.count ?? 0
+        XCTAssertGreaterThan(dataSize, 10000, "PDF with text should be larger than grid-only PDF (\(dataSize) bytes)")
     }
 }

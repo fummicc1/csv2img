@@ -84,6 +84,7 @@ class GenerateOutputModel: ObservableObject {
                 csv = try Csv.loadFromNetwork(url, encoding: encoding)
             }
         } catch {
+            print("[Csv2Img] Failed to load CSV: \(error)")
             csv = await MainActor.run(body: {
                 self.state.errorMessage = "Error happened:\n\(error)"
                 return self.cachedCsv
@@ -95,6 +96,7 @@ class GenerateOutputModel: ObservableObject {
 
         await MainActor.run(body: {
             cachedCsv = csv
+            state.errorMessage = nil
         })
         csvTask?.cancel()
         csvTask = Task {
@@ -108,13 +110,21 @@ class GenerateOutputModel: ObservableObject {
                     )
                     let exportable = try await csv.generate(exportType: exportMode)
                     if type(of: exportable.base) == PDFDocument.self {
-                        await self.update(
-                            keyPath: \.pdfDocument, value: (exportable.base as! PDFDocument))
+                        await MainActor.run {
+                            self.state.cgImage = nil
+                            self.state.pdfDocument = exportable.base as? PDFDocument
+                        }
                     } else {
-                        await self.update(keyPath: \.cgImage, value: (exportable.base as! CGImage))
+                        await MainActor.run {
+                            self.state.pdfDocument = nil
+                            self.state.cgImage = exportable.base as! CGImage
+                        }
                     }
                 } catch {
-                    print(error)
+                    print("[Csv2Img] Failed to generate output: \(error)")
+                    await MainActor.run {
+                        self.state.errorMessage = "Failed to generate: \(error)"
+                    }
                 }
             }
             Task {

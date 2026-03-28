@@ -60,6 +60,12 @@ import SwiftUI
                     .frame(minWidth: 200, idealWidth: 250, maxWidth: 300)
 
                     VStack {
+                        if let errorMessage = model.state.errorMessage {
+                            Text(errorMessage)
+                                .foregroundColor(.red)
+                                .font(.caption)
+                                .padding()
+                        }
                         GeometryReader(content: { proxy in
                             GeneratePreviewView(
                                 model: model

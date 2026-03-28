@@ -30,7 +30,7 @@ class PdfMakerTests: XCTestCase {
         // Given
         let fileURL = getRelativeFilePathFromPackageSource(path: "/Fixtures/outputs/category.pdf")
         let expected = PDFDocument(url: fileURL)!
-        let csv = Csv.loadFromString(
+        let csv = try Csv.loadFromString(
             """
             name,beginnerValue,middleValue,expertValue,unit
             Requirements Analysis,1.00,1.00,1.00,H
