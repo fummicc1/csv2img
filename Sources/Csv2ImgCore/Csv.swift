@@ -283,9 +283,10 @@ extension Csv {
         exportType: ExportType = .png,
         styles: [Csv.Column.Style]? = nil
     ) throws -> Csv {
+        precondition(separator.count == 1, "Separator must be a single character, got: \"\(separator)\"")
         let parser = CsvParser()
         let options = CsvParser.Options(
-            separator: Character(separator),
+            separator: separator.first!,
             maxFieldLength: maxLength
         )
 
@@ -322,9 +323,10 @@ extension Csv {
         maxLength: Int? = nil,
         chunkSize: Int = 300
     ) -> AsyncThrowingStream<CsvParseResult.Chunk, any Swift.Error> {
+        precondition(separator.count == 1, "Separator must be a single character, got: \"\(separator)\"")
         let parser = CsvParser()
         let options = CsvParser.StreamOptions(
-            separator: Character(separator),
+            separator: separator.first!,
             maxFieldLength: maxLength,
             chunkSize: chunkSize
         )
