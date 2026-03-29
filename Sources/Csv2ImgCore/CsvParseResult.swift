@@ -19,4 +19,18 @@ public struct CsvParseResult: Sendable {
     public let rows: [Csv.Row]
     public let warnings: [Warning]
     public let detectedSeparator: Character
+
+    /// A chunk of parsed CSV data yielded by the streaming parser.
+    public struct Chunk: Sendable {
+        /// The chunk's sequential index (0-based).
+        public let index: Int
+        /// Column definitions (same in every chunk, determined from the header row).
+        public let columns: [Csv.Column]
+        /// The rows in this chunk.
+        public let rows: [Csv.Row]
+        /// Warnings generated while parsing this chunk's rows.
+        public let warnings: [Warning]
+        /// Whether this is the final chunk.
+        public let isFinal: Bool
+    }
 }

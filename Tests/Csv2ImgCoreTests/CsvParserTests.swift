@@ -311,4 +311,153 @@ final class CsvParserTests: XCTestCase {
         XCTAssertEqual(rows.count, 1)
         XCTAssertEqual(rows[0].values, ["Alice", "She said \"hi\""])
     }
+
+    // MARK: - Streaming API tests
+
+    /// S001: Small CSV fits in one chunk.
+    func testS001_singleChunk() async throws {
+        let input = "a,b,c\n1,2,3\n4,5,6"
+        var chunks: [CsvParseResult.Chunk] = []
+        for try await chunk in parser.parseAsStream(input) {
+            chunks.append(chunk)
+        }
+        XCTAssertEqual(chunks.count, 1)
+        XCTAssertEqual(chunks[0].index, 0)
+        XCTAssertTrue(chunks[0].isFinal)
+        XCTAssertEqual(chunks[0].columns.map(\.name), ["a", "b", "c"])
+        XCTAssertEqual(chunks[0].rows.count, 2)
+    }
+
+    /// S002: Multiple chunks with chunkSize=3.
+    func testS002_multipleChunks() async throws {
+        var lines = ["h1,h2"]
+        for i in 0..<10 { lines.append("\(i),val\(i)") }
+        let input = lines.joined(separator: "\n")
+
+        var chunks: [CsvParseResult.Chunk] = []
+        let opts = CsvParser.StreamOptions(chunkSize: 3)
+        for try await chunk in parser.parseAsStream(input, options: opts) {
+            chunks.append(chunk)
+        }
+        XCTAssertEqual(chunks.count, 4) // 3+3+3+1
+        XCTAssertEqual(chunks[0].rows.count, 3)
+        XCTAssertEqual(chunks[1].rows.count, 3)
+        XCTAssertEqual(chunks[2].rows.count, 3)
+        XCTAssertEqual(chunks[3].rows.count, 1)
+        XCTAssertFalse(chunks[0].isFinal)
+        XCTAssertFalse(chunks[1].isFinal)
+        XCTAssertFalse(chunks[2].isFinal)
+        XCTAssertTrue(chunks[3].isFinal)
+    }
+
+    /// S003: All chunks have the same columns.
+    func testS003_columnsInEveryChunk() async throws {
+        var lines = ["name,value"]
+        for i in 0..<7 { lines.append("r\(i),\(i)") }
+        let input = lines.joined(separator: "\n")
+
+        let opts = CsvParser.StreamOptions(chunkSize: 2)
+        var columnSets: [[String]] = []
+        for try await chunk in parser.parseAsStream(input, options: opts) {
+            columnSets.append(chunk.columns.map(\.name))
+        }
+        for set in columnSets {
+            XCTAssertEqual(set, ["name", "value"])
+        }
+    }
+
+    /// S004: Row indices are global across chunks.
+    func testS004_globalRowIndices() async throws {
+        var lines = ["a"]
+        for i in 0..<5 { lines.append("r\(i)") }
+        let input = lines.joined(separator: "\n")
+
+        let opts = CsvParser.StreamOptions(chunkSize: 2)
+        var allIndices: [Int] = []
+        for try await chunk in parser.parseAsStream(input, options: opts) {
+            allIndices.append(contentsOf: chunk.rows.map(\.index))
+        }
+        XCTAssertEqual(allIndices, [1, 2, 3, 4, 5])
+    }
+
+    /// S005: Empty string throws emptyData.
+    func testS005_emptyStringThrows() async {
+        var thrownError: Error?
+        do {
+            for try await _ in parser.parseAsStream("") {
+                XCTFail("Should not yield any chunks")
+            }
+        } catch {
+            thrownError = error
+        }
+        XCTAssertTrue(thrownError is Csv.Error)
+    }
+
+    /// S006: Header-only CSV yields one chunk with 0 rows.
+    func testS006_headerOnlyYieldsEmptyChunk() async throws {
+        var chunks: [CsvParseResult.Chunk] = []
+        for try await chunk in parser.parseAsStream("a,b,c") {
+            chunks.append(chunk)
+        }
+        XCTAssertEqual(chunks.count, 1)
+        XCTAssertTrue(chunks[0].isFinal)
+        XCTAssertEqual(chunks[0].rows.count, 0)
+        XCTAssertEqual(chunks[0].columns.count, 3)
+    }
+
+    /// S007: Warnings appear in the correct chunk.
+    func testS007_warningsInCorrectChunk() async throws {
+        // Row 4 has too few fields (chunkSize=3, so it's in chunk 1)
+        let input = "a,b\n1,2\n3,4\n5,6\n7\n8,9"
+        let opts = CsvParser.StreamOptions(chunkSize: 3)
+        var chunks: [CsvParseResult.Chunk] = []
+        for try await chunk in parser.parseAsStream(input, options: opts) {
+            chunks.append(chunk)
+        }
+        XCTAssertEqual(chunks.count, 2)
+        XCTAssertTrue(chunks[0].warnings.isEmpty)
+        XCTAssertEqual(chunks[1].warnings.count, 1)
+    }
+
+    /// S008: Quoted fields with newlines work in streaming.
+    func testS008_quotedFieldsInStream() async throws {
+        let input = "a,b\n\"line1\nline2\",val"
+        var chunks: [CsvParseResult.Chunk] = []
+        for try await chunk in parser.parseAsStream(input) {
+            chunks.append(chunk)
+        }
+        XCTAssertEqual(chunks[0].rows[0].values, ["line1\nline2", "val"])
+    }
+
+    /// S009: maxFieldLength truncation works in streaming.
+    func testS009_maxFieldLengthInStream() async throws {
+        let input = "a\n12345678901234567890"
+        let opts = CsvParser.StreamOptions(maxFieldLength: 10)
+        var chunks: [CsvParseResult.Chunk] = []
+        for try await chunk in parser.parseAsStream(input, options: opts) {
+            chunks.append(chunk)
+        }
+        XCTAssertEqual(chunks[0].rows[0].values, ["1234567..."])
+    }
+
+    /// S010: Streaming result equals batch parse result.
+    func testS010_equivalenceWithParse() async throws {
+        let input = "name,value,unit\nAlpha,1.00,H\nBeta,2.00,page\nGamma,3.00,item\nDelta,4.00,step"
+        let batchResult = try parser.parse(input)
+
+        let opts = CsvParser.StreamOptions(chunkSize: 2)
+        var streamColumns: [Csv.Column] = []
+        var streamRows: [Csv.Row] = []
+        var streamWarnings: [CsvParseResult.Warning] = []
+        for try await chunk in parser.parseAsStream(input, options: opts) {
+            streamColumns = chunk.columns
+            streamRows.append(contentsOf: chunk.rows)
+            streamWarnings.append(contentsOf: chunk.warnings)
+        }
+
+        XCTAssertEqual(streamColumns.map(\.name), batchResult.columns.map(\.name))
+        XCTAssertEqual(streamRows.map(\.values), batchResult.rows.map(\.values))
+        XCTAssertEqual(streamRows.map(\.index), batchResult.rows.map(\.index))
+        XCTAssertEqual(streamWarnings, batchResult.warnings)
+    }
 }
