@@ -392,11 +392,21 @@ extension Csv {
         ) {
             str = _str
         } else {
-            throw Error.invalidLocalResource(
-                url: file.absoluteString,
-                data: data,
-                encoding: encoding
-            )
+            let fallbackEncodings: [String.Encoding] = [
+                .shiftJIS, .japaneseEUC, .utf16, .utf32, .ascii,
+            ]
+            let fallbackStr = fallbackEncodings.lazy
+                .filter { $0 != encoding }
+                .compactMap { String(data: data, encoding: $0) }
+                .first
+            guard let fallbackStr else {
+                throw Error.invalidLocalResource(
+                    url: file.absoluteString,
+                    data: data,
+                    encoding: encoding
+                )
+            }
+            str = fallbackStr
         }
         return try Csv.loadFromString(
             str,
