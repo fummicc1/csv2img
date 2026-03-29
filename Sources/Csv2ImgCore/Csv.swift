@@ -18,7 +18,7 @@ import UniformTypeIdentifiers
  7,8,9
  10,11,12
  """
- let csv = Csv.loadFromString(rawCsv)
+ let csv = try Csv.loadFromString(rawCsv)
  Output:
  | a  | b  | c  |
  | 1  | 2  | 3  |
@@ -224,7 +224,7 @@ extension Csv {
     /// 7,8,9
     /// 10,11,12
     /// """
-    /// let csv = Csv.loadFromString(rawCsv)
+    /// let csv = try Csv.loadFromString(rawCsv)
     /// Output:
     /// | a  | b  | c  |
     /// | 1  | 2  | 3  |
@@ -242,7 +242,7 @@ extension Csv {
     /// 4.5.6
     /// 7.8.9
     /// """
-    /// let csv = Csv.loadFromString(dotSeparated, separator: ".")
+    /// let csv = try Csv.loadFromString(dotSeparated, separator: ".")
     /// Output:
     /// | a  | b  | c  |
     /// | 1  | 2  | 3  |
@@ -260,7 +260,7 @@ extension Csv {
     /// 4.5.6
     /// 7.8.9
     /// """
-    /// let csv = Csv.loadFromString(dotSeparated, separator: ".", maxLength: 7)
+    /// let csv = try Csv.loadFromString(dotSeparated, separator: ".", maxLength: 7)
     /// Output:
     /// | a  | b  | c        |
     /// | 1  | 2  | 3333333  |
