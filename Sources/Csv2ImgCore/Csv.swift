@@ -308,6 +308,29 @@ extension Csv {
         )
     }
 
+    /// Parse a CSV string as an `AsyncThrowingStream` of row chunks.
+    ///
+    /// - Parameters:
+    ///     - str: Raw CSV string.
+    ///     - separator: Field separator (default `","`).
+    ///     - maxLength: Maximum field length before truncation.
+    ///     - chunkSize: Number of rows per chunk (default 300).
+    /// - Returns: A stream of ``CsvParseResult/Chunk`` values.
+    public static func loadFromStringAsStream(
+        _ str: String,
+        separator: String = ",",
+        maxLength: Int? = nil,
+        chunkSize: Int = 300
+    ) -> AsyncThrowingStream<CsvParseResult.Chunk, any Swift.Error> {
+        let parser = CsvParser()
+        let options = CsvParser.StreamOptions(
+            separator: Character(separator),
+            maxFieldLength: maxLength,
+            chunkSize: chunkSize
+        )
+        return parser.parseAsStream(str, options: options)
+    }
+
     /// Generate `Csv` from network url (like `HTTPS`).
     ///
     /// - Parameters:
