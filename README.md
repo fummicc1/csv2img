@@ -54,7 +54,7 @@ You cloud convert csv into image / pdf in 3 ways.
  7,8,9
  10,11,12
  """
-let csv = Csv.loadFromString(rawCsv)
+let csv = try Csv.loadFromString(rawCsv)
 let image = try await csv.generate(exportType: .png)
  Output:
  | a  | b  | c  |
@@ -79,7 +79,7 @@ let url = URL(
 )
 rawCsv.data(using: .utf8)?.write(to: url)
 // ----- ↑Just prepared for explanation. -----
-let csv = Csv.loadFromDisk(url)
+let csv = try Csv.loadFromDisk(url)
 let data = try await csv.generate(fontSize: 12, exportType: .png)
  Output:
  | a  | b  | c  |
@@ -103,7 +103,7 @@ let url = URL(
     string: "https://raw.githubusercontent.com/fummicc1/csv2img/main/Fixtures/sample_1.csv"
 )
 // ----- ↑Just prepared for explanation. -----
-let csv = Csv.loadFromNetwork(url)
+let csv = try Csv.loadFromNetwork(url)
 let data = try await csv.generate(fontSize: 12, exportType: .png)
  Output:
  | a  | b  | c  |
