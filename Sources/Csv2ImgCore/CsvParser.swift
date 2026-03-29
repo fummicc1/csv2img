@@ -9,16 +9,13 @@ public struct CsvParser: Sendable {
 
     public struct Options: Sendable {
         public var separator: Character
-        public var encoding: String.Encoding
         public var maxFieldLength: Int?
 
         public init(
             separator: Character = ",",
-            encoding: String.Encoding = .utf8,
             maxFieldLength: Int? = nil
         ) {
             self.separator = separator
-            self.encoding = encoding
             self.maxFieldLength = maxFieldLength
         }
     }

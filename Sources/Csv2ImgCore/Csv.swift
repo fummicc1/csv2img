@@ -286,7 +286,6 @@ extension Csv {
         let parser = CsvParser()
         let options = CsvParser.Options(
             separator: Character(separator),
-            encoding: encoding,
             maxFieldLength: maxLength
         )
 
