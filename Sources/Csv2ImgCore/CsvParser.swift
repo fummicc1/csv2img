@@ -20,212 +20,38 @@ public struct CsvParser: Sendable {
         }
     }
 
+    public struct StreamOptions: Sendable {
+        public var separator: Character
+        public var maxFieldLength: Int?
+        public var chunkSize: Int
+
+        public init(
+            separator: Character = ",",
+            maxFieldLength: Int? = nil,
+            chunkSize: Int = 300
+        ) {
+            self.separator = separator
+            self.maxFieldLength = maxFieldLength
+            self.chunkSize = chunkSize
+        }
+    }
+
     public init() {}
 
+    // MARK: - Batch API
+
     public func parse(_ string: String, options: Options = .init()) throws -> CsvParseResult {
-        let trimmed = string.trimmingCharacters(in: .whitespacesAndNewlines)
-        if trimmed.isEmpty {
-            throw Csv.Error.emptyData
-        }
+        var machine = try StateMachine(string: string, separator: options.separator)
 
-        let separatorScalar = options.separator.unicodeScalars.first!
-        let scalars = string.unicodeScalars
-        var index = scalars.startIndex
-
-        // State machine states
-        enum State {
-            case fieldStart
-            case unquotedField
-            case quotedField
-            case quoteInQuoted
-            case rowEnd
-        }
-
-        var state: State = .fieldStart
-        var currentField = ""
-        var currentRow: [String] = []
         var allRows: [[String]] = []
-
-        // Tracking line/column for error reporting (1-based)
-        var line = 1
-        var column = 1
-
-        // Helpers
-        func peekScalar() -> Unicode.Scalar? {
-            guard index < scalars.endIndex else { return nil }
-            return scalars[index]
-        }
-
-        func advanceIndex() {
-            index = scalars.index(after: index)
-            column += 1
-        }
-
-        func commitField() {
-            currentRow.append(currentField)
-            currentField = ""
-        }
-
-        func commitRow() {
-            allRows.append(currentRow)
-            currentRow = []
-            line += 1
-            column = 1
-        }
-
-        mainLoop: while true {
-            switch state {
-            case .fieldStart:
-                guard let scalar = peekScalar() else {
-                    // EOF at field start — if we have accumulated fields in the current row,
-                    // commit an empty field and the row. Otherwise we are done.
-                    if !currentRow.isEmpty {
-                        commitField()
-                        commitRow()
-                    }
-                    break mainLoop
-                }
-
-                if scalar == "\"" {
-                    advanceIndex()
-                    state = .quotedField
-                } else if scalar == separatorScalar {
-                    commitField()
-                    advanceIndex()
-                    state = .fieldStart
-                } else if scalar == "\r" {
-                    commitField()
-                    advanceIndex()
-                    // Check for \r\n
-                    if let next = peekScalar(), next == "\n" {
-                        advanceIndex()
-                    }
-                    commitRow()
-                    state = .fieldStart
-                } else if scalar == "\n" {
-                    commitField()
-                    advanceIndex()
-                    commitRow()
-                    state = .fieldStart
-                } else {
-                    currentField.unicodeScalars.append(scalar)
-                    advanceIndex()
-                    state = .unquotedField
-                }
-
-            case .unquotedField:
-                guard let scalar = peekScalar() else {
-                    commitField()
-                    commitRow()
-                    break mainLoop
-                }
-
-                if scalar == separatorScalar {
-                    commitField()
-                    advanceIndex()
-                    state = .fieldStart
-                } else if scalar == "\r" {
-                    commitField()
-                    advanceIndex()
-                    if let next = peekScalar(), next == "\n" {
-                        advanceIndex()
-                    }
-                    commitRow()
-                    state = .fieldStart
-                } else if scalar == "\n" {
-                    commitField()
-                    advanceIndex()
-                    commitRow()
-                    state = .fieldStart
-                } else {
-                    currentField.unicodeScalars.append(scalar)
-                    advanceIndex()
-                }
-
-            case .quotedField:
-                guard let scalar = peekScalar() else {
-                    // Non-RFC 4180: EOF inside quoted field.
-                    // Treat the opening quote as part of content and commit what we have.
-                    commitField()
-                    commitRow()
-                    break mainLoop
-                }
-
-                if scalar == "\"" {
-                    advanceIndex()
-                    state = .quoteInQuoted
-                } else {
-                    // Track newlines inside quoted fields for accurate error reporting
-                    if scalar == "\r" {
-                        currentField.unicodeScalars.append(scalar)
-                        advanceIndex()
-                        if let next = peekScalar(), next == "\n" {
-                            currentField.unicodeScalars.append(next)
-                            advanceIndex()
-                        }
-                        line += 1
-                        column = 1
-                    } else if scalar == "\n" {
-                        currentField.unicodeScalars.append(scalar)
-                        advanceIndex()
-                        line += 1
-                        column = 1
-                    } else {
-                        currentField.unicodeScalars.append(scalar)
-                        advanceIndex()
-                    }
-                }
-
-            case .quoteInQuoted:
-                let scalar = peekScalar()
-
-                if let scalar, scalar == "\"" {
-                    // Escaped quote "" -> "
-                    currentField.unicodeScalars.append("\"")
-                    advanceIndex()
-                    state = .quotedField
-                } else if let scalar, scalar == separatorScalar {
-                    commitField()
-                    advanceIndex()
-                    state = .fieldStart
-                } else if let scalar, scalar == "\r" {
-                    commitField()
-                    advanceIndex()
-                    if let next = peekScalar(), next == "\n" {
-                        advanceIndex()
-                    }
-                    commitRow()
-                    state = .fieldStart
-                } else if let scalar, scalar == "\n" {
-                    commitField()
-                    advanceIndex()
-                    commitRow()
-                    state = .fieldStart
-                } else if scalar == nil {
-                    // EOF after closing quote
-                    commitField()
-                    commitRow()
-                    break mainLoop
-                } else {
-                    // Non-RFC 4180: unexpected character after closing quote.
-                    // Treat the closing quote as part of the field content and
-                    // continue as an unquoted field for resilience.
-                    currentField.unicodeScalars.append("\"")
-                    currentField.unicodeScalars.append(scalar!)
-                    advanceIndex()
-                    state = .unquotedField
-                }
-
-            case .rowEnd:
-                state = .fieldStart
-            }
+        while let row = machine.nextRow() {
+            allRows.append(row)
         }
 
         guard !allRows.isEmpty else {
             throw Csv.Error.emptyData
         }
 
-        // First row is the header
         let headerFields = allRows[0]
         let columnCount = headerFields.count
         let styles = Csv.Column.Style.random(count: columnCount)
@@ -257,22 +83,6 @@ public struct CsvParser: Sendable {
 
     // MARK: - Streaming API
 
-    public struct StreamOptions: Sendable {
-        public var separator: Character
-        public var maxFieldLength: Int?
-        public var chunkSize: Int
-
-        public init(
-            separator: Character = ",",
-            maxFieldLength: Int? = nil,
-            chunkSize: Int = 300
-        ) {
-            self.separator = separator
-            self.maxFieldLength = maxFieldLength
-            self.chunkSize = chunkSize
-        }
-    }
-
     /// Parses a CSV string and yields rows in chunks via an `AsyncThrowingStream`.
     public func parseAsStream(
         _ string: String,
@@ -281,173 +91,17 @@ public struct CsvParser: Sendable {
         AsyncThrowingStream { continuation in
             Task {
                 do {
-                    let trimmed = string.trimmingCharacters(in: .whitespacesAndNewlines)
-                    if trimmed.isEmpty {
-                        throw Csv.Error.emptyData
-                    }
+                    var machine = try StateMachine(string: string, separator: options.separator)
 
-                    let separatorScalar = options.separator.unicodeScalars.first!
-                    let scalars = string.unicodeScalars
-                    var index = scalars.startIndex
-
-                    enum State {
-                        case fieldStart, unquotedField, quotedField, quoteInQuoted, rowEnd
-                    }
-
-                    var state: State = .fieldStart
-                    var currentField = ""
-                    var currentRow: [String] = []
                     var allRawRows: [[String]] = []
-
-                    var line = 1
-                    var column = 1
-
-                    func peekScalar() -> Unicode.Scalar? {
-                        guard index < scalars.endIndex else { return nil }
-                        return scalars[index]
-                    }
-                    func advanceIndex() {
-                        index = scalars.index(after: index)
-                        column += 1
-                    }
-                    func commitField() {
-                        currentRow.append(currentField)
-                        currentField = ""
-                    }
-                    func commitRow() {
-                        allRawRows.append(currentRow)
-                        currentRow = []
-                        line += 1
-                        column = 1
-                    }
-
-                    // Parse all raw rows using the same state machine as parse()
-                    mainLoop: while true {
-                        switch state {
-                        case .fieldStart:
-                            guard let scalar = peekScalar() else {
-                                if !currentRow.isEmpty {
-                                    commitField()
-                                    commitRow()
-                                }
-                                break mainLoop
-                            }
-                            if scalar == "\"" {
-                                advanceIndex()
-                                state = .quotedField
-                            } else if scalar == separatorScalar {
-                                commitField()
-                                advanceIndex()
-                                state = .fieldStart
-                            } else if scalar == "\r" {
-                                commitField()
-                                advanceIndex()
-                                if let next = peekScalar(), next == "\n" { advanceIndex() }
-                                commitRow()
-                                state = .fieldStart
-                            } else if scalar == "\n" {
-                                commitField()
-                                advanceIndex()
-                                commitRow()
-                                state = .fieldStart
-                            } else {
-                                currentField.unicodeScalars.append(scalar)
-                                advanceIndex()
-                                state = .unquotedField
-                            }
-                        case .unquotedField:
-                            guard let scalar = peekScalar() else {
-                                commitField()
-                                commitRow()
-                                break mainLoop
-                            }
-                            if scalar == separatorScalar {
-                                commitField()
-                                advanceIndex()
-                                state = .fieldStart
-                            } else if scalar == "\r" {
-                                commitField()
-                                advanceIndex()
-                                if let next = peekScalar(), next == "\n" { advanceIndex() }
-                                commitRow()
-                                state = .fieldStart
-                            } else if scalar == "\n" {
-                                commitField()
-                                advanceIndex()
-                                commitRow()
-                                state = .fieldStart
-                            } else {
-                                currentField.unicodeScalars.append(scalar)
-                                advanceIndex()
-                            }
-                        case .quotedField:
-                            guard let scalar = peekScalar() else {
-                                commitField()
-                                commitRow()
-                                break mainLoop
-                            }
-                            if scalar == "\"" {
-                                advanceIndex()
-                                state = .quoteInQuoted
-                            } else {
-                                if scalar == "\r" {
-                                    currentField.unicodeScalars.append(scalar)
-                                    advanceIndex()
-                                    if let next = peekScalar(), next == "\n" {
-                                        currentField.unicodeScalars.append(next)
-                                        advanceIndex()
-                                    }
-                                    line += 1; column = 1
-                                } else if scalar == "\n" {
-                                    currentField.unicodeScalars.append(scalar)
-                                    advanceIndex()
-                                    line += 1; column = 1
-                                } else {
-                                    currentField.unicodeScalars.append(scalar)
-                                    advanceIndex()
-                                }
-                            }
-                        case .quoteInQuoted:
-                            let scalar = peekScalar()
-                            if let scalar, scalar == "\"" {
-                                currentField.unicodeScalars.append("\"")
-                                advanceIndex()
-                                state = .quotedField
-                            } else if let scalar, scalar == separatorScalar {
-                                commitField()
-                                advanceIndex()
-                                state = .fieldStart
-                            } else if let scalar, scalar == "\r" {
-                                commitField()
-                                advanceIndex()
-                                if let next = peekScalar(), next == "\n" { advanceIndex() }
-                                commitRow()
-                                state = .fieldStart
-                            } else if let scalar, scalar == "\n" {
-                                commitField()
-                                advanceIndex()
-                                commitRow()
-                                state = .fieldStart
-                            } else if scalar == nil {
-                                commitField()
-                                commitRow()
-                                break mainLoop
-                            } else {
-                                currentField.unicodeScalars.append("\"")
-                                currentField.unicodeScalars.append(scalar!)
-                                advanceIndex()
-                                state = .unquotedField
-                            }
-                        case .rowEnd:
-                            state = .fieldStart
-                        }
+                    while let row = machine.nextRow() {
+                        allRawRows.append(row)
                     }
 
                     guard !allRawRows.isEmpty else {
                         throw Csv.Error.emptyData
                     }
 
-                    // Build columns from header
                     let headerFields = allRawRows[0]
                     let columnCount = headerFields.count
                     let styles = Csv.Column.Style.random(count: columnCount)
@@ -455,7 +109,6 @@ public struct CsvParser: Sendable {
                         Csv.Column(name: name, style: styles[i])
                     }
 
-                    // Yield data rows in chunks
                     var chunkIndex = 0
                     var bufferedRows: [Csv.Row] = []
                     var bufferedWarnings: [CsvParseResult.Warning] = []
@@ -486,7 +139,6 @@ public struct CsvParser: Sendable {
                         }
                     }
 
-                    // Yield remaining rows as final chunk
                     if !bufferedRows.isEmpty || chunkIndex == 0 {
                         continuation.yield(CsvParseResult.Chunk(
                             index: chunkIndex,
@@ -505,7 +157,7 @@ public struct CsvParser: Sendable {
         }
     }
 
-    // MARK: - Private Helpers
+    // MARK: - Row Validation
 
     static func validateAndBuildRow(
         rawFields: [String],
@@ -548,5 +200,198 @@ public struct CsvParser: Sendable {
         }
 
         return (Csv.Row(index: rowIndex, values: fields), warnings)
+    }
+}
+
+// MARK: - State Machine
+
+extension CsvParser {
+
+    /// Encapsulates the CSV parsing state machine.
+    /// Call `nextRow()` repeatedly to get each raw row as `[String]`, or `nil` at EOF.
+    struct StateMachine {
+
+        enum State {
+            case fieldStart
+            case unquotedField
+            case quotedField
+            case quoteInQuoted
+        }
+
+        private let scalars: String.UnicodeScalarView
+        private let separatorScalar: Unicode.Scalar
+        private var index: String.UnicodeScalarView.Index
+        private var state: State = .fieldStart
+        private var currentField = ""
+        private var currentRow: [String] = []
+        private var finished = false
+
+        // Position tracking (1-based)
+        private(set) var line = 1
+        private(set) var column = 1
+
+        init(string: String, separator: Character) throws {
+            let trimmed = string.trimmingCharacters(in: .whitespacesAndNewlines)
+            if trimmed.isEmpty {
+                throw Csv.Error.emptyData
+            }
+            self.scalars = string.unicodeScalars
+            self.index = scalars.startIndex
+            self.separatorScalar = separator.unicodeScalars.first!
+        }
+
+        /// Returns the next parsed row as an array of field strings, or `nil` at EOF.
+        mutating func nextRow() -> [String]? {
+            guard !finished else { return nil }
+
+            while true {
+                switch state {
+                case .fieldStart:
+                    guard let scalar = peek() else {
+                        if !currentRow.isEmpty {
+                            commitField()
+                            return commitAndReturnRow()
+                        }
+                        finished = true
+                        return nil
+                    }
+
+                    if scalar == "\"" {
+                        advance()
+                        state = .quotedField
+                    } else if scalar == separatorScalar {
+                        commitField()
+                        advance()
+                        state = .fieldStart
+                    } else if scalar == "\r" {
+                        commitField()
+                        advance()
+                        if let next = peek(), next == "\n" { advance() }
+                        return commitAndReturnRow()
+                    } else if scalar == "\n" {
+                        commitField()
+                        advance()
+                        return commitAndReturnRow()
+                    } else {
+                        currentField.unicodeScalars.append(scalar)
+                        advance()
+                        state = .unquotedField
+                    }
+
+                case .unquotedField:
+                    guard let scalar = peek() else {
+                        commitField()
+                        finished = true
+                        return commitAndReturnRow()
+                    }
+
+                    if scalar == separatorScalar {
+                        commitField()
+                        advance()
+                        state = .fieldStart
+                    } else if scalar == "\r" {
+                        commitField()
+                        advance()
+                        if let next = peek(), next == "\n" { advance() }
+                        return commitAndReturnRow()
+                    } else if scalar == "\n" {
+                        commitField()
+                        advance()
+                        return commitAndReturnRow()
+                    } else {
+                        currentField.unicodeScalars.append(scalar)
+                        advance()
+                    }
+
+                case .quotedField:
+                    guard let scalar = peek() else {
+                        // Non-RFC 4180: EOF inside quoted field.
+                        commitField()
+                        finished = true
+                        return commitAndReturnRow()
+                    }
+
+                    if scalar == "\"" {
+                        advance()
+                        state = .quoteInQuoted
+                    } else if scalar == "\r" {
+                        currentField.unicodeScalars.append(scalar)
+                        advance()
+                        if let next = peek(), next == "\n" {
+                            currentField.unicodeScalars.append(next)
+                            advance()
+                        }
+                        line += 1; column = 1
+                    } else if scalar == "\n" {
+                        currentField.unicodeScalars.append(scalar)
+                        advance()
+                        line += 1; column = 1
+                    } else {
+                        currentField.unicodeScalars.append(scalar)
+                        advance()
+                    }
+
+                case .quoteInQuoted:
+                    guard let scalar = peek() else {
+                        // EOF after closing quote
+                        commitField()
+                        finished = true
+                        return commitAndReturnRow()
+                    }
+
+                    if scalar == "\"" {
+                        // Escaped quote "" -> "
+                        currentField.unicodeScalars.append("\"")
+                        advance()
+                        state = .quotedField
+                    } else if scalar == separatorScalar {
+                        commitField()
+                        advance()
+                        state = .fieldStart
+                    } else if scalar == "\r" {
+                        commitField()
+                        advance()
+                        if let next = peek(), next == "\n" { advance() }
+                        return commitAndReturnRow()
+                    } else if scalar == "\n" {
+                        commitField()
+                        advance()
+                        return commitAndReturnRow()
+                    } else {
+                        // Non-RFC 4180: unexpected character after closing quote.
+                        currentField.unicodeScalars.append("\"")
+                        currentField.unicodeScalars.append(scalar)
+                        advance()
+                        state = .unquotedField
+                    }
+                }
+            }
+        }
+
+        // MARK: - Private
+
+        private func peek() -> Unicode.Scalar? {
+            guard index < scalars.endIndex else { return nil }
+            return scalars[index]
+        }
+
+        private mutating func advance() {
+            index = scalars.index(after: index)
+            column += 1
+        }
+
+        private mutating func commitField() {
+            currentRow.append(currentField)
+            currentField = ""
+        }
+
+        private mutating func commitAndReturnRow() -> [String] {
+            let row = currentRow
+            currentRow = []
+            line += 1
+            column = 1
+            state = .fieldStart
+            return row
+        }
     }
 }
