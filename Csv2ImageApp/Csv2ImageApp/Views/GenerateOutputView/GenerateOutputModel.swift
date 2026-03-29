@@ -84,7 +84,6 @@ class GenerateOutputModel: ObservableObject {
                 csv = try Csv.loadFromNetwork(url, encoding: encoding)
             }
         } catch {
-            print("[Csv2Img] Failed to load CSV: \(error)")
             csv = await MainActor.run(body: {
                 self.state.errorMessage = "Error happened:\n\(error)"
                 return self.cachedCsv
@@ -123,7 +122,6 @@ class GenerateOutputModel: ObservableObject {
                         }
                     } catch {
                         guard !Task.isCancelled else { return }
-                        print("[Csv2Img] Failed to generate output: \(error)")
                         await MainActor.run {
                             self.state.errorMessage = "Failed to generate: \(error)"
                         }

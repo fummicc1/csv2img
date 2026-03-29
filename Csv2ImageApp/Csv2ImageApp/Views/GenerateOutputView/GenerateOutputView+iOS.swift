@@ -114,8 +114,10 @@ import SwiftUI
                     secondaryButton: .default(Text("Open")) {
                         if let savedURL = model.savedURL {
                             let parentDir = savedURL.deletingLastPathComponent()
-                            let filesAppURL = URL(string: "shareddocuments://\(parentDir.path)")!
-                            UIApplication.shared.open(filesAppURL)
+                            let encodedPath = parentDir.path.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? parentDir.path
+                            if let filesAppURL = URL(string: "shareddocuments://\(encodedPath)") {
+                                UIApplication.shared.open(filesAppURL)
+                            }
                         }
                     }
                 )
