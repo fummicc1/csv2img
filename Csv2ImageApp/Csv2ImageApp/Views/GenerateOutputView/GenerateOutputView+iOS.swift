@@ -14,7 +14,6 @@ import SwiftUI
         @StateObject var model: GenerateOutputModel
         @Binding var backToPreviousPage: Bool
         @State private var succeedSavingOutput: Bool = false
-        @State private var showShareSheet: Bool = false
 
         private let availableEncodingType: [String.Encoding] = [
             .utf8,
@@ -113,25 +112,14 @@ import SwiftUI
                         }
                     },
                     secondaryButton: .default(Text("Open")) {
-                        showShareSheet = true
+                        if let savedURL = model.savedURL {
+                            let parentDir = savedURL.deletingLastPathComponent()
+                            let filesAppURL = URL(string: "shareddocuments://\(parentDir.path)")!
+                            UIApplication.shared.open(filesAppURL)
+                        }
                     }
                 )
             }
-            .sheet(isPresented: $showShareSheet) {
-                if let savedURL = model.savedURL {
-                    ActivityView(activityItems: [savedURL])
-                }
-            }
         }
-    }
-
-    struct ActivityView: UIViewControllerRepresentable {
-        let activityItems: [Any]
-
-        func makeUIViewController(context: Context) -> UIActivityViewController {
-            UIActivityViewController(activityItems: activityItems, applicationActivities: nil)
-        }
-
-        func updateUIViewController(_ uiViewController: UIActivityViewController, context: Context) {}
     }
 #endif
