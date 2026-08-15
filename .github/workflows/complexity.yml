@@ -9,6 +9,7 @@ on:
 permissions:
   contents: read
   security-events: write
+  pull-requests: write
 
 jobs:
   gate:
@@ -61,3 +62,56 @@ jobs:
       - name: Show report
         if: always()
         run: cat coupling-report.txt
+
+      - name: Comment report on PR
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const fs = require('fs');
+            const marker = '## 🔍 swift-complexity report';
+            let report;
+            try {
+              report = fs.readFileSync('coupling-report.txt', 'utf8').trim();
+            } catch (error) {
+              console.log('No coupling report found:', error);
+              return;
+            }
+
+            const body = [
+              marker,
+              '',
+              'Complexity gate (threshold 20) passed. Type coupling metrics below',
+              'are report-only — see the [coupling guide](https://github.com/fummicc1/swift-complexity/blob/main/docs/user-guide/coupling-metrics.md).',
+              '',
+              '<details><summary>Type coupling report (fan-in / fan-out / instability)</summary>',
+              '',
+              '```text',
+              report,
+              '```',
+              '',
+              '</details>',
+            ].join('\n');
+
+            // Update the existing comment instead of stacking one per push.
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+            const existing = comments.find(c => c.body.startsWith(marker));
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existing.id,
+                body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body,
+              });
+            }
