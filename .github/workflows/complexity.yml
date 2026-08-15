@@ -1,0 +1,63 @@
+name: Complexity
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+  security-events: write
+
+jobs:
+  gate:
+    name: Complexity Gate
+    runs-on: ubuntu-22.04
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run swift-complexity
+        id: analysis
+        uses: fummicc1/swift-complexity@v1
+        with:
+          paths: Sources
+          # The worst existing function is cyclomatic 16 / cognitive 19, so 20
+          # is a hard gate that passes today and blocks further regressions.
+          threshold: "20"
+
+      - name: Upload SARIF
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: ${{ steps.analysis.outputs.report-file }}
+
+  coupling:
+    name: Coupling Report
+    # Index-backed analysis needs a built package, so this job builds on
+    # macOS instead of using the zero-toolchain path.
+    runs-on: macos-15
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
+
+      - name: Build (generates the index store)
+        run: swift build
+
+      - name: Run coupling analysis
+        uses: fummicc1/swift-complexity@v1
+        with:
+          paths: Sources
+          format: text
+          output-file: coupling-report.txt
+          threshold: "20"
+          extra-args: "--coupling --index-store-path .build/debug/index/store"
+
+      - name: Show report
+        if: always()
+        run: cat coupling-report.txt
