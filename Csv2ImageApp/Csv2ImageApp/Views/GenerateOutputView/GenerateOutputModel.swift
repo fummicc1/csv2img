@@ -79,9 +79,9 @@ class GenerateOutputModel: ObservableObject {
         do {
             switch fileType {
             case .local:
-                csv = try Csv.loadFromDisk(url, encoding: encoding, exportType: exportMode)
+                csv = try Csv.loadFromDisk(url, encoding: encoding)
             case .network:
-                csv = try Csv.loadFromNetwork(url, encoding: encoding, exportType: exportMode)
+                csv = try Csv.loadFromNetwork(url, encoding: encoding)
             }
         } catch {
             csv = await MainActor.run(body: {
@@ -95,40 +95,51 @@ class GenerateOutputModel: ObservableObject {
 
         await MainActor.run(body: {
             cachedCsv = csv
+            state.errorMessage = nil
         })
         csvTask?.cancel()
         csvTask = Task {
-            Task {
-                do {
-                    await csv.update(
-                        pdfMetadata: .init(
-                            size: pdfSize,
-                            orientation: pdfOrientation
+            await withTaskGroup(of: Void.self) { group in
+                group.addTask {
+                    do {
+                        await csv.update(
+                            pdfMetadata: .init(
+                                size: pdfSize,
+                                orientation: pdfOrientation
+                            )
                         )
-                    )
-                    let exportable = try await csv.generate(exportType: exportMode)
-                    if type(of: exportable.base) == PDFDocument.self {
-                        await self.update(
-                            keyPath: \.pdfDocument, value: (exportable.base as! PDFDocument))
-                    } else {
-                        await self.update(keyPath: \.cgImage, value: (exportable.base as! CGImage))
+                        let exportable = try await csv.generate(exportType: exportMode)
+                        if type(of: exportable.base) == PDFDocument.self {
+                            await MainActor.run {
+                                self.state.cgImage = nil
+                                self.state.pdfDocument = exportable.base as? PDFDocument
+                            }
+                        } else {
+                            await MainActor.run {
+                                self.state.pdfDocument = nil
+                                self.state.cgImage = exportable.base as! CGImage
+                            }
+                        }
+                    } catch {
+                        guard !Task.isCancelled else { return }
+                        await MainActor.run {
+                            self.state.errorMessage = "Failed to generate: \(error)"
+                        }
                     }
-                } catch {
-                    print(error)
                 }
-            }
-            Task {
-                for await isLoading in csv.isLoadingPublisher.values {
-                    await MainActor.run(body: {
-                        state.isLoading = isLoading
-                    })
+                group.addTask {
+                    for await isLoading in csv.isLoadingPublisher.values {
+                        await MainActor.run {
+                            self.state.isLoading = isLoading
+                        }
+                    }
                 }
-            }
-            Task {
-                for await progress in csv.progressPublisher.values {
-                    await MainActor.run(body: {
-                        state.progress = progress
-                    })
+                group.addTask {
+                    for await progress in csv.progressPublisher.values {
+                        await MainActor.run {
+                            self.state.progress = progress
+                        }
+                    }
                 }
             }
         }

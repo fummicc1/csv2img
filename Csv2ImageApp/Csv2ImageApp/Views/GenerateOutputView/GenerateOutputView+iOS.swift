@@ -79,6 +79,14 @@ import SwiftUI
                         }
                     }
 
+                    if let errorMessage = model.state.errorMessage {
+                        Section(header: Text("Error")) {
+                            Text(errorMessage)
+                                .foregroundColor(.red)
+                                .font(.caption)
+                        }
+                    }
+
                     Section(header: Text("Preview")) {
                         GeneratePreviewView(
                             model: model
@@ -104,8 +112,12 @@ import SwiftUI
                         }
                     },
                     secondaryButton: .default(Text("Open")) {
-                        if let savedURL = model.savedURL, Application.shared.canOpenURL(savedURL) {
-                            Application.shared.open(savedURL)
+                        if let savedURL = model.savedURL {
+                            let parentDir = savedURL.deletingLastPathComponent()
+                            let encodedPath = parentDir.path.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? parentDir.path
+                            if let filesAppURL = URL(string: "shareddocuments://\(encodedPath)") {
+                                UIApplication.shared.open(filesAppURL)
+                            }
                         }
                     }
                 )

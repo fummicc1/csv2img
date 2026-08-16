@@ -3,7 +3,7 @@ import XCTest
 @testable import Csv2ImgCore
 
 final class Csv2Tests: XCTestCase {
-    func testCsvParseFromString() async {
+    func testCsvParseFromString() async throws {
         let input = """
             name,beginnerValue,middleValue,expertValue,unit
             Requirements Analysis,1.00,1.00,1.00,H
@@ -22,7 +22,7 @@ final class Csv2Tests: XCTestCase {
             Csv.Column.Style(color: Color.blue.cgColor, applyOnlyColumn: false),
             Csv.Column.Style(color: Color.yellow.cgColor, applyOnlyColumn: false),
         ]
-        let csv = Csv.loadFromString(input, styles: styles)
+        let csv = try Csv.loadFromString(input, styles: styles)
         let actualColumns = await csv.columns
         let actualRows = await csv.rows
         XCTAssertEqual(

@@ -18,7 +18,7 @@ import UniformTypeIdentifiers
  7,8,9
  10,11,12
  """
- let csv = Csv.loadFromString(rawCsv)
+ let csv = try Csv.loadFromString(rawCsv)
  Output:
  | a  | b  | c  |
  | 1  | 2  | 3  |
@@ -224,7 +224,7 @@ extension Csv {
     /// 7,8,9
     /// 10,11,12
     /// """
-    /// let csv = Csv.loadFromString(rawCsv)
+    /// let csv = try Csv.loadFromString(rawCsv)
     /// Output:
     /// | a  | b  | c  |
     /// | 1  | 2  | 3  |
@@ -242,7 +242,7 @@ extension Csv {
     /// 4.5.6
     /// 7.8.9
     /// """
-    /// let csv = Csv.loadFromString(dotSeparated, separator: ".")
+    /// let csv = try Csv.loadFromString(dotSeparated, separator: ".")
     /// Output:
     /// | a  | b  | c  |
     /// | 1  | 2  | 3  |
@@ -260,7 +260,7 @@ extension Csv {
     /// 4.5.6
     /// 7.8.9
     /// """
-    /// let csv = Csv.loadFromString(dotSeparated, separator: ".", maxLength: 7)
+    /// let csv = try Csv.loadFromString(dotSeparated, separator: ".", maxLength: 7)
     /// Output:
     /// | a  | b  | c        |
     /// | 1  | 2  | 3333333  |
@@ -282,112 +282,55 @@ extension Csv {
         maxLength: Int? = nil,
         exportType: ExportType = .png,
         styles: [Csv.Column.Style]? = nil
-    ) -> Csv {
-        var lines =
-            str
-            .components(
-                separatedBy: CharacterSet(
-                    charactersIn: "\r\n"
-                )
-            )
-            .filter({
-                !$0.isEmpty
-            })
-        var columns: [Csv.Column] = []
-        var rows: [Row] = []
+    ) throws -> Csv {
+        precondition(separator.count == 1, "Separator must be a single character, got: \"\(separator)\"")
+        let parser = CsvParser()
+        let options = CsvParser.Options(
+            separator: separator.first!,
+            maxFieldLength: maxLength
+        )
 
-        if lines.count == 1 {
-            let count = lines[0]
-                .split(
-                    separator: Character(
-                        separator
-                    ),
-                    omittingEmptySubsequences: false
-                )
-                .count
-            let columns = (0..<count).map {
-                String(
-                    $0
-                )
+        let result = try parser.parse(str, options: options)
+        let columns: [Column]
+        if let styles = styles {
+            columns = result.columns.enumerated().map { (i, col) in
+                Column(name: col.name, style: i < styles.count ? styles[i] : col.style)
             }
-            lines.insert(
-                columns.joined(
-                    separator: separator
-                ),
-                at: 0
-            )
-        }
-
-        for (
-            i,
-            line
-        ) in lines.enumerated() {
-            var items =
-                line
-                .split(
-                    separator: Character(
-                        separator
-                    ),
-                    omittingEmptySubsequences: false
-                )
-                .map({
-                    String(
-                        $0
-                    )
-                })
-            if i == 0 {
-                let columnCount = items.count
-                let styles =
-                    styles
-                    ?? Column.Style.random(
-                        count: columnCount
-                    )
-                columns = items.enumerated().map {
-                    (
-                        i,
-                        name
-                    ) in
-                    return Column(
-                        name: name,
-                        style: styles[i]
-                    )
-                }
-            } else {
-                items = items.enumerated().compactMap {
-                    (
-                        index,
-                        item
-                    ) in
-                    let str: String
-                    if let maxLength = maxLength, item.count > maxLength {
-                        str =
-                            String(
-                                item.prefix(
-                                    maxLength
-                                )
-                            ) + "..."
-                    } else {
-                        str = item
-                    }
-                    return str
-                }
-                let row = Row(
-                    index: i,
-                    values: items
-                )
-                rows.append(
-                    row
-                )
-            }
+        } else {
+            columns = result.columns
         }
         return Csv(
             separator: separator,
             rawString: str,
             encoding: encoding,
             columns: columns,
-            rows: rows,
-            exportType: .pdf
+            rows: result.rows,
+            exportType: exportType
         )
+    }
+
+    /// Parse a CSV string as an `AsyncThrowingStream` of row chunks.
+    ///
+    /// - Parameters:
+    ///     - str: Raw CSV string.
+    ///     - separator: Field separator (default `","`).
+    ///     - maxLength: Maximum field length before truncation.
+    ///     - chunkSize: Number of rows per chunk (default 300).
+    /// - Returns: A stream of ``CsvParseResult/Chunk`` values.
+    public static func loadFromStringAsStream(
+        _ str: String,
+        separator: String = ",",
+        maxLength: Int? = nil,
+        chunkSize: Int = 300
+    ) -> AsyncThrowingStream<CsvParseResult.Chunk, any Swift.Error> {
+        precondition(separator.count == 1, "Separator must be a single character, got: \"\(separator)\"")
+        let parser = CsvParser()
+        let options = CsvParser.StreamOptions(
+            separator: separator.first!,
+            maxFieldLength: maxLength,
+            chunkSize: chunkSize
+        )
+        return parser.parseAsStream(str, options: options)
     }
 
     /// Generate `Csv` from network url (like `HTTPS`).
@@ -416,7 +359,7 @@ extension Csv {
                 data: data
             )
         }
-        return Csv.loadFromString(
+        return try Csv.loadFromString(
             str,
             encoding: encoding,
             separator: separator
@@ -449,13 +392,23 @@ extension Csv {
         ) {
             str = _str
         } else {
-            throw Error.invalidLocalResource(
-                url: file.absoluteString,
-                data: data,
-                encoding: encoding
-            )
+            let fallbackEncodings: [String.Encoding] = [
+                .shiftJIS, .japaneseEUC, .utf16, .utf32, .ascii,
+            ]
+            let fallbackStr = fallbackEncodings.lazy
+                .filter { $0 != encoding }
+                .compactMap { String(data: data, encoding: $0) }
+                .first
+            guard let fallbackStr else {
+                throw Error.invalidLocalResource(
+                    url: file.absoluteString,
+                    data: data,
+                    encoding: encoding
+                )
+            }
+            str = fallbackStr
         }
-        return Csv.loadFromString(
+        return try Csv.loadFromString(
             str,
             encoding: encoding,
             separator: separator
