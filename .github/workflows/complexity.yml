@@ -1,0 +1,117 @@
+name: Complexity
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+  security-events: write
+  pull-requests: write
+
+jobs:
+  gate:
+    name: Complexity Gate
+    runs-on: ubuntu-22.04
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run swift-complexity
+        id: analysis
+        uses: fummicc1/swift-complexity@v1
+        with:
+          paths: Sources
+          # The worst existing function is cyclomatic 16 / cognitive 19, so 20
+          # is a hard gate that passes today and blocks further regressions.
+          threshold: "20"
+
+      - name: Upload SARIF
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: ${{ steps.analysis.outputs.report-file }}
+
+  coupling:
+    name: Coupling Report
+    # Index-backed analysis needs a built package, so this job builds on
+    # macOS instead of using the zero-toolchain path.
+    runs-on: macos-15
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
+
+      - name: Build (generates the index store)
+        run: swift build
+
+      - name: Run coupling analysis
+        uses: fummicc1/swift-complexity@v1
+        with:
+          paths: Sources
+          format: text
+          output-file: coupling-report.txt
+          threshold: "20"
+          extra-args: "--coupling --index-store-path .build/debug/index/store"
+
+      - name: Show report
+        if: always()
+        run: cat coupling-report.txt
+
+      - name: Comment report on PR
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const fs = require('fs');
+            const marker = '## 🔍 swift-complexity report';
+            let report;
+            try {
+              report = fs.readFileSync('coupling-report.txt', 'utf8').trim();
+            } catch (error) {
+              console.log('No coupling report found:', error);
+              return;
+            }
+
+            const body = [
+              marker,
+              '',
+              'Complexity gate (threshold 20) passed. Type coupling metrics below',
+              'are report-only — see the [coupling guide](https://github.com/fummicc1/swift-complexity/blob/main/docs/user-guide/coupling-metrics.md).',
+              '',
+              '<details><summary>Type coupling report (fan-in / fan-out / instability)</summary>',
+              '',
+              '```text',
+              report,
+              '```',
+              '',
+              '</details>',
+            ].join('\n');
+
+            // Update the existing comment instead of stacking one per push.
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+            const existing = comments.find(c => c.body.startsWith(marker));
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existing.id,
+                body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body,
+              });
+            }
