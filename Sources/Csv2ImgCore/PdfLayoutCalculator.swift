@@ -235,26 +235,17 @@ struct PdfLayoutCalculator {
             max(w * targetTotal / currentTotal, minWidths[i])
         }
 
-        // If enforcing minimums pushed total over target, redistribute remaining space
-        let minTotal = zip(result, minWidths).reduce(0.0) { acc, pair in
-            acc + (pair.0 <= pair.1 ? pair.1 : 0)
-        }
-        let fixedTotal = result.filter { $0 <= 0 }.count
-        if fixedTotal == 0 {
-            let scaledTotal = result.reduce(0, +)
-            if scaledTotal > targetTotal {
-                let excess = scaledTotal - targetTotal
-                let shrinkable = result.enumerated().filter { result[$0.offset] > minWidths[$0.offset] }
-                let shrinkableTotal = shrinkable.reduce(0.0) { $0 + result[$1.offset] }
-                if shrinkableTotal > 0 {
-                    for (i, _) in shrinkable {
-                        let proportion = result[i] / shrinkableTotal
-                        result[i] = max(result[i] - excess * proportion, minWidths[i])
-                    }
-                }
-            }
-        }
+        let excess = result.reduce(0, +) - targetTotal
+        guard excess > 0 else { return result }
 
+        // Columns clamped to their minimum pushed the total over the target, so only the others give the excess back.
+        let shrinkable = result.indices.filter { result[$0] > minWidths[$0] }
+        let shrinkableTotal = shrinkable.reduce(0.0) { $0 + result[$1] }
+        guard shrinkableTotal > 0 else { return result }
+
+        for i in shrinkable {
+            result[i] = max(result[i] - excess * result[i] / shrinkableTotal, minWidths[i])
+        }
         return result
     }
 }
