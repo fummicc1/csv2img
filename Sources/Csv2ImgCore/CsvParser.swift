@@ -242,130 +242,104 @@ extension CsvParser {
 
         /// Returns the next parsed row as an array of field strings, or `nil` at EOF.
         mutating func nextRow() -> [String]? {
-            guard !finished else { return nil }
-
-            while true {
-                switch state {
-                case .fieldStart:
-                    guard let scalar = peek() else {
-                        if !currentRow.isEmpty {
-                            commitField()
-                            return commitAndReturnRow()
-                        }
-                        finished = true
-                        return nil
-                    }
-
-                    if scalar == "\"" {
-                        advance()
-                        state = .quotedField
-                    } else if scalar == separatorScalar {
-                        commitField()
-                        advance()
-                        state = .fieldStart
-                    } else if scalar == "\r" {
-                        commitField()
-                        advance()
-                        if let next = peek(), next == "\n" { advance() }
-                        return commitAndReturnRow()
-                    } else if scalar == "\n" {
-                        commitField()
-                        advance()
-                        return commitAndReturnRow()
-                    } else {
-                        currentField.unicodeScalars.append(scalar)
-                        advance()
-                        state = .unquotedField
-                    }
-
-                case .unquotedField:
-                    guard let scalar = peek() else {
-                        commitField()
-                        finished = true
-                        return commitAndReturnRow()
-                    }
-
-                    if scalar == separatorScalar {
-                        commitField()
-                        advance()
-                        state = .fieldStart
-                    } else if scalar == "\r" {
-                        commitField()
-                        advance()
-                        if let next = peek(), next == "\n" { advance() }
-                        return commitAndReturnRow()
-                    } else if scalar == "\n" {
-                        commitField()
-                        advance()
-                        return commitAndReturnRow()
-                    } else {
-                        currentField.unicodeScalars.append(scalar)
-                        advance()
-                    }
-
-                case .quotedField:
-                    guard let scalar = peek() else {
-                        // Non-RFC 4180: EOF inside quoted field.
-                        commitField()
-                        finished = true
-                        return commitAndReturnRow()
-                    }
-
-                    if scalar == "\"" {
-                        advance()
-                        state = .quoteInQuoted
-                    } else if scalar == "\r" {
-                        currentField.unicodeScalars.append(scalar)
-                        advance()
-                        if let next = peek(), next == "\n" {
-                            currentField.unicodeScalars.append(next)
-                            advance()
-                        }
-                        line += 1; column = 1
-                    } else if scalar == "\n" {
-                        currentField.unicodeScalars.append(scalar)
-                        advance()
-                        line += 1; column = 1
-                    } else {
-                        currentField.unicodeScalars.append(scalar)
-                        advance()
-                    }
-
-                case .quoteInQuoted:
-                    guard let scalar = peek() else {
-                        // EOF after closing quote
-                        commitField()
-                        finished = true
-                        return commitAndReturnRow()
-                    }
-
-                    if scalar == "\"" {
-                        // Escaped quote "" -> "
-                        currentField.unicodeScalars.append("\"")
-                        advance()
-                        state = .quotedField
-                    } else if scalar == separatorScalar {
-                        commitField()
-                        advance()
-                        state = .fieldStart
-                    } else if scalar == "\r" {
-                        commitField()
-                        advance()
-                        if let next = peek(), next == "\n" { advance() }
-                        return commitAndReturnRow()
-                    } else if scalar == "\n" {
-                        commitField()
-                        advance()
-                        return commitAndReturnRow()
-                    } else {
-                        // Non-RFC 4180: unexpected character after closing quote.
-                        currentField.unicodeScalars.append("\"")
-                        currentField.unicodeScalars.append(scalar)
-                        advance()
-                        state = .unquotedField
-                    }
-                }
+            while !finished {
+                if let row = step() { return row }
             }
+            return nil
+        }
+
+        // MARK: - Transitions
+
+        private mutating func step() -> [String]? {
+            guard let scalar = peek() else { return handleEndOfInput() }
+
+            switch state {
+            case .fieldStart:
+                return handleFieldStart(scalar)
+            case .unquotedField:
+                return handleUnquotedField(scalar)
+            case .quotedField:
+                handleQuotedField(scalar)
+                return nil
+            case .quoteInQuoted:
+                return handleQuoteInQuoted(scalar)
+            }
+        }
+
+        private mutating func handleEndOfInput() -> [String]? {
+            finished = true
+            if state == .fieldStart && currentRow.isEmpty { return nil }
+            commitField()
+            return commitAndReturnRow()
+        }
+
+        private mutating func handleFieldStart(_ scalar: Unicode.Scalar) -> [String]? {
+            if scalar == "\"" {
+                advance()
+                state = .quotedField
+                return nil
+            }
+            state = .unquotedField
+            return handleUnquotedField(scalar)
+        }
+
+        private mutating func handleUnquotedField(_ scalar: Unicode.Scalar) -> [String]? {
+            if isFieldBoundary(scalar) { return closeField(at: scalar) }
+            currentField.unicodeScalars.append(scalar)
+            advance()
+            return nil
+        }
+
+        private mutating func handleQuotedField(_ scalar: Unicode.Scalar) {
+            if scalar == "\"" {
+                advance()
+                state = .quoteInQuoted
+                return
+            }
+            currentField.unicodeScalars.append(scalar)
+            advance()
+            guard isLineBreak(scalar) else { return }
+            if scalar == "\r", let next = peek(), next == "\n" {
+                currentField.unicodeScalars.append(next)
+                advance()
+            }
+            line += 1
+            column = 1
+        }
+
+        private mutating func handleQuoteInQuoted(_ scalar: Unicode.Scalar) -> [String]? {
+            if scalar == "\"" {
+                currentField.unicodeScalars.append("\"")
+                advance()
+                state = .quotedField
+                return nil
+            }
+            if isFieldBoundary(scalar) { return closeField(at: scalar) }
+            // Non-RFC 4180: keep the stray quote instead of rejecting the whole file.
+            currentField.unicodeScalars.append("\"")
+            currentField.unicodeScalars.append(scalar)
+            advance()
+            state = .unquotedField
+            return nil
+        }
+
+        private mutating func closeField(at scalar: Unicode.Scalar) -> [String]? {
+            commitField()
+            advance()
+            if scalar == separatorScalar {
+                state = .fieldStart
+                return nil
+            }
+            if scalar == "\r", let next = peek(), next == "\n" { advance() }
+            return commitAndReturnRow()
+        }
+
+        private func isFieldBoundary(_ scalar: Unicode.Scalar) -> Bool {
+            scalar == separatorScalar || isLineBreak(scalar)
+        }
+
+        private func isLineBreak(_ scalar: Unicode.Scalar) -> Bool {
+            scalar == "\r" || scalar == "\n"
         }
 
         // MARK: - Private
