@@ -20,7 +20,6 @@ struct PdfDocumentView: ViewRepresentable {
         func makeNSView(context: Context) -> PDFView {
             view.document = document
             view.setFrameSize(size)
-
             view.displayMode = .twoUpContinuous
             return view
         }
@@ -28,7 +27,6 @@ struct PdfDocumentView: ViewRepresentable {
         func updateNSView(_ nsView: PDFView, context: Context) {
             nsView.document = document
             nsView.setFrameSize(size)
-            nsView.autoScales = true
             nsView.displayMode = .twoUpContinuous
         }
     #elseif os(iOS)
@@ -37,7 +35,6 @@ struct PdfDocumentView: ViewRepresentable {
         func makeUIView(context: Context) -> PDFView {
             view.document = document
             view.frame.size = size
-
             view.displayMode = .singlePage
             view.usePageViewController(true, withViewOptions: nil)
             return view
@@ -45,7 +42,6 @@ struct PdfDocumentView: ViewRepresentable {
         func updateUIView(_ uiView: PDFView, context: Context) {
             uiView.document = document
             uiView.frame.size = size
-            uiView.autoScales = true
             uiView.displayMode = .singlePage
             uiView.usePageViewController(true, withViewOptions: nil)
         }
