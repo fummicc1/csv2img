@@ -7,22 +7,22 @@ import PDFKit
 /// Coomand line interface `Csv2Img`
 ///
 ///
-/// If you have a csv file on your computer, you cloud use this flag with `--local`, `-l`.
+/// If you have a csv file on your computer, pass its path.
 ///
 /// ```shell
-/// ./Csv2ImgCmd ~/Downloads/sample.csv --output ./output.png
+/// ./Csv2ImgCmd ~/Downloads/sample.csv --export-type png --output ./output.png
 /// ```
 ///
 /// If you would like to convert csv file on the internet, you cloud just pass the url with prefix https:// or http:// such as https://example.com/
 ///
 /// ```shell
 /// ./Csv2ImgCmd https://raw.githubusercontent.com/fummicc1/csv2img/main/Fixtures/sample_1.csv \
-/// --output output.png
+/// --export-type png --output output.png
 /// ```
 @main
 public struct Csv2Img: AsyncParsableCommand {
 
-    static let version: String = "1.9.1"
+    static let version: String = "2.0.0"
 
     public static var configuration: CommandConfiguration {
         CommandConfiguration(
@@ -73,7 +73,7 @@ public struct Csv2Img: AsyncParsableCommand {
     public var paperSize: String = "b3"
 
     @Option(
-        name: .shortAndLong,
+        name: .long,
         help: "Page orientation for PDF (portrait/landscape). Default is landscape"
     )
     public var orientation: String = "landscape"
