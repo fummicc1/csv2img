@@ -1,0 +1,41 @@
+name: "[Csv2ImageApp] Build App"
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+      - develop
+
+jobs:
+  build_app:
+    name: "Build Csv2ImageApp"
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+      - uses: maxim-lobanov/setup-xcode@v1
+        if: ${{ env.LOCAL != 'true' }}
+        with:
+          xcode-version: latest-stable
+      - name: Install xcbeautify
+        run: brew install xcbeautify
+      - name: Build (macOS)
+        run: |
+          set -o pipefail && \
+          xcodebuild -project Csv2ImageApp/Csv2ImageApp.xcodeproj \
+          -scheme Csv2ImageApp \
+          clean build \
+          -destination 'platform=macOS,arch=arm64' \
+          CODE_SIGNING_ALLOWED=NO \
+          | xcbeautify
+      - name: Build (iOS)
+        run: |
+          set -o pipefail && \
+          xcodebuild -project Csv2ImageApp/Csv2ImageApp.xcodeproj \
+          -scheme Csv2ImageApp \
+          clean build \
+          -destination 'generic/platform=iOS Simulator' \
+          CODE_SIGNING_ALLOWED=NO \
+          | xcbeautify

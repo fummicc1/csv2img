@@ -36,6 +36,9 @@ jobs:
 
   coupling:
     name: Coupling Report
+    # The PR comment below states that the gate passed, so it must not be
+    # posted for a run where the gate failed.
+    needs: gate
     # Index-backed analysis needs a built package, so this job builds on
     # macOS instead of using the zero-toolchain path.
     runs-on: macos-15
