@@ -12,7 +12,7 @@ on:
 jobs:
   test_cmd:
     name: "Build Csv2ImgCmd"
-    runs-on: macos-14
+    runs-on: macos-15
     steps:
       - uses: actions/checkout@v4
       - uses: maxim-lobanov/setup-xcode@v1

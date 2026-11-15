@@ -12,7 +12,7 @@ on:
 jobs:
   build_app:
     name: "Build Csv2ImageApp"
-    runs-on: macos-14
+    runs-on: macos-15
     steps:
       - uses: actions/checkout@v4
       - uses: maxim-lobanov/setup-xcode@v1
