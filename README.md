@@ -1,6 +1,6 @@
 ![Csv2mg_bg](https://user-images.githubusercontent.com/44002126/173288309-81e336d2-5239-441a-bc6e-2b58bb9da349.png)
 
-[![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Ffummicc1%2Fcsv2img%2Fbadge%3Ftype%3Dswift-versions)](https://swiftpackageindex.com/fummicc1/csv2img) [![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Ffummicc1%2Fcsv2img%2Fbadge%3Ftype%3Dplatforms)](https://swiftpackageindex.com/fummicc1/csv2img) <img src="https://github.com/fummicc1/csv2img/actions/workflows/lib.yml/badge.svg"> <img src="https://github.com/fummicc1/csv2img/actions/workflows/builder.yml/badge.svg"> <img src="https://github.com/fummicc1/csv2img/actions/workflows/command.yml/badge.svg">
+[![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Ffummicc1%2Fcsv2img%2Fbadge%3Ftype%3Dswift-versions)](https://swiftpackageindex.com/fummicc1/csv2img) [![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Ffummicc1%2Fcsv2img%2Fbadge%3Ftype%3Dplatforms)](https://swiftpackageindex.com/fummicc1/csv2img) <img src="https://github.com/fummicc1/csv2img/actions/workflows/core.yml/badge.svg"> <img src="https://github.com/fummicc1/csv2img/actions/workflows/builder.yml/badge.svg"> <img src="https://github.com/fummicc1/csv2img/actions/workflows/command.yml/badge.svg">
 
 # Csv2ImageApp
 
@@ -23,7 +23,7 @@ https://github.com/user-attachments/assets/9b6f5064-ab6e-4897-a0ab-cf5f104e3bbe
 Add the following to your `Package.swift` file:
 
 ```swift
-.package(url: "https://github.com/fummicc1/csv2img.git", from: "1.9.1"),
+.package(url: "https://github.com/fummicc1/csv2img.git", from: "2.0.0"),
 ```
 
 # Csv2ImgCore (Library)
@@ -32,15 +32,15 @@ Convert Csv into png image.
 
 - [documentation](https://fummicc1.github.io/csv2img/documentation/csv2imgcore/)
 
-## Installation of Csv2Img
+## Installation of Csv2ImgCore
 
 Add the following to your `Package.swift` file:
 
 ```swift
-.product(name: "Csv2Img", package: "csv2img"),
+.product(name: "Csv2ImgCore", package: "csv2img"),
 ```
 
-## Usage of Csv2Img
+## Usage of Csv2ImgCore
 
 You cloud convert csv into image / pdf in 3 ways.
 
@@ -187,21 +187,22 @@ Add the following to your `Package.swift` file:
 
 ## Usage of Csv2ImgCmd
 
-Coomand line interface using `Csv2Img` library.
+Command line interface using `Csv2ImgCore` library.
 
-If you have a csv file on your computer, you cloud use this flag with `--local`, `-l`.
-
-```shell
-./Csv2ImgCmd --local ~/Downloads/sample.csv ./output.png
-```
-
-If you would like to convert csv file on the internet, you cloud use this flag with `--network`, `-n`.
+If you have a csv file on your computer, pass its path. The export type defaults to `pdf`, so specify `--export-type png` for an image.
 
 ```shell
-./Csv2ImgCmd --network \
-https://raw.githubusercontent.com/fummicc1/csv2img/main/Sources/Csv2ImgCmd/Resources/sample_1.csv \
-output.png
+./Csv2ImgCmd ~/Downloads/sample.csv --export-type png --output ./output.png
 ```
+
+If you would like to convert a csv file on the internet, pass its url starting with `http://` or `https://`.
+
+```shell
+./Csv2ImgCmd https://raw.githubusercontent.com/fummicc1/csv2img/main/Fixtures/sample_1.csv \
+--export-type png --output output.png
+```
+
+PDF output accepts `--paper-size` (default `b3`) and `--orientation` (default `landscape`).
 
 # Contributing
 
