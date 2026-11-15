@@ -52,12 +52,8 @@ public struct CsvParser: Sendable {
             throw Csv.Error.emptyData
         }
 
-        let headerFields = allRows[0]
-        let columnCount = headerFields.count
-        let styles = Csv.Column.Style.random(count: columnCount)
-        let columns: [Csv.Column] = headerFields.enumerated().map { i, name in
-            Csv.Column(name: name, style: styles[i])
-        }
+        let columns = Self.makeColumns(from: allRows[0])
+        let columnCount = columns.count
 
         var warnings: [CsvParseResult.Warning] = []
         var rows: [Csv.Row] = []
@@ -84,76 +80,87 @@ public struct CsvParser: Sendable {
     // MARK: - Streaming API
 
     /// Parses a CSV string and yields rows in chunks via an `AsyncThrowingStream`.
+    ///
+    /// Rows are parsed incrementally, so the first chunk is delivered as soon as
+    /// `chunkSize` rows are read, and parsing stops when the stream is terminated.
     public func parseAsStream(
         _ string: String,
         options: StreamOptions = .init()
     ) -> AsyncThrowingStream<CsvParseResult.Chunk, Error> {
         AsyncThrowingStream { continuation in
-            Task {
+            let task = Task {
                 do {
-                    var machine = try StateMachine(string: string, separator: options.separator)
-
-                    var allRawRows: [[String]] = []
-                    while let row = machine.nextRow() {
-                        allRawRows.append(row)
-                    }
-
-                    guard !allRawRows.isEmpty else {
-                        throw Csv.Error.emptyData
-                    }
-
-                    let headerFields = allRawRows[0]
-                    let columnCount = headerFields.count
-                    let styles = Csv.Column.Style.random(count: columnCount)
-                    let columns: [Csv.Column] = headerFields.enumerated().map { i, name in
-                        Csv.Column(name: name, style: styles[i])
-                    }
-
-                    var chunkIndex = 0
-                    var bufferedRows: [Csv.Row] = []
-                    var bufferedWarnings: [CsvParseResult.Warning] = []
-                    let dataRowCount = allRawRows.count - 1
-
-                    for rawIndex in 1..<allRawRows.count {
-                        let (row, rowWarnings) = Self.validateAndBuildRow(
-                            rawFields: allRawRows[rawIndex],
-                            columnCount: columnCount,
-                            rowIndex: rawIndex,
-                            maxFieldLength: options.maxFieldLength
-                        )
-                        bufferedRows.append(row)
-                        bufferedWarnings.append(contentsOf: rowWarnings)
-
-                        if bufferedRows.count >= options.chunkSize {
-                            let isLast = rawIndex == dataRowCount
-                            continuation.yield(CsvParseResult.Chunk(
-                                index: chunkIndex,
-                                columns: columns,
-                                rows: bufferedRows,
-                                warnings: bufferedWarnings,
-                                isFinal: isLast
-                            ))
-                            bufferedRows = []
-                            bufferedWarnings = []
-                            chunkIndex += 1
-                        }
-                    }
-
-                    if !bufferedRows.isEmpty || chunkIndex == 0 {
-                        continuation.yield(CsvParseResult.Chunk(
-                            index: chunkIndex,
-                            columns: columns,
-                            rows: bufferedRows,
-                            warnings: bufferedWarnings,
-                            isFinal: true
-                        ))
-                    }
-
+                    try Self.yieldChunks(of: string, options: options, to: continuation)
                     continuation.finish()
                 } catch {
                     continuation.finish(throwing: error)
                 }
             }
+            continuation.onTermination = { _ in task.cancel() }
+        }
+    }
+
+    private static func yieldChunks(
+        of string: String,
+        options: StreamOptions,
+        to continuation: AsyncThrowingStream<CsvParseResult.Chunk, Error>.Continuation
+    ) throws {
+        var machine = try StateMachine(string: string, separator: options.separator)
+        guard let headerFields = machine.nextRow() else {
+            throw Csv.Error.emptyData
+        }
+        let columns = makeColumns(from: headerFields)
+
+        var chunkIndex = 0
+        var rowIndex = 0
+        var bufferedRows: [Csv.Row] = []
+        var bufferedWarnings: [CsvParseResult.Warning] = []
+        var nextFields = machine.nextRow()
+
+        while let rawFields = nextFields {
+            try Task.checkCancellation()
+            rowIndex += 1
+            let (row, rowWarnings) = validateAndBuildRow(
+                rawFields: rawFields,
+                columnCount: columns.count,
+                rowIndex: rowIndex,
+                maxFieldLength: options.maxFieldLength
+            )
+            bufferedRows.append(row)
+            bufferedWarnings.append(contentsOf: rowWarnings)
+
+            // Reading one row ahead is the only way to know whether this chunk is the last one.
+            nextFields = machine.nextRow()
+            let isFinal = nextFields == nil
+            guard isFinal || bufferedRows.count >= options.chunkSize else { continue }
+
+            continuation.yield(CsvParseResult.Chunk(
+                index: chunkIndex,
+                columns: columns,
+                rows: bufferedRows,
+                warnings: bufferedWarnings,
+                isFinal: isFinal
+            ))
+            bufferedRows = []
+            bufferedWarnings = []
+            chunkIndex += 1
+        }
+
+        if chunkIndex == 0 {
+            continuation.yield(CsvParseResult.Chunk(
+                index: 0,
+                columns: columns,
+                rows: [],
+                warnings: [],
+                isFinal: true
+            ))
+        }
+    }
+
+    private static func makeColumns(from headerFields: [String]) -> [Csv.Column] {
+        let styles = Csv.Column.Style.random(count: headerFields.count)
+        return headerFields.enumerated().map { i, name in
+            Csv.Column(name: name, style: styles[i])
         }
     }
 

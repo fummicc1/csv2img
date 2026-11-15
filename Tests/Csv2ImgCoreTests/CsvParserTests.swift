@@ -460,4 +460,36 @@ final class CsvParserTests: XCTestCase {
         XCTAssertEqual(streamRows.map(\.index), batchResult.rows.map(\.index))
         XCTAssertEqual(streamWarnings, batchResult.warnings)
     }
+
+    /// S011: A chunk that ends exactly at the last row is marked final, with no trailing empty chunk.
+    func testS011_finalChunkOnExactBoundary() async throws {
+        var lines = ["a"]
+        for i in 0..<6 { lines.append("r\(i)") }
+        let input = lines.joined(separator: "\n")
+
+        let opts = CsvParser.StreamOptions(chunkSize: 3)
+        var chunks: [CsvParseResult.Chunk] = []
+        for try await chunk in parser.parseAsStream(input, options: opts) {
+            chunks.append(chunk)
+        }
+        XCTAssertEqual(chunks.map(\.rows.count), [3, 3])
+        XCTAssertEqual(chunks.map(\.isFinal), [false, true])
+    }
+
+    /// S012: A consumer can take only the first chunk of a large input and stop.
+    func testS012_stopAfterFirstChunk() async throws {
+        var lines = ["a,b"]
+        for i in 0..<50_000 { lines.append("\(i),val\(i)") }
+        let input = lines.joined(separator: "\n")
+
+        let opts = CsvParser.StreamOptions(chunkSize: 100)
+        var firstChunk: CsvParseResult.Chunk?
+        for try await chunk in parser.parseAsStream(input, options: opts) {
+            firstChunk = chunk
+            break
+        }
+        XCTAssertEqual(firstChunk?.index, 0)
+        XCTAssertEqual(firstChunk?.rows.count, 100)
+        XCTAssertEqual(firstChunk?.isFinal, false)
+    }
 }
