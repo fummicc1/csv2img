@@ -12,6 +12,12 @@ fi
 DEST="csv2img-mac.tar.gz"
 BINARY_NAME="csv2img"
 
+SOURCE_VERSION=$(sed -n 's/.*static let version: String = "\(.*\)"/\1/p' Sources/Csv2ImgCmd/command.swift)
+if [ "$SOURCE_VERSION" != "$VERSION" ]; then
+    echo "Version mismatch: tag is $VERSION but Csv2ImgCmd reports $SOURCE_VERSION"
+    exit 1
+fi
+
 echo "🚀 Building Csv2Img $VERSION for macOS..."
 
 # Building for Intel (x86_64) architecture
