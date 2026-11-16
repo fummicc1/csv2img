@@ -49,6 +49,15 @@ public class ImageRenderer {
             context.scaleBy(x: 1.0, y: -1.0)
         #endif
 
+        #if os(macOS)
+            NSGraphicsContext.saveGraphicsState()
+            NSGraphicsContext.current = NSGraphicsContext(cgContext: context, flipped: true)
+            defer { NSGraphicsContext.restoreGraphicsState() }
+        #else
+            UIGraphicsPushContext(context)
+            defer { UIGraphicsPopContext() }
+        #endif
+
         for column in representation.columns {
             drawText(
                 context: context, text: column.name, frame: column.frame, style: column.style,
@@ -93,17 +102,7 @@ public class ImageRenderer {
         context.addPath(textPath)
         context.clip()
 
-        // テキストを描画
-        #if os(macOS)
-            NSGraphicsContext.saveGraphicsState()
-            NSGraphicsContext.current = NSGraphicsContext(cgContext: context, flipped: true)
-            attributedString.draw(in: textRect)
-            NSGraphicsContext.restoreGraphicsState()
-        #else
-            UIGraphicsPushContext(context)
-            attributedString.draw(in: textRect)
-            UIGraphicsPopContext()
-        #endif
+        attributedString.draw(in: textRect)
 
         context.restoreGState()
     }
