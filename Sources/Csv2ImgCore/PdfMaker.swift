@@ -99,36 +99,19 @@ final class PdfMaker: PdfMakerType {
             throw PdfMakingError.emptyRows
         }
 
-        let textSizeList =
-            rows
-            .flatMap({
-                $0.values
-            })
-            .map({
-                $0.getSize(
-                    fontSize: fontSize
-                )
-            })
-            + columns
-            .map({
-                $0.name
-            })
-            .map({
-                $0.getSize(
-                    fontSize: fontSize
-                )
-            })
-
         let styles: [Csv.Column.Style] = columns.map(
             \.style
         )
 
-        let longestHeight = textSizeList.map({
-            $0.height
-        }).sorted().reversed()[0]
-        let longestWidth = textSizeList.map({
-            $0.width
-        }).sorted().reversed()[0]
+        var longestWidth: Double = 0
+        var longestHeight: Double = 0
+        for texts in rows.map(\.values) + [columns.map(\.name)] {
+            for text in texts {
+                let size = text.getSize(fontSize: fontSize)
+                longestWidth = max(longestWidth, size.width)
+                longestHeight = max(longestHeight, size.height)
+            }
+        }
 
         let rowHeight = longestHeight + verticalSpace
         let columnWidth = longestWidth + horizontalSpace
@@ -196,10 +179,7 @@ final class PdfMaker: PdfMakerType {
             )
         )
 
-        let completeCount: Double = Double(
-            totalPageNumber
-        )
-        var completeFraction: Double = 0
+        let reporter = ProgressReporter(total: totalPageNumber, progress: progress)
 
         var currentPageNumber: Int = 1
         var startRowIndex: Int = 0
@@ -270,13 +250,8 @@ final class PdfMaker: PdfMakerType {
                     width
                 )
             )
-            // `Csv.Row.index` begins with `1`.
-            let rows = rows.filter({
-                (startRowIndex..<startRowIndex + maxNumberOfRowsInPage)
-                    .contains(
-                        $0.index - 1
-                    )
-            })
+            let pageEnd = min(startRowIndex + maxNumberOfRowsInPage, rows.count)
+            let rows = startRowIndex < pageEnd ? Array(rows[startRowIndex..<pageEnd]) : []
             setRowText(
                 context: context,
                 styles: styles,
@@ -304,10 +279,7 @@ final class PdfMaker: PdfMakerType {
                 using: .stroke
             )
 
-            completeFraction += 1
-            progress(
-                completeFraction / completeCount
-            )
+            reporter.advance()
 
             currentPageNumber += 1
             startRowIndex += maxNumberOfRowsInPage
@@ -389,8 +361,7 @@ final class PdfMaker: PdfMakerType {
             throw PdfMakingError.noContextAvailabe
         }
 
-        let completeCount = Double(layout.pages.count)
-        var completeFraction: Double = 0
+        let reporter = ProgressReporter(total: layout.pages.count, progress: progress)
 
         for page in layout.pages {
             let mediaBoxPerPage = CGRect(
@@ -476,8 +447,7 @@ final class PdfMaker: PdfMakerType {
                 bottomMargin: calculator.pageMargin
             )
 
-            completeFraction += 1
-            progress(completeFraction / completeCount)
+            reporter.advance()
 
             context.endPDFPage()
         }
@@ -572,7 +542,7 @@ extension PdfMaker {
                     .foregroundColor: column.style.displayableColor(),
                 ]
             )
-            let textSize = str.string.getSize(fontSize: fontSize)
+            let textSize = str.integralSize()
             let cellCenterX = colX + (colWidth - textSize.width) / 2
             let cellCenterY = headerBottom + (headerHeight - textSize.height) / 2
 
@@ -634,7 +604,7 @@ extension PdfMaker {
                         .foregroundColor: style.displayableColor(),
                     ]
                 )
-                let textSize = str.string.getSize(fontSize: fontSize)
+                let textSize = str.integralSize()
 
                 // Center text horizontally, vertically within the cell
                 let cellCenterX = colX + (colWidth - textSize.width) / 2
@@ -737,9 +707,7 @@ extension PdfMaker {
                         .foregroundColor: style.displayableColor(),
                     ]
                 )
-                let size = str.string.getSize(
-                    fontSize: fontSize
-                )
+                let size = str.integralSize()
                 let leadingSpaceInBox = (width - size.width) / 2
                 let originX =
                     xOffSet + Double(
@@ -833,9 +801,7 @@ extension PdfMaker {
                     .foregroundColor: column.style.displayableColor(),
                 ]
             )
-            let size = str.string.getSize(
-                fontSize: fontSize
-            )
+            let size = str.integralSize()
             let originX = xOffSet + i * width + (width - size.width) / 2
             let originY = yOffSet + totalHeight - (height + size.height) / 2
             drawText(str, at: CGPoint(x: originX, y: originY), in: context)

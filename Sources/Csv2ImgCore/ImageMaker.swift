@@ -140,44 +140,46 @@ final class ImageMaker: ImageMakerType {
 
         let backgroundColor = CGColor(red: 250 / 255, green: 250 / 255, blue: 250 / 255, alpha: 1)
 
-        let columnWidths = calculateColumnWidths(columns: columns, rows: rows)
+        let headerSizes = columns.map { $0.name.getSize(fontSize: fontSize) }
+        let cellSizes = rows.map { row in
+            row.values.map { $0.getSize(fontSize: fontSize) }
+        }
+
+        let columnWidths = calculateColumnWidths(headerSizes: headerSizes, cellSizes: cellSizes)
         let width = columnWidths.reduce(0, +) + (columns.count + 1) * horizontalSpace
 
         let rowHeights = calculateRowHeights(
-            columns: columns, rows: rows, columnWidths: columnWidths)
+            headerSizes: headerSizes, cellSizes: cellSizes, columnWidths: columnWidths)
         let height = rowHeights.reduce(0, +) + (rows.count + 2) * verticalSpace
 
-        var columnRepresentations: [CsvImageRepresentation.ColumnRepresentation] = []
-        var rowRepresentations: [CsvImageRepresentation.RowRepresentation] = []
+        var xOffsets: [Int] = []
+        xOffsets.reserveCapacity(columnWidths.count)
+        var nextXOffset = horizontalSpace
+        for columnWidth in columnWidths {
+            xOffsets.append(nextXOffset)
+            nextXOffset += columnWidth + horizontalSpace
+        }
 
-        let completeCount: Double = Double(rows.count + columns.count)
-        var completeFraction: Double = 0
+        var rowRepresentations: [CsvImageRepresentation.RowRepresentation] = []
+        rowRepresentations.reserveCapacity(rows.count)
+
+        let reporter = ProgressReporter(total: rows.count, progress: progress)
 
         var yOffset = verticalSpace
-        // ヘッダー行の描画
-        for (i, column) in columns.enumerated() {
-            let xOffset = columnWidths[0..<i].reduce(0, +) + (i + 1) * horizontalSpace
-            let frame = CGRect(
-                x: xOffset, y: yOffset, width: columnWidths[i], height: rowHeights[0])
-            columnRepresentations.append(
-                CsvImageRepresentation.ColumnRepresentation(
-                    name: column.name,
-                    style: column.style,
-                    frame: frame
-                )
+        let columnRepresentations = columns.enumerated().map { (i, column) in
+            CsvImageRepresentation.ColumnRepresentation(
+                name: column.name,
+                style: column.style,
+                frame: CGRect(
+                    x: xOffsets[i], y: yOffset, width: columnWidths[i], height: rowHeights[0])
             )
         }
         yOffset += rowHeights[0] + verticalSpace
 
-        // データ行の描画
         for (i, row) in rows.enumerated() {
-            var rowFrames: [CGRect] = []
-            for (j, item) in row.values.enumerated() {
-                if columns.count <= j { continue }
-                let xOffset = columnWidths[0..<j].reduce(0, +) + (j + 1) * horizontalSpace
-                let frame = CGRect(
-                    x: xOffset, y: yOffset, width: columnWidths[j], height: rowHeights[i + 1])
-                rowFrames.append(frame)
+            let rowFrames = (0..<min(row.values.count, columns.count)).map { j in
+                CGRect(
+                    x: xOffsets[j], y: yOffset, width: columnWidths[j], height: rowHeights[i + 1])
             }
             rowRepresentations.append(
                 CsvImageRepresentation.RowRepresentation(
@@ -187,8 +189,7 @@ final class ImageMaker: ImageMakerType {
             )
             yOffset += rowHeights[i + 1] + verticalSpace
 
-            completeFraction += 1
-            progress(completeFraction / completeCount)
+            reporter.advance()
         }
 
         return CsvImageRepresentation(
@@ -201,35 +202,29 @@ final class ImageMaker: ImageMakerType {
         )
     }
 
-    private func calculateColumnWidths(columns: [Csv.Column], rows: [Csv.Row]) -> [Int] {
-        return columns.enumerated().map { (index, column) in
-            let headerWidth = column.name.getSize(fontSize: fontSize).width
-            let maxContentWidth =
-                rows.map { row in
-                    row.values.count > index
-                        ? row.values[index].getSize(fontSize: fontSize).width : 0
-                }.max() ?? 0
-            return Int(max(headerWidth, maxContentWidth)) + 20  // 20はパディング
+    private func calculateColumnWidths(headerSizes: [CGSize], cellSizes: [[CGSize]]) -> [Int] {
+        var maxWidths = headerSizes.map(\.width)
+        for sizes in cellSizes {
+            for (index, size) in sizes.prefix(maxWidths.count).enumerated() {
+                maxWidths[index] = max(maxWidths[index], size.width)
+            }
         }
+        return maxWidths.map { Int($0) + 20 }
     }
 
-    private func calculateRowHeights(columns: [Csv.Column], rows: [Csv.Row], columnWidths: [Int])
-        -> [Int]
-    {
-        let headerHeight =
-            Int(columns.map { $0.name.getSize(fontSize: fontSize).height }.max() ?? 0) + 10
+    private func calculateRowHeights(
+        headerSizes: [CGSize], cellSizes: [[CGSize]], columnWidths: [Int]
+    ) -> [Int] {
+        let headerHeight = Int(headerSizes.map(\.height).max() ?? 0) + 10
 
-        let contentHeights = rows.map { row in
+        let contentHeights = cellSizes.map { sizes in
             let maxHeight =
-                row.values.enumerated().map { (index, value) in
-                    if index < columnWidths.count {
-                        let size = value.getSize(fontSize: fontSize)
-                        let lines = ceil(size.width / CGFloat(columnWidths[index]))
-                        return size.height * lines
-                    }
-                    return 0
+                sizes.enumerated().map { (index, size) -> CGFloat in
+                    guard index < columnWidths.count else { return 0 }
+                    let lines = ceil(size.width / CGFloat(columnWidths[index]))
+                    return size.height * lines
                 }.max() ?? 0
-            return Int(maxHeight) + 10  // 10はパディング
+            return Int(maxHeight) + 10
         }
 
         return [headerHeight] + contentHeights
