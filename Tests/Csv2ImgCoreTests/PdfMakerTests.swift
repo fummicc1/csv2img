@@ -274,4 +274,18 @@ class PdfMakerTests: XCTestCase {
         XCTAssertNotNil(pdf.dataRepresentation())
         XCTAssertGreaterThan(pdf.pageCount, 0)
     }
+
+    /// T511: Auto-sized PDF keeps every row when the table spans several pages.
+    func testT511_autoSizedPdfKeepsAllRows() throws {
+        let columns = [Csv.Column(name: "id", style: .random())]
+        let rowCount = 200
+        let rows = (0..<rowCount).map { Csv.Row(index: $0 + 1, values: ["row\($0)end"]) }
+        let pdfMaker = PdfMaker(maximumRowCount: nil, fontSize: 12, metadata: PDFMetadata())
+
+        let pdf = try pdfMaker.make(columns: columns, rows: rows) { _ in }
+
+        let text = (0..<pdf.pageCount).compactMap { pdf.page(at: $0)?.string }.joined(separator: "\n")
+        let missing = (0..<rowCount).filter { !text.contains("row\($0)end") }
+        XCTAssertEqual(missing, [], "Rows missing from the PDF")
+    }
 }

@@ -122,29 +122,9 @@ final class PdfMaker: PdfMakerType {
             * Double(
                 columns.count
             )
-        let allRowsHeight =
-            Double(
-                rows.count
-            ) * (longestHeight + verticalSpace)
-
-        let largestRowsHeight = min(
-            maxRowsHeight,
-            allRowsHeight
-        )
-
-        let totalPageNumber = Int(
-            allRowsHeight / largestRowsHeight
-        )
-
-        let totalHeight =
-            allRowsHeight + Double(
-                totalPageNumber
-            ) * rowHeight
-
-        let pageHeight = min(
-            largestRowsHeight + rowHeight,
-            totalHeight
-        )
+        let rowsPerPage = max(1, min(rows.count, Int(maxRowsHeight / rowHeight)))
+        let totalPageNumber = (rows.count + rowsPerPage - 1) / rowsPerPage
+        let pageHeight = Double(rowsPerPage + 1) * rowHeight
 
         var mediaBox = CGRect(
             origin: .zero,
@@ -172,13 +152,6 @@ final class PdfMaker: PdfMakerType {
             throw PdfMakingError.noContextAvailabe
         }
 
-        // `-1` is due to column space.
-        let maxNumberOfRowsInPage: Int = Int(
-            ceil(
-                pageHeight / rowHeight - 1
-            )
-        )
-
         let reporter = ProgressReporter(total: totalPageNumber, progress: progress)
 
         var currentPageNumber: Int = 1
@@ -203,15 +176,7 @@ final class PdfMaker: PdfMakerType {
                     alpha: 1
                 )
             )
-            context.fill(
-                CGRect(
-                    origin: .zero,
-                    size: CGSize(
-                        width: width,
-                        height: allRowsHeight
-                    )
-                )
-            )
+            context.fill(mediaBoxPerPage)
 
             context.setLineWidth(
                 lineWidth
@@ -250,14 +215,14 @@ final class PdfMaker: PdfMakerType {
                     width
                 )
             )
-            let pageEnd = min(startRowIndex + maxNumberOfRowsInPage, rows.count)
+            let pageEnd = min(startRowIndex + rowsPerPage, rows.count)
             let rows = startRowIndex < pageEnd ? Array(rows[startRowIndex..<pageEnd]) : []
             setRowText(
                 context: context,
                 styles: styles,
                 rows: rows,
                 from: 0,
-                rowCountPerPage: maxNumberOfRowsInPage,
+                rowCountPerPage: rowsPerPage,
                 columnHeight: Double(
                     rowHeight
                 ),
@@ -282,7 +247,7 @@ final class PdfMaker: PdfMakerType {
             reporter.advance()
 
             currentPageNumber += 1
-            startRowIndex += maxNumberOfRowsInPage
+            startRowIndex += rowsPerPage
 
             context.endPDFPage()
         }
