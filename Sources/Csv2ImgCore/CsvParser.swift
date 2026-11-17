@@ -5,6 +5,7 @@ import Foundation
 ///
 /// The parser iterates through the input using `String.UnicodeScalarView` for performance
 /// and handles quoted fields, escaped quotes, and mixed newline styles.
+/// Lines with no characters are skipped; a line holding only `""` is still a row with one empty field.
 public struct CsvParser: Sendable {
 
     public struct Options: Sendable {
@@ -281,6 +282,10 @@ extension CsvParser {
         }
 
         private mutating func handleFieldStart(_ scalar: Unicode.Scalar) -> [String]? {
+            if currentRow.isEmpty && isLineBreak(scalar) {
+                skipBlankLine(at: scalar)
+                return nil
+            }
             if scalar == "\"" {
                 advance()
                 state = .quotedField
@@ -339,6 +344,13 @@ extension CsvParser {
             }
             if scalar == "\r", let next = peek(), next == "\n" { advance() }
             return commitAndReturnRow()
+        }
+
+        private mutating func skipBlankLine(at scalar: Unicode.Scalar) {
+            advance()
+            if scalar == "\r", let next = peek(), next == "\n" { advance() }
+            line += 1
+            column = 1
         }
 
         private func isFieldBoundary(_ scalar: Unicode.Scalar) -> Bool {

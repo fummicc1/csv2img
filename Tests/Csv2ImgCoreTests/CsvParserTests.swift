@@ -261,6 +261,30 @@ final class CsvParserTests: XCTestCase {
         XCTAssertEqual(result.rows[0].values, ["", ""])
     }
 
+    /// T203: Blank lines between rows are skipped.
+    func testT203_blankLinesSkipped() throws {
+        let input = "a,b\n\n1,2\r\n\r\n\r3,4\n\n"
+        let result = try parser.parse(input)
+        XCTAssertEqual(result.rows.map(\.values), [["1", "2"], ["3", "4"]])
+        XCTAssertEqual(result.rows.map(\.index), [1, 2])
+        XCTAssertTrue(result.warnings.isEmpty)
+    }
+
+    /// T204: Blank lines before the header are skipped.
+    func testT204_leadingBlankLinesSkipped() throws {
+        let input = "\n\r\na,b\n1,2"
+        let result = try parser.parse(input)
+        XCTAssertEqual(result.columns.map(\.name), ["a", "b"])
+        XCTAssertEqual(result.rows.map(\.values), [["1", "2"]])
+    }
+
+    /// T205: A quoted empty field on its own line is a row, not a blank line.
+    func testT205_quotedEmptyLineIsRow() throws {
+        let input = "a\n\"\"\n1"
+        let result = try parser.parse(input)
+        XCTAssertEqual(result.rows.map(\.values), [[""], ["1"]])
+    }
+
     /// T206: Unicode/Japanese characters.
     func testT206_unicodeJapanese() throws {
         let input = "名前,値\n東京,100"
@@ -459,6 +483,16 @@ final class CsvParserTests: XCTestCase {
         XCTAssertEqual(streamRows.map(\.values), batchResult.rows.map(\.values))
         XCTAssertEqual(streamRows.map(\.index), batchResult.rows.map(\.index))
         XCTAssertEqual(streamWarnings, batchResult.warnings)
+    }
+
+    /// S013: Blank lines are skipped in the stream as well.
+    func testS013_blankLinesSkippedInStream() async throws {
+        let input = "a,b\n\n1,2\n\n3,4\n"
+        var rows: [[String]] = []
+        for try await chunk in parser.parseAsStream(input) {
+            rows.append(contentsOf: chunk.rows.map(\.values))
+        }
+        XCTAssertEqual(rows, [["1", "2"], ["3", "4"]])
     }
 
     /// S011: A chunk that ends exactly at the last row is marked final, with no trailing empty chunk.
