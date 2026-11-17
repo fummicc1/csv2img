@@ -261,6 +261,28 @@ final class CsvParserTests: XCTestCase {
         XCTAssertEqual(result.rows[0].values, ["", ""])
     }
 
+    /// T208: A leading byte order mark is not part of the first column name.
+    func testT208_leadingBomRemoved() throws {
+        let input = "\u{FEFF}a,b\n1,2"
+        let result = try parser.parse(input)
+        XCTAssertEqual(result.columns.map(\.name), ["a", "b"])
+        XCTAssertEqual(result.rows.map(\.values), [["1", "2"]])
+    }
+
+    /// T209: A byte order mark in front of a quoted header still lets the quotes be parsed.
+    func testT209_bomBeforeQuotedHeader() throws {
+        let input = "\u{FEFF}\"a,x\",b\n1,2"
+        let result = try parser.parse(input)
+        XCTAssertEqual(result.columns.map(\.name), ["a,x", "b"])
+    }
+
+    /// T210: U+FEFF elsewhere in the data is kept.
+    func testT210_bomInsideDataKept() throws {
+        let input = "a,b\n\u{FEFF}1,2"
+        let result = try parser.parse(input)
+        XCTAssertEqual(result.rows.map(\.values), [["\u{FEFF}1", "2"]])
+    }
+
     /// T206: Unicode/Japanese characters.
     func testT206_unicodeJapanese() throws {
         let input = "名前,値\n東京,100"
