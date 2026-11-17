@@ -24,6 +24,67 @@ class PdfMakerTests: XCTestCase {
         PdfMaker(maximumRowCount: nil, fontSize: 12, metadata: metadata)
     }
 
+    private struct PlacedCharacter {
+        let character: Character
+        let bounds: CGRect
+        let pageBounds: CGRect
+    }
+
+    private func placedCharacters(in pdf: PDFDocument) -> [PlacedCharacter] {
+        (0..<pdf.pageCount).flatMap { pageIndex -> [PlacedCharacter] in
+            guard let page = pdf.page(at: pageIndex), let string = page.string else { return [] }
+            let pageBounds = page.bounds(for: .mediaBox)
+            let units = Array(string.utf16)
+            return units.indices.compactMap { index in
+                guard let scalar = Unicode.Scalar(units[index]),
+                    !CharacterSet.whitespacesAndNewlines.contains(scalar),
+                    let selection = page.selection(for: NSRange(location: index, length: 1))
+                else { return nil }
+                return PlacedCharacter(
+                    character: Character(scalar),
+                    bounds: selection.bounds(for: page),
+                    pageBounds: pageBounds
+                )
+            }
+        }
+    }
+
+    private func assertLongCellStaysInItsColumn(
+        _ longText: String,
+        file: StaticString = #filePath,
+        line: UInt = #line
+    ) throws {
+        let columns = makeColumns(["H1", "H2"])
+        let rows = makeRows([[longText, "ZZZ"]])
+        let pdfMaker = makePdfMaker(metadata: PDFMetadata(size: .a5, orientation: .portrait))
+
+        let pdf = try pdfMaker.make(columns: columns, rows: rows) { _ in }
+
+        let characters = placedCharacters(in: pdf)
+        let outside = characters.filter { !$0.pageBounds.insetBy(dx: -1, dy: -1).contains($0.bounds) }
+        XCTAssertEqual(outside.map(\.character), [], "Characters drawn outside the page", file: file, line: line)
+
+        let drawn = String(characters.map(\.character))
+        let expected = longText.filter { !$0.isWhitespace }
+        XCTAssertTrue(drawn.contains(expected), "The cell text is incomplete", file: file, line: line)
+
+        let neighbour = characters.filter { $0.character == "Z" }.map(\.bounds)
+        let neighbourLeft = try XCTUnwrap(neighbour.map(\.minX).min(), file: file, line: line)
+        XCTAssertEqual(
+            Set(neighbour.map { Int($0.midY.rounded()) }).count,
+            1,
+            "A short cell should not wrap because another column is long",
+            file: file,
+            line: line
+        )
+        let cellCharacters = characters.filter { $0.character.isLowercase }
+        let overflowing = cellCharacters.filter { $0.bounds.maxX > neighbourLeft }
+        XCTAssertEqual(overflowing.count, 0, "Characters drawn over the next column", file: file, line: line)
+
+        let lineCount = Set(cellCharacters.map { Int($0.bounds.midY.rounded()) }).count
+        XCTAssertGreaterThan(lineCount, 1, "The cell should wrap onto several lines", file: file, line: line)
+    }
+
     // MARK: - Existing test
 
     func test_make() async throws {
@@ -287,5 +348,32 @@ class PdfMakerTests: XCTestCase {
         let text = (0..<pdf.pageCount).compactMap { pdf.page(at: $0)?.string }.joined(separator: "\n")
         let missing = (0..<rowCount).filter { !text.contains("row\($0)end") }
         XCTAssertEqual(missing, [], "Rows missing from the PDF")
+    }
+
+    // MARK: - T541-T543: Wrapping in fixed-size pages
+
+    /// T541: A long cell wraps inside its column instead of running over the next column and the page edge.
+    func testT541_longCellWrapsInsideColumn() throws {
+        let longText = Array(repeating: "lorem ipsum", count: 28).joined(separator: " ")
+        try assertLongCellStaysInItsColumn(longText)
+    }
+
+    /// T542: A long cell without any space still wraps.
+    func testT542_unbreakableCellWraps() throws {
+        try assertLongCellStaysInItsColumn(String(repeating: "x", count: 300))
+    }
+
+    /// T543: A line break inside a cell starts a new line.
+    func testT543_lineBreakInsideCell() throws {
+        let columns = makeColumns(["H1", "H2"])
+        let rows = makeRows([["first\nsecond", "ZZZ"]])
+        let pdfMaker = makePdfMaker(metadata: PDFMetadata(size: .a5, orientation: .portrait))
+
+        let pdf = try pdfMaker.make(columns: columns, rows: rows) { _ in }
+
+        let characters = placedCharacters(in: pdf)
+        let firstLine = try XCTUnwrap(characters.first { $0.character == "f" })
+        let secondLine = try XCTUnwrap(characters.first { $0.character == "d" })
+        XCTAssertGreaterThan(firstLine.bounds.minY, secondLine.bounds.maxY - 1)
     }
 }
