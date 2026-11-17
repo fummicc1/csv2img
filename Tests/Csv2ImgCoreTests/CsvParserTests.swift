@@ -261,6 +261,21 @@ final class CsvParserTests: XCTestCase {
         XCTAssertEqual(result.rows[0].values, ["", ""])
     }
 
+    /// T206: Unicode/Japanese characters.
+    func testT206_unicodeJapanese() throws {
+        let input = "名前,値\n東京,100"
+        let result = try parser.parse(input)
+        XCTAssertEqual(result.columns.map(\.name), ["名前", "値"])
+        XCTAssertEqual(result.rows[0].values, ["東京", "100"])
+    }
+
+    /// T207: Emoji characters.
+    func testT207_emoji() throws {
+        let input = "a,b\n🎉,🚀"
+        let result = try parser.parse(input)
+        XCTAssertEqual(result.rows[0].values, ["🎉", "🚀"])
+    }
+
     /// T208: A leading byte order mark is not part of the first column name.
     func testT208_leadingBomRemoved() throws {
         let input = "\u{FEFF}a,b\n1,2"
@@ -281,21 +296,6 @@ final class CsvParserTests: XCTestCase {
         let input = "a,b\n\u{FEFF}1,2"
         let result = try parser.parse(input)
         XCTAssertEqual(result.rows.map(\.values), [["\u{FEFF}1", "2"]])
-    }
-
-    /// T206: Unicode/Japanese characters.
-    func testT206_unicodeJapanese() throws {
-        let input = "名前,値\n東京,100"
-        let result = try parser.parse(input)
-        XCTAssertEqual(result.columns.map(\.name), ["名前", "値"])
-        XCTAssertEqual(result.rows[0].values, ["東京", "100"])
-    }
-
-    /// T207: Emoji characters.
-    func testT207_emoji() throws {
-        let input = "a,b\n🎉,🚀"
-        let result = try parser.parse(input)
-        XCTAssertEqual(result.rows[0].values, ["🎉", "🚀"])
     }
 
     // MARK: - Non-RFC 4180 resilience
