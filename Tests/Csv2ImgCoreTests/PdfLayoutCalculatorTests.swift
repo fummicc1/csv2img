@@ -92,6 +92,20 @@ final class PdfLayoutCalculatorTests: XCTestCase {
         XCTAssertLessThan(totalWidth, unscaledTotal, "Scaled widths should be smaller than unscaled")
     }
 
+    /// T407: When one column is too long, the short columns keep their natural width.
+    func testT407_onlyWideColumnsShrink() {
+        let calc = makeCalculator()
+        let columns = makeColumns(["A", "B"])
+        let rows = makeRows([[String(repeating: "long text ", count: 30), "short"]])
+
+        let natural = calc.calculateColumnWidths(columns: columns, rows: rows, availableWidth: nil)
+        let available = 300.0
+        let widths = calc.calculateColumnWidths(columns: columns, rows: rows, availableWidth: available)
+
+        XCTAssertEqual(widths[1], natural[1], accuracy: 0.01)
+        XCTAssertEqual(widths.reduce(0, +), available, accuracy: 0.01)
+    }
+
     /// T406: Fixed size, no scaling needed — columns fit within page width.
     func testT406_fixedSizeNoScaling() {
         let calc = makeCalculator()
