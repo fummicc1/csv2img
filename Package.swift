@@ -72,5 +72,9 @@ let package = Package(
                 ),
             ]
         ),
+        .testTarget(
+            name: "Csv2ImgCmdTests",
+            dependencies: ["Csv2ImgCmd"]
+        ),
     ]
 )

@@ -11,7 +11,7 @@ on:
 
 jobs:
   test_cmd:
-    name: "Build Csv2ImgCmd"
+    name: "Build and Test Csv2ImgCmd"
     runs-on: macos-15
     steps:
       - uses: actions/checkout@v4
@@ -25,6 +25,6 @@ jobs:
         run: |
           set -o pipefail && \
           xcodebuild -scheme Csv2ImgCmd \
-          clean build \
+          clean test \
           -destination 'platform=OS X,arch=arm64' \
           | xcbeautify
