@@ -560,44 +560,27 @@ extension Csv {
     /**
      - parameters:
      - to url: local file path where [png, pdf] image will be saved.
-     - Returns: If saving csv image to file, returns `true`. Otherwise, return `False`.
+     - Returns: The saved data, or `nil` when nothing has been generated yet or the file could not be written.
      */
     public func write(
         to url: URL
     ) -> Data? {
-        let data: Data?
-        if exportType == .png {
-            data = imageMarker.latestOutput?.convertToData()
-        } else if exportType == .pdf {
-            pdfMarker.latestOutput?.write(
-                to: url
-            )
-            return pdfMarker.latestOutput?.dataRepresentation()
-        } else {
-            data = nil
-        }
-        guard let data = data else {
-            return nil
-        }
-        do {
-            if !FileManager.default.fileExists(
-                atPath: url.absoluteString
-            ) {
-                FileManager.default.createFile(
-                    atPath: url.absoluteString,
-                    contents: data
-                )
-            } else {
-                try data.write(
-                    to: url
-                )
+        switch exportType {
+        case .png:
+            guard let data = imageMarker.latestOutput?.convertToData() else {
+                return nil
             }
-            return data
-        } catch {
-            print(
-                error
-            )
-            return nil
+            do {
+                try data.write(to: url)
+                return data
+            } catch {
+                return nil
+            }
+        case .pdf:
+            guard let document = pdfMarker.latestOutput, document.write(to: url) else {
+                return nil
+            }
+            return document.dataRepresentation()
         }
     }
 
