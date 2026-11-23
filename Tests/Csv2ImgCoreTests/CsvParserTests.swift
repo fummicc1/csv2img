@@ -261,12 +261,12 @@ final class CsvParserTests: XCTestCase {
         XCTAssertEqual(result.rows[0].values, ["", ""])
     }
 
-    /// T203: Blank lines between rows are skipped.
-    func testT203_blankLinesSkipped() throws {
-        let input = "a,b\n\n1,2\r\n\r\n\r3,4\n\n"
+    /// T203: Blank lines between rows are kept as rows of empty fields.
+    func testT203_blankLinesBetweenRowsKept() throws {
+        let input = "a,b\n1,2\r\n\r\n\r3,4"
         let result = try parser.parse(input)
-        XCTAssertEqual(result.rows.map(\.values), [["1", "2"], ["3", "4"]])
-        XCTAssertEqual(result.rows.map(\.index), [1, 2])
+        XCTAssertEqual(result.rows.map(\.values), [["1", "2"], ["", ""], ["", ""], ["3", "4"]])
+        XCTAssertEqual(result.rows.map(\.index), [1, 2, 3, 4])
         XCTAssertTrue(result.warnings.isEmpty)
     }
 
@@ -276,6 +276,27 @@ final class CsvParserTests: XCTestCase {
         let result = try parser.parse(input)
         XCTAssertEqual(result.columns.map(\.name), ["a", "b"])
         XCTAssertEqual(result.rows.map(\.values), [["1", "2"]])
+    }
+
+    /// T211: Blank lines after the last row are skipped.
+    func testT211_trailingBlankLinesSkipped() throws {
+        let input = "a,b\n1,2\n\n\r\n\r"
+        let result = try parser.parse(input)
+        XCTAssertEqual(result.rows.map(\.values), [["1", "2"]])
+    }
+
+    /// T212: A blank line right after the header is kept.
+    func testT212_blankLineAfterHeaderKept() throws {
+        let input = "a,b\n\n1,2"
+        let result = try parser.parse(input)
+        XCTAssertEqual(result.rows.map(\.values), [["", ""], ["1", "2"]])
+    }
+
+    /// T213: In a single-column file a blank line between rows keeps its empty value.
+    func testT213_blankLineInSingleColumnKept() throws {
+        let input = "a\n1\n\n2\n"
+        let result = try parser.parse(input)
+        XCTAssertEqual(result.rows.map(\.values), [["1"], [""], ["2"]])
     }
 
     /// T205: A quoted empty field on its own line is a row, not a blank line.
@@ -507,14 +528,16 @@ final class CsvParserTests: XCTestCase {
         XCTAssertEqual(streamWarnings, batchResult.warnings)
     }
 
-    /// S013: Blank lines are skipped in the stream as well.
-    func testS013_blankLinesSkippedInStream() async throws {
-        let input = "a,b\n\n1,2\n\n3,4\n"
-        var rows: [[String]] = []
-        for try await chunk in parser.parseAsStream(input) {
-            rows.append(contentsOf: chunk.rows.map(\.values))
+    /// S013: The stream keeps blank lines between rows and skips the ones at the end.
+    func testS013_blankLinesInStream() async throws {
+        let input = "a,b\n1,2\n\n3,4\n\n"
+        var chunks: [CsvParseResult.Chunk] = []
+        for try await chunk in parser.parseAsStream(input, options: .init(chunkSize: 3)) {
+            chunks.append(chunk)
         }
-        XCTAssertEqual(rows, [["1", "2"], ["3", "4"]])
+        XCTAssertEqual(chunks.flatMap(\.rows).map(\.values), [["1", "2"], ["", ""], ["3", "4"]])
+        XCTAssertEqual(chunks.map(\.isFinal), [true])
+        XCTAssertTrue(chunks.flatMap(\.warnings).isEmpty)
     }
 
     /// S011: A chunk that ends exactly at the last row is marked final, with no trailing empty chunk.
