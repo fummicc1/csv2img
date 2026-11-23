@@ -106,6 +106,21 @@ final class PdfLayoutCalculatorTests: XCTestCase {
         XCTAssertEqual(widths.reduce(0, +), available, accuracy: 0.01)
     }
 
+    /// T410: A cell with line breaks is split at them only, when the column is as wide as its longest line.
+    func testT410_lineBreakCellKeepsEachLineWhole() {
+        let calc = makeCalculator()
+        let text = "line1\nline2\r\n\nlonger line"
+        let columns = makeColumns(["H1"])
+        let rows = makeRows([[text]])
+
+        let widths = calc.calculateColumnWidths(columns: columns, rows: rows, availableWidth: 1000)
+
+        XCTAssertEqual(
+            calc.wrappedLines(of: text, columnWidth: widths[0]),
+            ["line1", "line2", "", "longer line"]
+        )
+    }
+
     /// T406: Fixed size, no scaling needed — columns fit within page width.
     func testT406_fixedSizeNoScaling() {
         let calc = makeCalculator()

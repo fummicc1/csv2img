@@ -30,6 +30,19 @@ jobs:
           -destination 'platform=macOS,arch=arm64' \
           CODE_SIGNING_ALLOWED=NO \
           | xcbeautify
+      - name: Test (macOS)
+        run: |
+          set -o pipefail && \
+          xcodebuild -project Csv2ImageApp/Csv2ImageApp.xcodeproj \
+          -scheme Csv2ImageApp \
+          test \
+          -only-testing:Csv2ImageAppTests \
+          -destination 'platform=macOS,arch=arm64' \
+          CODE_SIGN_IDENTITY=- \
+          CODE_SIGN_STYLE=Manual \
+          DEVELOPMENT_TEAM= \
+          PROVISIONING_PROFILE_SPECIFIER= \
+          | xcbeautify
       - name: Build (iOS)
         run: |
           set -o pipefail && \
