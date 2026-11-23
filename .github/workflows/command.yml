@@ -11,7 +11,7 @@ on:
 
 jobs:
   test_cmd:
-    name: "Build and Test Csv2ImgCmd"
+    name: "Build Csv2ImgCmd"
     runs-on: macos-15
     steps:
       - uses: actions/checkout@v4
