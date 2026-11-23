@@ -5,7 +5,8 @@ import Foundation
 ///
 /// The parser iterates through the input using `String.UnicodeScalarView` for performance
 /// and handles quoted fields, escaped quotes, and mixed newline styles.
-/// Lines with no characters are skipped; a line holding only `""` is still a row with one empty field.
+/// Lines with no characters are kept as rows of empty fields when they sit between rows,
+/// and skipped before the header and after the last row.
 public struct CsvParser: Sendable {
 
     public struct Options: Sendable {
@@ -177,7 +178,9 @@ public struct CsvParser: Sendable {
         var warnings: [CsvParseResult.Warning] = []
         let actualCount = fields.count
 
-        if actualCount < columnCount {
+        if rawFields == StateMachine.blankLine {
+            fields = Array(repeating: "", count: columnCount)
+        } else if actualCount < columnCount {
             warnings.append(CsvParseResult.Warning(
                 kind: .columnCountMismatch(expected: columnCount, actual: actualCount),
                 row: rowIndex
@@ -219,6 +222,9 @@ extension CsvParser {
     /// Call `nextRow()` repeatedly to get each raw row as `[String]`, or `nil` at EOF.
     struct StateMachine {
 
+        /// The row returned for a line with no characters. A line holding only `""` is `[""]` instead.
+        static let blankLine: [String] = []
+
         enum State {
             case fieldStart
             case unquotedField
@@ -233,6 +239,9 @@ extension CsvParser {
         private var currentField = ""
         private var currentRow: [String] = []
         private var finished = false
+        private var heldRow: [String]?
+        private var pendingBlankLines = 0
+        private var hasReturnedRow = false
 
         // Position tracking (1-based)
         private(set) var line = 1
@@ -250,11 +259,20 @@ extension CsvParser {
         }
 
         /// Returns the next parsed row as an array of field strings, or `nil` at EOF.
+        ///
+        /// Blank lines are held back until the next row arrives, so the ones after the last row are never returned.
         mutating func nextRow() -> [String]? {
-            while !finished {
-                if let row = step() { return row }
+            while heldRow == nil && !finished {
+                heldRow = step()
             }
-            return nil
+            guard let row = heldRow else { return nil }
+            if pendingBlankLines > 0 {
+                pendingBlankLines -= 1
+                return Self.blankLine
+            }
+            heldRow = nil
+            hasReturnedRow = true
+            return row
         }
 
         // MARK: - Transitions
@@ -352,6 +370,7 @@ extension CsvParser {
             if scalar == "\r", let next = peek(), next == "\n" { advance() }
             line += 1
             column = 1
+            if hasReturnedRow { pendingBlankLines += 1 }
         }
 
         private func isFieldBoundary(_ scalar: Unicode.Scalar) -> Bool {
