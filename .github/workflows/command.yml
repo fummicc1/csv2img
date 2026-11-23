@@ -25,6 +25,6 @@ jobs:
         run: |
           set -o pipefail && \
           xcodebuild -scheme Csv2ImgCmd \
-          clean build \
+          clean test \
           -destination 'platform=OS X,arch=arm64' \
           | xcbeautify
