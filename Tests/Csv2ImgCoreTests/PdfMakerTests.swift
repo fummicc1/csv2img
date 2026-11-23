@@ -372,8 +372,13 @@ class PdfMakerTests: XCTestCase {
         let pdf = try pdfMaker.make(columns: columns, rows: rows) { _ in }
 
         let characters = placedCharacters(in: pdf)
-        let firstLine = try XCTUnwrap(characters.first { $0.character == "f" })
-        let secondLine = try XCTUnwrap(characters.first { $0.character == "d" })
-        XCTAssertGreaterThan(firstLine.bounds.minY, secondLine.bounds.maxY - 1)
+        func midY(of character: Character) throws -> CGFloat {
+            try XCTUnwrap(characters.first { $0.character == character }).bounds.midY
+        }
+        let firstLine = try midY(of: "f")
+        let secondLine = try midY(of: "c")
+        XCTAssertEqual(try midY(of: "t"), firstLine, accuracy: 1)
+        XCTAssertEqual(try midY(of: "d"), secondLine, accuracy: 1)
+        XCTAssertGreaterThan(firstLine, secondLine + 5)
     }
 }

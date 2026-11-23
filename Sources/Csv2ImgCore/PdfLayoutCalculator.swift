@@ -156,9 +156,17 @@ struct PdfLayoutCalculator {
     /// Splits a cell text into the lines that fit a column, so that measuring and drawing agree on the result.
     func wrappedLines(of text: String, columnWidth: Double) -> [String] {
         let width = columnWidth - horizontalPadding * 2
-        let hasLineBreak = text.contains(where: \.isNewline)
         guard width > 0 else { return [text] }
-        if !hasLineBreak && Double(text.getSize(fontSize: fontSize).width) <= width {
+        if !text.contains(where: \.isNewline) {
+            return wrappedLines(ofParagraph: text, width: width)
+        }
+        return text.split(omittingEmptySubsequences: false, whereSeparator: \.isNewline)
+            .flatMap { wrappedLines(ofParagraph: String($0), width: width) }
+    }
+
+    private func wrappedLines(ofParagraph text: String, width: Double) -> [String] {
+        // Column widths come from this same measurement, so text that fits must not reach the typesetter, which would break it over the fraction of a point lost to rounding.
+        if Double(text.getSize(fontSize: fontSize).width) <= width {
             return [text]
         }
 
