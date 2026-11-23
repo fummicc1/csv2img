@@ -25,6 +25,7 @@ struct PdfLayoutCalculator {
     let verticalPadding: Double
     let pageMargin: Double
     let pageNumberAreaHeight: Double
+    private let lineHeight: Double
 
     init(
         fontSize: Double,
@@ -38,6 +39,7 @@ struct PdfLayoutCalculator {
         self.verticalPadding = verticalPadding
         self.pageMargin = pageMargin
         self.pageNumberAreaHeight = pageNumberAreaHeight
+        self.lineHeight = Double("Hg".getSize(fontSize: fontSize).height)
     }
 
     // MARK: - Public
@@ -124,7 +126,7 @@ struct PdfLayoutCalculator {
                 let minWidths = columns.map { col -> Double in
                     Double(col.name.getSize(fontSize: fontSize).width) + horizontalPadding * 2
                 }
-                widths = proportionallyScale(widths: widths, minWidths: minWidths, targetTotal: available)
+                widths = fit(widths: widths, minWidths: minWidths, targetTotal: available)
             }
         }
 
@@ -141,21 +143,41 @@ struct PdfLayoutCalculator {
             return singleLineHeight() + verticalPadding
         }
 
-        let maxCellHeight = values.enumerated().map { (index, value) -> Double in
-            guard index < columnWidths.count else { return singleLineHeight() }
-            let cellWidth = columnWidths[index] - horizontalPadding * 2
-            if cellWidth <= 0 { return singleLineHeight() }
+        let maxLineCount = values.enumerated().map { (index, value) -> Int in
+            guard index < columnWidths.count else { return 1 }
+            return wrappedLines(of: value, columnWidth: columnWidths[index]).count
+        }.max() ?? 1
 
-            let singleWidth = Double(value.getSize(fontSize: fontSize).width)
-            // Skip CTFramesetter if text fits in single line
-            if singleWidth <= cellWidth {
-                return singleLineHeight()
-            }
+        return Double(maxLineCount) * singleLineHeight() + verticalPadding
+    }
 
-            return measureWrappedTextHeight(text: value, constraintWidth: cellWidth)
-        }.max() ?? singleLineHeight()
+    // MARK: - Wrapping
 
-        return maxCellHeight + verticalPadding
+    /// Splits a cell text into the lines that fit a column, so that measuring and drawing agree on the result.
+    func wrappedLines(of text: String, columnWidth: Double) -> [String] {
+        let width = columnWidth - horizontalPadding * 2
+        let hasLineBreak = text.contains(where: \.isNewline)
+        guard width > 0 else { return [text] }
+        if !hasLineBreak && Double(text.getSize(fontSize: fontSize).width) <= width {
+            return [text]
+        }
+
+        let attributed = NSAttributedString(
+            string: text,
+            attributes: [.font: text.getFont(ofSize: fontSize)]
+        )
+        let typesetter = CTTypesetterCreateWithAttributedString(attributed)
+        let source = text as NSString
+        var lines: [String] = []
+        var start = 0
+        while start < source.length {
+            let suggested = CTTypesetterSuggestLineBreak(typesetter, start, width)
+            let length = suggested > 0 ? suggested : source.rangeOfComposedCharacterSequence(at: start).length
+            let line = source.substring(with: NSRange(location: start, length: length))
+            lines.append(line.replacingOccurrences(of: "\\s+$", with: "", options: .regularExpression))
+            start += length
+        }
+        return lines.isEmpty ? [text] : lines
     }
 
     // MARK: - Page Splitting
@@ -195,56 +217,24 @@ struct PdfLayoutCalculator {
     // MARK: - Private Helpers
 
     private func calculateHeaderHeight(columns: [Csv.Column], columnWidths: [Double]) -> Double {
-        let maxHeight = columns.enumerated().map { (index, column) -> Double in
-            guard index < columnWidths.count else { return singleLineHeight() }
-            let cellWidth = columnWidths[index] - horizontalPadding * 2
-            if cellWidth <= 0 { return singleLineHeight() }
-            let textWidth = Double(column.name.getSize(fontSize: fontSize).width)
-            if textWidth <= cellWidth {
-                return singleLineHeight()
-            }
-            return measureWrappedTextHeight(text: column.name, constraintWidth: cellWidth)
-        }.max() ?? singleLineHeight()
-
-        return maxHeight + verticalPadding
+        calculateRowHeight(values: columns.map(\.name), columnWidths: columnWidths)
     }
 
     func singleLineHeight() -> Double {
-        return Double("Hg".getSize(fontSize: fontSize).height)
+        lineHeight
     }
 
-    private func measureWrappedTextHeight(text: String, constraintWidth: Double) -> Double {
-        let font = text.getFont(ofSize: fontSize)
-        let attrString = NSAttributedString(
-            string: text,
-            attributes: [.font: font]
-        )
-        let framesetter = CTFramesetterCreateWithAttributedString(attrString)
-        let constraint = CGSize(width: constraintWidth, height: .greatestFiniteMagnitude)
-        let suggestedSize = CTFramesetterSuggestFrameSizeWithConstraints(
-            framesetter, CFRangeMake(0, 0), nil, constraint, nil
-        )
-        return Double(suggestedSize.height)
-    }
+    /// Narrow columns keep their natural width and only the wide ones give up space, so short values are not wrapped because of one long column.
+    private func fit(widths: [Double], minWidths: [Double], targetTotal: Double) -> [Double] {
+        var result = widths
+        var remainingWidth = targetTotal
+        var remainingCount = widths.count
 
-    private func proportionallyScale(widths: [Double], minWidths: [Double], targetTotal: Double) -> [Double] {
-        let currentTotal = widths.reduce(0, +)
-        guard currentTotal > 0 else { return widths }
-
-        var result = widths.enumerated().map { (i, w) -> Double in
-            max(w * targetTotal / currentTotal, minWidths[i])
-        }
-
-        let excess = result.reduce(0, +) - targetTotal
-        guard excess > 0 else { return result }
-
-        // Columns clamped to their minimum pushed the total over the target, so only the others give the excess back.
-        let shrinkable = result.indices.filter { result[$0] > minWidths[$0] }
-        let shrinkableTotal = shrinkable.reduce(0.0) { $0 + result[$1] }
-        guard shrinkableTotal > 0 else { return result }
-
-        for i in shrinkable {
-            result[i] = max(result[i] - excess * result[i] / shrinkableTotal, minWidths[i])
+        for i in widths.indices.sorted(by: { widths[$0] < widths[$1] }) {
+            let share = remainingWidth / Double(remainingCount)
+            result[i] = max(min(widths[i], share), minWidths[i])
+            remainingWidth -= result[i]
+            remainingCount -= 1
         }
         return result
     }

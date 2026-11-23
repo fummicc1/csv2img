@@ -64,4 +64,57 @@ final class Csv2Tests: XCTestCase {
             ]
         )
     }
+
+    private func temporaryFile(extension pathExtension: String) -> URL {
+        FileManager.default.temporaryDirectory
+            .appendingPathComponent(UUID().uuidString)
+            .appendingPathExtension(pathExtension)
+    }
+
+    func testWriteCreatesPngFile() async throws {
+        let csv = try Csv.loadFromString("a,b\n1,2")
+        _ = try await csv.generate(exportType: .png)
+        let url = temporaryFile(extension: "png")
+        defer { try? FileManager.default.removeItem(at: url) }
+
+        let returned = await csv.write(to: url)
+
+        let written = try Data(contentsOf: url)
+        XCTAssertFalse(written.isEmpty)
+        XCTAssertEqual(returned, written)
+    }
+
+    func testWriteOverwritesExistingPngFile() async throws {
+        let csv = try Csv.loadFromString("a,b\n1,2")
+        _ = try await csv.generate(exportType: .png)
+        let url = temporaryFile(extension: "png")
+        defer { try? FileManager.default.removeItem(at: url) }
+        try Data("old".utf8).write(to: url)
+
+        let returned = await csv.write(to: url)
+
+        XCTAssertEqual(try Data(contentsOf: url), returned)
+    }
+
+    func testWriteCreatesPdfFile() async throws {
+        let csv = try Csv.loadFromString("a,b\n1,2")
+        _ = try await csv.generate(exportType: .pdf)
+        let url = temporaryFile(extension: "pdf")
+        defer { try? FileManager.default.removeItem(at: url) }
+
+        let returned = await csv.write(to: url)
+
+        XCTAssertNotNil(returned)
+        XCTAssertFalse(try Data(contentsOf: url).isEmpty)
+    }
+
+    func testWriteReturnsNilWhenFileCannotBeCreated() async throws {
+        let csv = try Csv.loadFromString("a,b\n1,2")
+        _ = try await csv.generate(exportType: .png)
+        let url = temporaryFile(extension: "png").appendingPathComponent("missing-directory.png")
+
+        let returned = await csv.write(to: url)
+
+        XCTAssertNil(returned)
+    }
 }

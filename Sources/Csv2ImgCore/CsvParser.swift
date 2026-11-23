@@ -244,7 +244,8 @@ extension CsvParser {
                 throw Csv.Error.emptyData
             }
             self.scalars = string.unicodeScalars
-            self.index = scalars.startIndex
+            let byteOrderMark: Unicode.Scalar = "\u{FEFF}"
+            self.index = scalars.first == byteOrderMark ? scalars.index(after: scalars.startIndex) : scalars.startIndex
             self.separatorScalar = separator.unicodeScalars.first!
         }
 

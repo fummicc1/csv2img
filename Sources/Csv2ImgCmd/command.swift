@@ -54,12 +54,6 @@ public struct Csv2Img: AsyncParsableCommand {
     )
     public var output: String
 
-    @Flag(
-        name: .shortAndLong,
-        help: "Print the version of csv2img"
-    )
-    public var version: Bool = false
-
     @Option(
         name: .shortAndLong,
         help: "Specify the font size"
@@ -70,13 +64,13 @@ public struct Csv2Img: AsyncParsableCommand {
         name: .shortAndLong,
         help: "Paper size for PDF export (a4, b4, b3, etc). Default is b3"
     )
-    public var paperSize: String = "b3"
+    public var paperSize: PdfSize = .b3
 
     @Option(
         name: .long,
         help: "Page orientation for PDF (portrait/landscape). Default is landscape"
     )
-    public var orientation: String = "landscape"
+    public var orientation: PdfSize.Orientation = .landscape
 
     public init() {}
 
@@ -85,7 +79,7 @@ public struct Csv2Img: AsyncParsableCommand {
             throw ValidationError("Input file does not exist at path: \(input)")
         }
 
-        let outputDir = (output as NSString).deletingLastPathComponent
+        let outputDir = URL(fileURLWithPath: output).deletingLastPathComponent().path
         if !FileManager.default.fileExists(atPath: outputDir) {
             throw ValidationError("Output directory does not exist: \(outputDir)")
         }
@@ -102,11 +96,6 @@ public struct Csv2Img: AsyncParsableCommand {
     }
 
     public func run() async throws {
-        if version {
-            print("csv2img version \(Self.version)")
-            return
-        }
-
         print("🚀 Starting conversion process...")
 
         let csv: Csv
@@ -124,13 +113,9 @@ public struct Csv2Img: AsyncParsableCommand {
         print("🔄 Processing CSV data...")
 
         if exportType == .pdf {
-            let orientation: PdfSize.Orientation =
-                self.orientation.lowercased() == "portrait" ? .portrait : .landscape
-            let size = PdfSize(rawValue: paperSize.lowercased()) ?? .b3
-
             await csv.update(
                 pdfMetadata: .init(
-                    size: size,
+                    size: paperSize,
                     orientation: orientation
                 ))
             print("📄 Configured PDF settings: \(paperSize) - \(orientation)")
@@ -169,4 +154,16 @@ public struct Csv2Img: AsyncParsableCommand {
 }
 
 extension Csv.ExportType: ExpressibleByArgument {
+}
+
+extension PdfSize: ExpressibleByArgument {
+    public init?(argument: String) {
+        self.init(rawValue: argument.lowercased())
+    }
+}
+
+extension PdfSize.Orientation: ExpressibleByArgument {
+    public init?(argument: String) {
+        self.init(rawValue: argument.lowercased())
+    }
 }

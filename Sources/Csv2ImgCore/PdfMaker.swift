@@ -385,6 +385,7 @@ final class PdfMaker: PdfMakerType {
                 columns: columns,
                 columnWidths: layout.columnWidths,
                 headerHeight: layout.headerHeight,
+                calculator: calculator,
                 xOffset: xOffset,
                 yBase: yBase,
                 pageTableHeight: pageTableHeight
@@ -397,6 +398,7 @@ final class PdfMaker: PdfMakerType {
                 columnWidths: layout.columnWidths,
                 rowHeights: layout.rowHeights,
                 headerHeight: layout.headerHeight,
+                calculator: calculator,
                 page: page,
                 xOffset: xOffset,
                 yBase: yBase
@@ -471,6 +473,7 @@ extension PdfMaker {
         columns: [Csv.Column],
         columnWidths: [Double],
         headerHeight: Double,
+        calculator: PdfLayoutCalculator,
         xOffset: Double,
         yBase: Double,
         pageTableHeight: Double
@@ -498,20 +501,14 @@ extension PdfMaker {
             context.move(to: CGPoint(x: colX, y: yBase))
             context.addLine(to: CGPoint(x: colX, y: tableTop))
 
-            // Draw header text centered in cell
             let column = columns[i]
-            let str = NSAttributedString(
-                string: column.name,
-                attributes: [
-                    .font: column.name.getFont(ofSize: fontSize),
-                    .foregroundColor: column.style.displayableColor(),
-                ]
+            drawCellText(
+                column.name,
+                color: column.style.displayableColor(),
+                in: CGRect(x: colX, y: headerBottom, width: colWidth, height: headerHeight),
+                calculator: calculator,
+                context: context
             )
-            let textSize = str.integralSize()
-            let cellCenterX = colX + (colWidth - textSize.width) / 2
-            let cellCenterY = headerBottom + (headerHeight - textSize.height) / 2
-
-            drawText(str, at: CGPoint(x: cellCenterX, y: cellCenterY), in: context)
 
             colX += colWidth
         }
@@ -530,6 +527,7 @@ extension PdfMaker {
         columnWidths: [Double],
         rowHeights: [Double],
         headerHeight: Double,
+        calculator: PdfLayoutCalculator,
         page: PdfLayoutCalculator.PageContent,
         xOffset: Double,
         yBase: Double
@@ -560,27 +558,47 @@ extension PdfMaker {
                     continue
                 }
 
-                let style = styles[colIndex]
                 let colWidth = columnWidths[colIndex]
-                let str = NSAttributedString(
-                    string: text,
-                    attributes: [
-                        .font: text.getFont(ofSize: fontSize),
-                        .foregroundColor: style.displayableColor(),
-                    ]
+                drawCellText(
+                    text,
+                    color: styles[colIndex].displayableColor(),
+                    in: CGRect(x: colX, y: rowBottom, width: colWidth, height: rowH),
+                    calculator: calculator,
+                    context: context
                 )
-                let textSize = str.integralSize()
-
-                // Center text horizontally, vertically within the cell
-                let cellCenterX = colX + (colWidth - textSize.width) / 2
-                let cellCenterY = rowBottom + (rowH - textSize.height) / 2
-
-                drawText(str, at: CGPoint(x: cellCenterX, y: cellCenterY), in: context)
 
                 colX += colWidth
             }
 
             currentY = rowBottom
+        }
+    }
+
+    /// Draws a cell text centered in its cell, wrapped onto as many lines as the column width requires.
+    private func drawCellText(
+        _ text: String,
+        color: Any,
+        in cell: CGRect,
+        calculator: PdfLayoutCalculator,
+        context: CGContext
+    ) {
+        let lines = calculator.wrappedLines(of: text, columnWidth: cell.width)
+        let lineHeight = calculator.singleLineHeight()
+        let firstLineY = cell.minY + (cell.height + Double(lines.count - 2) * lineHeight) / 2
+
+        for (index, line) in lines.enumerated() {
+            let str = NSAttributedString(
+                string: line,
+                attributes: [
+                    .font: line.getFont(ofSize: fontSize),
+                    .foregroundColor: color,
+                ]
+            )
+            let origin = CGPoint(
+                x: cell.minX + (cell.width - str.integralSize().width) / 2,
+                y: firstLineY - Double(index) * lineHeight
+            )
+            drawText(str, at: origin, in: context)
         }
     }
 
